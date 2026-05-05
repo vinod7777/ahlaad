@@ -162,7 +162,7 @@ export default function Featured() {
           {highlights[activeDay as keyof typeof highlights].desc.split('₹2,50,000').length > 1 ? (
             <>
               {highlights[activeDay as keyof typeof highlights].desc.split('₹2,50,000')[0]}
-              <span className="text-[#39FF14] font-display text-2xl" style={{ textShadow: '0 0 12px rgba(57,255,20,0.5)' }}>₹2,50,000</span>
+              <span className="text-[#C9A84C] font-display text-2xl" style={{ textShadow: '0 0 12px rgba(201,168,76,0.5)' }}>₹2,50,000</span>
               {highlights[activeDay as keyof typeof highlights].desc.split('₹2,50,000')[1]}
             </>
           ) : highlights[activeDay as keyof typeof highlights].desc}

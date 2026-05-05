@@ -122,9 +122,10 @@ export default function Contact() {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <SilverJubileeLogo size={36} />
+            <SilverJubileeLogo size={48} />
             <div>
-              <span className="font-display text-lg text-white tracking-wider">AHLAAD 2026</span>
+              <img src="/ahlaad.png" alt="Ahlaad" className="h-8 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
+              <span className="font-display text-lg text-[#C9A84C] tracking-wider">2K26</span>
               <span className="text-white/40 text-xs block">AITAM Silver Jubilee Cultural Fest</span>
             </div>
           </div>
@@ -135,7 +136,7 @@ export default function Contact() {
           </div>
           
           <div className="text-sm text-white/40">
-            © 2026 AITAM — Ahlaad Silver Jubilee. All rights reserved.
+            © 2K26 AITAM — Ahlaad Silver Jubilee. All rights reserved.
           </div>
         </div>
 

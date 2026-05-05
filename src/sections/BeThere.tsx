@@ -92,15 +92,15 @@ export default function BeThere() {
         className="relative z-10 text-center px-[6vw]"
       >
         <div className="font-mono text-sm text-[#C9A84C] uppercase tracking-widest mb-4">
-          JUNE 26–27, 2026
+          JUNE 26–27, 2K26
         </div>
 
-        <h2 className="be-there-title font-display text-hero text-white mb-6" style={{ textShadow: '0 0 20px rgba(201,168,76,0.9), 0 0 40px rgba(201,168,76,0.6), 0 0 80px rgba(201,168,76,0.3), 0 4px 20px rgba(0,0,0,0.8)' }}>
-          AHLAAD
-        </h2>
+        <div className="be-there-title mb-6">
+          <img src="/ahlaad.png" alt="Ahlaad" className="h-[clamp(64px,11vw,170px)] w-auto object-contain mx-auto" style={{ filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.9)) drop-shadow(0 0 40px rgba(201,168,76,0.6)) drop-shadow(0 0 80px rgba(201,168,76,0.3))' }} />
+        </div>
 
         <p className="be-there-subtitle text-xl md:text-2xl text-white mb-10 max-w-2xl mx-auto font-medium" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.5)' }}>
-          Two days. Nine competitions. <span className="text-[#39FF14] font-display text-3xl" style={{ textShadow: '0 0 15px rgba(57,255,20,0.6)' }}>₹2,50,000</span> prize pool.<br />
+          Two days. Nine competitions. <span className="text-[#C9A84C] font-display text-3xl" style={{ textShadow: '0 0 15px rgba(201,168,76,0.6)' }}>₹2,50,000</span> prize pool.<br />
           <span className="text-[#C9A84C] font-bold" style={{ textShadow: '0 0 15px rgba(201,168,76,0.8), 0 2px 10px rgba(0,0,0,0.9)' }}>25 years of excellence — one grand celebration.</span>
         </p>
 

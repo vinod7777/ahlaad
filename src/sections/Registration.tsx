@@ -26,15 +26,12 @@ export default function Registration() {
   const headerRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
-    participant_name: '',
+    name: '',
     email: '',
+    password: '',
     phone: '',
     college: '',
     college_id: '',
-    competition: '',
-    team_name: '',
-    team_size: '',
-    entry_type: 'individual',
   });
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -67,23 +64,16 @@ export default function Registration() {
     return () => ctx.revert();
   }, []);
 
-  const isTeamEvent = ['Short Films', 'Rock Band', 'Dance — Classical Group', 'Dance — Western Group', 'Drama / Skit'].includes(formData.competition);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
     setErrorMsg('');
 
     try {
-      const payload = {
-        ...formData,
-        entry_type: isTeamEvent ? 'team' : 'individual',
-      };
-
-      const response = await fetch('http://localhost/ahlaad_backend/register.php', {
+      const response = await fetch('http://localhost/ahlaad_backend/signup.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -91,8 +81,7 @@ export default function Registration() {
       if (data.success) {
         setStatus('success');
         setFormData({
-          participant_name: '', email: '', phone: '', college: '',
-          college_id: '', competition: '', team_name: '', team_size: '', entry_type: 'individual',
+          name: '', email: '', password: '', phone: '', college: '', college_id: '',
         });
       } else {
         setStatus('error');
@@ -115,49 +104,48 @@ export default function Registration() {
           {/* Left - Info */}
           <div ref={headerRef} className="lg:w-2/5">
             <h2 className="font-display text-section text-white mb-6">
-              <span className="text-gradient-gold">Register</span>
+              Join the <span className="text-gradient-gold">Celebration</span>
             </h2>
             <p className="text-white/60 text-lg mb-8 max-w-md">
-              Fill out the form to register for any competition at Ahlaad 2026. 
-              Valid College ID is mandatory. Open to all UG/PG students.
+              Create your account to participate in Ahlaad 2K26. 
+              Once registered, you can log in to your dashboard to manage your event participations.
             </p>
 
             <div className="space-y-4 mb-8">
-              <div className="glass-card px-5 py-4 rounded-lg border border-[#C9A84C]/30">
-                <p className="text-[#C9A84C] font-mono text-xs uppercase tracking-wider mb-1">Individual Events</p>
-                <p className="text-white text-lg font-display">₹200 <span className="text-white/50 text-sm">per person</span></p>
-                <p className="text-white/50 text-xs mt-1">Singing · Cover Song · Photography · Painting · Handicrafts · Dance Solo</p>
-              </div>
-              <div className="glass-card px-5 py-4 rounded-lg border border-[#8B0000]/30">
-                <p className="text-[#8B0000] font-mono text-xs uppercase tracking-wider mb-1">Team Events</p>
-                <p className="text-white text-lg font-display">₹500 <span className="text-white/50 text-sm">per team</span></p>
-                <p className="text-white/50 text-xs mt-1">Rock Band · Short Films · Drama · Dance Group</p>
+              <div className="glass-card px-5 py-4 rounded-lg border border-[#C9A84C]/30 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#C9A84C]/10 flex items-center justify-center shrink-0">
+                  <CheckCircle className="w-6 h-6 text-[#C9A84C]" />
+                </div>
+                <div>
+                  <p className="text-white font-display">Direct Registration</p>
+                  <p className="text-white/40 text-sm">One account for all events</p>
+                </div>
               </div>
             </div>
 
-            <div className="glass-card px-5 py-4 rounded-lg border border-[#39FF14]/30">
-              <p className="text-[#39FF14] font-mono text-xs uppercase tracking-wider mb-1">Total Prize Pool</p>
-              <p className="text-[#39FF14] text-4xl font-display" style={{ textShadow: '0 0 20px rgba(57,255,20,0.5)' }}>₹2,50,000</p>
+            <div className="glass-card px-5 py-4 rounded-lg border border-[#C9A84C]/30">
+              <p className="text-[#C9A84C] font-mono text-xs uppercase tracking-wider mb-1">Total Prize Pool</p>
+              <p className="text-[#C9A84C] text-4xl font-display" style={{ textShadow: '0 0 20px rgba(201,168,76,0.5)' }}>₹2,50,000</p>
             </div>
           </div>
 
           {/* Right - Form */}
           <div ref={formRef} className="lg:w-3/5">
             <div className="glass-card rounded-xl p-8 border border-[#C9A84C]/20">
-              <h3 className="font-display text-2xl text-white mb-6">Registration Form</h3>
+              <h3 className="font-display text-2xl text-white mb-6">Direct Registration</h3>
 
               {status === 'success' ? (
                 <div className="text-center py-12">
                   <div className="w-20 h-20 rounded-full bg-[#39FF14]/20 flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-10 h-10 text-[#39FF14]" />
                   </div>
-                  <h4 className="font-display text-3xl text-white mb-2">Registered! 🎉</h4>
-                  <p className="text-white/60 mb-6">Your registration has been saved. We'll send confirmation to your email.</p>
+                  <h4 className="font-display text-3xl text-white mb-2">Account Created! 🎉</h4>
+                  <p className="text-white/60 mb-6">Your account is ready. You can now log in to the dashboard.</p>
                   <button
-                    className="btn-outline"
-                    onClick={() => setStatus('idle')}
+                    className="btn-primary"
+                    onClick={() => window.location.href = '#login'}
                   >
-                    Register Another
+                    Go to Login
                   </button>
                 </div>
               ) : (
@@ -167,8 +155,8 @@ export default function Registration() {
                     <label className="text-white/70 text-sm mb-1 block">Full Name *</label>
                     <input
                       type="text"
-                      value={formData.participant_name}
-                      onChange={(e) => setFormData({ ...formData, participant_name: e.target.value })}
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Enter your full name"
                       className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder:text-white/40 input-glow transition-all"
                       required
@@ -227,58 +215,18 @@ export default function Registration() {
                     </div>
                   </div>
 
-                  {/* Competition Select */}
+                  {/* Password */}
                   <div>
-                    <label className="text-white/70 text-sm mb-1 block">Competition *</label>
-                    <select
-                      value={formData.competition}
-                      onChange={(e) => setFormData({ ...formData, competition: e.target.value })}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white input-glow transition-all appearance-none cursor-pointer"
+                    <label className="text-white/70 text-sm mb-1 block">Create Password *</label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="Min 6 characters"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder:text-white/40 input-glow transition-all"
+                      minLength={6}
                       required
-                    >
-                      <option value="" className="bg-[#080614]">Select a competition</option>
-                      {competitionOptions.map((comp) => (
-                        <option key={comp} value={comp} className="bg-[#080614]">{comp}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Team fields (conditional) */}
-                  {isTeamEvent && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 border border-[#C9A84C]/20 rounded-lg bg-[#C9A84C]/5">
-                      <div>
-                        <label className="text-[#C9A84C] text-sm mb-1 block">Team Name *</label>
-                        <input
-                          type="text"
-                          value={formData.team_name}
-                          onChange={(e) => setFormData({ ...formData, team_name: e.target.value })}
-                          placeholder="Your team name"
-                          className="w-full px-4 py-3 bg-white/5 border border-[#C9A84C]/30 rounded-lg text-white placeholder:text-white/40 input-glow transition-all"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[#C9A84C] text-sm mb-1 block">Team Size *</label>
-                        <input
-                          type="number"
-                          min="2"
-                          max="20"
-                          value={formData.team_size}
-                          onChange={(e) => setFormData({ ...formData, team_size: e.target.value })}
-                          placeholder="Number of members"
-                          className="w-full px-4 py-3 bg-white/5 border border-[#C9A84C]/30 rounded-lg text-white placeholder:text-white/40 input-glow transition-all"
-                          required
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Fee Display */}
-                  <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
-                    <span className="text-white/70">Entry Fee:</span>
-                    <span className="text-[#C9A84C] font-display text-2xl">
-                      {isTeamEvent ? '₹500' : formData.competition ? '₹200' : '—'}
-                    </span>
+                    />
                   </div>
 
                   {/* Error Message */}
@@ -296,18 +244,13 @@ export default function Registration() {
                     className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <Send className="w-4 h-4" />
-                    {status === 'loading' ? 'Registering...' : 'Submit Registration'}
+                    {status === 'loading' ? 'Creating Account...' : 'Register Directly'}
                   </button>
 
                   <p className="text-white/30 text-xs text-center mt-2">
-                    By registering, you agree to carry a valid College ID on event days.
+                    Already have an account? <a href="#login" className="text-[#C9A84C] hover:underline">Log in</a>
                   </p>
                 </form>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }

@@ -7,6 +7,7 @@ const navLinks = [
   { label: 'Competitions', href: '#competitions' },
   { label: 'Schedule', href: '#schedule' },
   { label: 'Register', href: '#register' },
+  { label: 'Login', href: '#login' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -47,12 +48,11 @@ export default function Navigation() {
             className="flex items-center gap-3 hover:opacity-90 transition-opacity"
           >
             <SilverJubileeLogo size={48} />
-            <div className="hidden sm:block">
-              <span className="font-display text-xl md:text-2xl text-white tracking-wider block leading-tight">
-                AHLAAD <span className="text-[#C9A84C]">2026</span>
-              </span>
-              <span className="text-[10px] text-white/50 font-mono tracking-wider">SILVER JUBILEE EDITION</span>
+            <div className="hidden sm:flex items-center gap-2">
+              <img src="/ahlaad.png" alt="Ahlaad" className="h-7 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
+              <span className="font-display text-xl md:text-2xl text-[#C9A84C] tracking-wider">2K26</span>
             </div>
+            <span className="text-[10px] text-white/50 font-mono tracking-wider block sm:hidden">AHLAAD 2K26</span>
           </a>
 
           {/* Desktop Navigation */}

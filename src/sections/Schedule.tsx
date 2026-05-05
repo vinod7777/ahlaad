@@ -180,7 +180,7 @@ export default function Schedule() {
                   </span>
                 </div>
                 <span className="text-white/40">|</span>
-                <span className="text-white/60 text-sm">{scheduleData[activeDay].date}, 2026</span>
+                <span className="text-white/60 text-sm">{scheduleData[activeDay].date}, 2K26</span>
                 <div 
                   className="flex-1 h-[2px] ml-4"
                   style={{ background: `linear-gradient(90deg, ${scheduleData[activeDay].color}, transparent)` }}
@@ -202,7 +202,7 @@ export default function Schedule() {
                     </div>
                     <div className="flex-1 min-w-[200px]">
                       <span className="text-white font-medium block">{event.name}</span>
-                      <span className={event.artist.includes('2,50,000') ? 'text-[#39FF14] font-display text-base' : 'text-white/50 text-sm'} style={event.artist.includes('2,50,000') ? { textShadow: '0 0 10px rgba(57,255,20,0.5)' } : {}}>{event.artist}</span>
+                      <span className={event.artist.includes('2,50,000') ? 'text-[#C9A84C] font-display text-base' : 'text-white/50 text-sm'} style={event.artist.includes('2,50,000') ? { textShadow: '0 0 10px rgba(201,168,76,0.5)' } : {}}>{event.artist}</span>
                     </div>
                     <div className="flex items-center gap-2 text-white/50 text-sm">
                       <MapPin className="w-4 h-4" />

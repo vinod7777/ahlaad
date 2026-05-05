@@ -109,7 +109,7 @@ export default function Closing() {
         </h3>
 
         <p className="closing-subtitle text-lg text-white/70 max-w-[38vw] mb-10 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-          Compete. Perform. Create. Win big. Whether you're a filmmaker, singer, dancer, or artist — Ahlaad 2026 is your stage to shine.
+          Compete. Perform. Create. Win big. Whether you're a filmmaker, singer, dancer, or artist — Ahlaad 2K26 is your stage to shine.
         </p>
 
         {/* Stats + CTA */}

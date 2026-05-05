@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -14,28 +15,20 @@ import Schedule from './sections/Schedule';
 import Unforgettable from './sections/Unforgettable';
 import Gallery from './sections/Gallery';
 import Registration from './sections/Registration';
+import Login from './sections/Login';
+import OrganiserBody from './sections/OrganiserBody';
 import Closing from './sections/Closing';
 import Contact from './sections/Contact';
 
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+
 gsap.registerPlugin(ScrollTrigger);
 
-function App() {
-  useEffect(() => {
-    // Clean up ScrollTriggers on unmount
-    return () => {
-      ScrollTrigger.getAll().forEach(st => st.kill());
-    };
-  }, []);
-
+function LandingPage() {
   return (
-    <div className="relative bg-[#080614] min-h-screen">
-      {/* Noise Overlay */}
-      <div className="noise-overlay" />
-      
-      {/* Navigation */}
+    <>
       <Navigation />
-      
-      {/* Main Content */}
       <main className="relative">
         <Hero />
         <About />
@@ -48,10 +41,35 @@ function App() {
         <Unforgettable />
         <Gallery />
         <Registration />
+        <Login />
+        <OrganiserBody />
         <Closing />
         <Contact />
       </main>
-    </div>
+    </>
+  );
+}
+
+function App() {
+  useEffect(() => {
+    return () => {
+      ScrollTrigger.getAll().forEach(st => st.kill());
+    };
+  }, []);
+
+  return (
+    <Router>
+      <div className="relative bg-[#080614] min-h-screen">
+        <div className="noise-overlay" />
+        
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

@@ -82,7 +82,7 @@ export default function Gallery() {
             <span className="text-gradient-gold">Gallery</span>
           </h2>
           <p className="text-white/60 text-lg max-w-xl">
-            Glimpses from past AITAM cultural events. Ahlaad 2026 promises to be even more spectacular.
+            Glimpses from past AITAM cultural events. Ahlaad 2K26 promises to be even more spectacular.
           </p>
         </div>
 

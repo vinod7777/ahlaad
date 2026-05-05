@@ -111,7 +111,7 @@ export default function About() {
             
             <div className="space-y-4 text-white/70 text-lg leading-relaxed mb-8">
               <p>
-                <strong className="text-white">Ahlaad 2026</strong> is the flagship cultural festival of 
+                <strong className="text-white">Ahlaad 2K26</strong> is the flagship cultural festival of 
                 Aditya Institute of Technology and Management (AITAM), organized by the Student Activity Centre (SAC). 
                 This edition marks our <strong className="text-[#C9A84C]">Silver Jubilee Year</strong> — 
                 celebrating 25 years of academic excellence. The festival transforms the campus into a vibrant space 
@@ -121,10 +121,10 @@ export default function About() {
                 "Unleash Your Talent. Own the Stage."
               </p>
               <p>
-                With a <strong className="text-[#39FF14] font-display text-2xl" style={{ textShadow: '0 0 15px rgba(57,255,20,0.5)' }}>₹2,50,000</strong> prize pool, 9 thrilling competitions, 
+                With a <strong className="text-[#C9A84C] font-display text-2xl" style={{ textShadow: '0 0 15px rgba(201,168,76,0.5)' }}>₹2,50,000</strong> prize pool, 9 thrilling competitions, 
                 live DJ night, and the grand valedictory graced by chief guests 
                 <strong className="text-gradient-gold font-display text-xl tracking-wide"> MSK Prasad</strong> & <strong className="text-gradient-gold font-display text-xl tracking-wide">Rasi Singh</strong>, 
-                Ahlaad 2026 is set to be the biggest cultural extravaganza in our history.
+                Ahlaad 2K26 is set to be the biggest cultural extravaganza in our history.
               </p>
             </div>
 
@@ -138,9 +138,9 @@ export default function About() {
                 <Music className="w-5 h-5 text-[#FF0080]" />
                 <span className="text-white text-sm">9 Competitions</span>
               </div>
-              <div className="flex items-center gap-3 glass-card px-5 py-4 rounded-lg border-2 border-[#39FF14]/40 hover:border-[#39FF14]/70 transition-colors" style={{ boxShadow: '0 0 20px rgba(57,255,20,0.15)' }}>
-                <Trophy className="w-6 h-6 text-[#39FF14]" />
-                <span className="text-[#39FF14] font-display text-xl" style={{ textShadow: '0 0 10px rgba(57,255,20,0.4)' }}>₹2,50,000 Prize Pool</span>
+              <div className="flex items-center gap-3 glass-card px-5 py-4 rounded-lg border-2 border-[#C9A84C]/40 hover:border-[#C9A84C]/70 transition-colors" style={{ boxShadow: '0 0 20px rgba(201,168,76,0.15)' }}>
+                <Trophy className="w-6 h-6 text-[#C9A84C]" />
+                <span className="text-[#C9A84C] font-display text-xl" style={{ textShadow: '0 0 10px rgba(201,168,76,0.4)' }}>₹2,50,000 Prize Pool</span>
               </div>
               <div className="flex items-center gap-3 glass-card px-4 py-3 rounded-lg border border-[#00FFFF]/30 hover:border-[#00FFFF]/60 transition-colors">
                 <Star className="w-5 h-5 text-[#00FFFF]" />

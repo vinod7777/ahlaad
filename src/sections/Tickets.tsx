@@ -114,7 +114,7 @@ export default function Tickets() {
             Entry <span className="text-gradient-gold">Fees</span>
           </h2>
           <p className="text-white/60 text-lg">
-            Choose your participation type — total prize pool of <span className="text-[#39FF14] font-display text-2xl" style={{ textShadow: '0 0 12px rgba(57,255,20,0.5)' }}>₹2,50,000</span> awaits!
+            Choose your participation type — total prize pool of <span className="text-[#C9A84C] font-display text-2xl" style={{ textShadow: '0 0 12px rgba(201,168,76,0.5)' }}>₹2,50,000</span> awaits!
           </p>
         </div>
 

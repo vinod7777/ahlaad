@@ -259,10 +259,10 @@ export default function Lineup() {
               <p className="text-white/60 text-lg">
                 9 Events · Entry Fee: ₹200 (Individual) | ₹500 (Team)
               </p>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#39FF14]/30 bg-[#39FF14]/5">
-                <Trophy className="w-5 h-5 text-[#39FF14]" />
-                <span className="text-[#39FF14] font-display text-2xl">₹2,50,000</span>
-                <span className="text-[#39FF14]/70 text-xs font-mono uppercase">Prize Pool</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#C9A84C]/30 bg-[#C9A84C]/5">
+                <Trophy className="w-5 h-5 text-[#C9A84C]" />
+                <span className="text-[#C9A84C] font-display text-2xl">₹2,50,000</span>
+                <span className="text-[#C9A84C]/70 text-xs font-mono uppercase">Prize Pool</span>
               </div>
             </div>
             <p className="text-white/40 text-sm mt-3">Click on any competition to view full guidelines</p>
@@ -343,11 +343,11 @@ export default function Lineup() {
           </div>
 
           {/* Prize Pool Banner */}
-          <div className="mt-16 relative overflow-hidden rounded-2xl p-8 md:p-12 text-center" style={{ background: 'linear-gradient(135deg, rgba(57,255,20,0.08), rgba(201,168,76,0.08), rgba(57,255,20,0.08))' }}>
-            <div className="absolute inset-0 border border-[#39FF14]/20 rounded-2xl" />
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#39FF14] to-transparent opacity-60" />
-            <p className="font-mono text-sm text-[#39FF14]/70 uppercase tracking-[0.3em] mb-3">Total Prize Pool</p>
-            <h3 className="font-display text-6xl md:text-8xl lg:text-9xl neon-text-glow-gold" style={{ color: '#39FF14', textShadow: '0 0 30px rgba(57,255,20,0.6), 0 0 60px rgba(57,255,20,0.3), 0 0 100px rgba(57,255,20,0.15)' }}>
+          <div className="mt-16 relative overflow-hidden rounded-2xl p-8 md:p-12 text-center" style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.12), rgba(201,168,76,0.08))' }}>
+            <div className="absolute inset-0 border border-[#C9A84C]/20 rounded-2xl" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent opacity-60" />
+            <p className="font-mono text-sm text-[#C9A84C]/70 uppercase tracking-[0.3em] mb-3">Total Prize Pool</p>
+            <h3 className="font-display text-6xl md:text-8xl lg:text-9xl neon-text-glow-gold" style={{ color: '#C9A84C', textShadow: '0 0 30px rgba(201,168,76,0.6), 0 0 60px rgba(201,168,76,0.3), 0 0 100px rgba(201,168,76,0.15)' }}>
               ₹2,50,000
             </h3>
             <p className="text-white/50 text-sm mt-4 max-w-md mx-auto">
