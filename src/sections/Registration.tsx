@@ -252,5 +252,10 @@ export default function Registration() {
                   </p>
                 </form>
               )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
