@@ -53,6 +53,10 @@ export default function Dashboard() {
     } else {
       setUser(userData);
       fetchDashboardData(userData.id);
+      
+      // Set up polling for real-time synchronization
+      const interval = setInterval(() => fetchDashboardData(userData.id), 5000);
+      return () => clearInterval(interval);
     }
   }, [navigate]);
 
