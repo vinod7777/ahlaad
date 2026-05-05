@@ -113,8 +113,12 @@ export default function Hero() {
           alt="Ahlaad 2K26 Hero"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080614]/90 via-[#080614]/50 to-[#080614]/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080614]/95 via-[#080614]/50 to-[#080614]/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080614] via-transparent to-transparent" />
+        
+        {/* Ambient Gold Neon Orbs */}
+        <div className="absolute top-[20%] left-[10%] w-96 h-96 bg-[#C9A84C]/5 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[20%] right-[30%] w-[500px] h-[500px] bg-[#C9A84C]/5 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
       {/* Content - Two Column Layout */}
@@ -122,7 +126,7 @@ export default function Hero() {
         {/* Meta Label */}
         <div 
           ref={metaRef}
-          className="absolute right-[6vw] top-[14vh] font-mono text-xs text-white/60 uppercase"
+          className="absolute right-[6vw] top-[14vh] font-mono text-xs text-[#C9A84C] uppercase font-bold tracking-[0.3em]"
         >
           SILVER JUBILEE EDITION
         </div>
@@ -138,8 +142,19 @@ export default function Hero() {
               ref={titleRef}
               className="font-display text-hero text-white leading-none mb-3 flex items-end gap-4"
             >
-              <img src="/ahlaad.png" alt="Ahlaad" className="h-[0.8em] w-auto object-contain" style={{ filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.9)) drop-shadow(0 0 40px rgba(201,168,76,0.6)) drop-shadow(0 0 80px rgba(201,168,76,0.3))' }} /> <span className="text-white/40 text-[0.5em]">2K26</span>
-            </h1>
+              <div className="relative group">
+                <img 
+                  src="/ahlaad.png" 
+                  alt="Ahlaad" 
+                  className="h-[0.8em] w-auto object-contain transition-all duration-700" 
+                  style={{ 
+                    filter: 'drop-shadow(0 0 25px rgba(201,168,76,0.8)) drop-shadow(0 0 50px rgba(201,168,76,0.4))' 
+                  }} 
+                />
+                <div className="absolute inset-0 bg-[#C9A84C]/20 blur-3xl rounded-full scale-50 opacity-50 group-hover:opacity-100 transition-opacity" />
+              </div>
+            <span className="text-[#C9A84C] text-[0.5em] neon-text-glow-gold-subtle font-bold">2K26</span>
+          </h1>
 
             {/* Accent Underline */}
             <div 
@@ -150,7 +165,7 @@ export default function Hero() {
             {/* Subtitle / Tagline */}
             <p 
               ref={subtitleRef}
-              className="text-lg md:text-2xl text-white/80 max-w-[34vw] mb-4 leading-relaxed font-light italic"
+              className="text-lg md:text-2xl text-[#C9A84C] max-w-[34vw] mb-4 leading-relaxed font-bold italic drop-shadow-lg"
             >
               "Unleash Your Talent. Own the Stage."
             </p>
@@ -162,15 +177,15 @@ export default function Hero() {
                 <Calendar className="w-5 h-5" />
                 <span className="font-mono text-sm">June 26 & 27, 2K26</span>
               </div>
-              <div className="flex items-center gap-2 text-[#E8E8E8]">
+              <div className="flex items-center gap-2 text-[#C9A84C]">
                 <MapPin className="w-5 h-5" />
-                <span className="font-mono text-sm">AITAM Campus, Tekkali</span>
+                <span className="font-mono text-sm font-bold uppercase">AITAM Campus, Tekkali</span>
               </div>
             </div>
 
             {/* Countdown Timer */}
             <div ref={countdownRef} className="mb-6">
-              <p className="font-mono text-xs text-white/50 uppercase tracking-wider mb-3">
+              <p className="font-mono text-xs text-[#C9A84C] uppercase tracking-wider mb-3 font-bold">
                 Event Starts In
               </p>
               <CountdownTimer />
@@ -179,7 +194,7 @@ export default function Hero() {
             {/* CTA Buttons */}
             <div ref={ctaRef} className="flex flex-wrap gap-4">
               <button 
-                className="btn-primary flex items-center gap-2 group"
+                className="btn-primary flex items-center gap-2 group gold-neon-border animate-gold-pulse"
                 onClick={() => document.querySelector('#register')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Register Now
@@ -202,24 +217,24 @@ export default function Hero() {
               <div className="absolute inset-0 rounded-2xl" style={{ boxShadow: 'inset 0 0 80px rgba(201,168,76,0.06), 0 0 50px rgba(201,168,76,0.1)' }} />
               
               <Trophy className="w-14 h-14 text-[#C9A84C] mx-auto mb-4" style={{ filter: 'drop-shadow(0 0 16px rgba(201,168,76,0.8))' }} />
-              <p className="font-mono text-xs text-[#C9A84C]/60 uppercase tracking-[0.4em] mb-3">Total Prize Pool</p>
+              <p className="font-mono text-xs text-[#C9A84C] uppercase tracking-[0.4em] mb-3 font-bold">Total Prize Pool</p>
               <h2 className="font-display text-8xl xl:text-9xl text-gradient-gold leading-none mb-4" style={{ textShadow: '0 0 40px rgba(201,168,76,0.4), 0 0 80px rgba(201,168,76,0.2)' }}>
                 ₹2,50,000
               </h2>
-              <p className="text-white/40 text-sm mb-6">Across 9 competitions · AITAM's biggest cultural fest</p>
+              <p className="text-[#C9A84C] text-xs mb-6 font-bold uppercase tracking-tight">Across 9 competitions · AITAM's biggest cultural fest</p>
               
               <div className="flex gap-4 justify-center">
                 <div className="glass-card px-5 py-3 rounded-lg border border-[#C9A84C]/20 text-center">
                   <p className="text-[#C9A84C] font-display text-2xl">9+</p>
-                  <p className="text-white/40 text-[10px] font-mono uppercase">Events</p>
+                  <p className="text-[#C9A84C] text-[10px] font-mono uppercase font-bold">Events</p>
                 </div>
                 <div className="glass-card px-5 py-3 rounded-lg border border-[#FF0080]/20 text-center">
                   <p className="text-[#FF0080] font-display text-2xl">2</p>
-                  <p className="text-white/40 text-[10px] font-mono uppercase">Days</p>
+                  <p className="text-[#FF0080] text-[10px] font-mono uppercase font-bold">Days</p>
                 </div>
                 <div className="glass-card px-5 py-3 rounded-lg border border-[#00FFFF]/20 text-center">
                   <p className="text-[#00FFFF] font-display text-2xl">25</p>
-                  <p className="text-white/40 text-[10px] font-mono uppercase">Years</p>
+                  <p className="text-[#00FFFF] text-[10px] font-mono uppercase font-bold">Years</p>
                 </div>
               </div>
             </div>

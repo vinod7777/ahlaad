@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Calendar, Plus, CheckCircle, Clock, MapPin, QrCode, CreditCard, Menu, X } from 'lucide-react';
+import { User, LogOut, Calendar, Plus, CheckCircle, Clock, MapPin, QrCode, CreditCard, Menu, X, Users } from 'lucide-react';
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [newMemberName, setNewMemberName] = useState('');
   const [selectedReg, setSelectedReg] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'events' | 'timeline' | 'pass'>('overview');
+  const [regStep, setRegStep] = useState(1);
 
   const navigate = useNavigate();
 
@@ -24,6 +25,21 @@ export default function Dashboard() {
   ];
 
   const teamEvents = ['Short Films', 'Rock Band', 'Dance — Classical Group', 'Dance — Western Group', 'Drama / Skit'];
+
+  const eventGuidelines: { [key: string]: string[] } = {
+    'Short Films': ['Duration: 5-10 mins', 'Theme: Open', 'Format: MP4/MOV', 'No plagiarism'],
+    'Rock Band': ['Duration: 15 mins total', 'Min 4 members', 'Electronic instruments allowed', 'Original/Cover'],
+    'Photography': ['Theme: Campus Life', 'Unedited RAW + JPEG', 'Mobile/DSLR allowed'],
+    'Singing': ['Classical/Light music', 'Time limit: 4 mins', 'Karaoke allowed'],
+    'Cover Song': ['Live instruments preferred', 'Time: 5 mins', 'Vocal clarity is key'],
+    'Dance — Classical Solo': ['Standard classical forms only', 'Costume mandatory', 'Time: 6 mins'],
+    'Dance — Classical Group': ['Min 4 members', 'Synchronization focus', 'Time: 8 mins'],
+    'Dance — Western Solo': ['Hip-hop/Freestyle/Contemporary', 'No vulgarity', 'Time: 4 mins'],
+    'Dance — Western Group': ['Min 5 members', 'Energetic performance', 'Time: 7 mins'],
+    'Drama / Skit': ['Theme: Social Awareness', 'Language: English/Telugu', 'Time: 12 mins'],
+    'Painting': ['Sheet provided', 'Topic on-spot', 'Bring own colors/brushes'],
+    'Handicrafts': ['Eco-friendly materials only', 'Time: 2 hours', 'On-spot creation']
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem('ahlaad_user');
@@ -85,6 +101,7 @@ export default function Dashboard() {
         setShowRegModal(false);
         setNewReg({ competition: '', entry_type: 'individual', team_name: '', team_size: 2, utr_id: '' });
         setPaymentFile(null);
+        setRegStep(1);
         fetchDashboardData(user.id);
       } else {
         alert(data.message);
@@ -327,7 +344,9 @@ export default function Dashboard() {
                     <button 
                       onClick={() => {
                         const isTeam = teamEvents.includes(comp);
-                        setNewReg({ ...newReg, competition: comp, entry_type: isTeam ? 'team' : 'individual' });
+                        setNewReg({ ...newReg, competition: comp, entry_type: isTeam ? 'team' : 'individual', utr_id: '', team_name: '', team_size: 2 });
+                        setPaymentFile(null);
+                        setRegStep(1);
                         setShowRegModal(true);
                       }}
                       className="w-full py-3 rounded-xl border border-[#C9A84C]/30 text-[#C9A84C] text-xs font-bold uppercase tracking-widest hover:bg-[#C9A84C] hover:text-[#080614] transition-all"
@@ -511,100 +530,163 @@ export default function Dashboard() {
           <div className="glass-card w-full max-w-lg p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300">
             <h3 className="font-display text-2xl mb-6">Join <span className="text-gradient-gold">Competition</span></h3>
             
-            <div className="space-y-4">
-              <div>
-                <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Select Competition</label>
-                <select 
-                  value={newReg.competition}
-                  onChange={(e) => {
-                    const comp = e.target.value;
-                    const isTeam = teamEvents.includes(comp);
-                    setNewReg({ ...newReg, competition: comp, entry_type: isTeam ? 'team' : 'individual' });
-                  }}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#C9A84C]/50 appearance-none cursor-pointer"
-                >
-                  <option value="" className="bg-[#080614]">Choose event...</option>
-                  {competitions.map(c => <option key={c} value={c} className="bg-[#080614]">{c}</option>)}
-                </select>
-              </div>
-
-              {newReg.entry_type === 'team' && (
-                <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
-                  <div>
-                    <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Team Name</label>
-                    <input 
-                      type="text" 
-                      value={newReg.team_name}
-                      onChange={(e) => setNewReg({ ...newReg, team_name: e.target.value })}
-                      placeholder="e.g. Dream Team"
-                      className="w-full bg-white/5 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#C9A84C]/50"
-                    />
+            <div className="space-y-6">
+              {regStep === 1 ? (
+                <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-[#C9A84C]/10 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-[#C9A84C]" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white uppercase tracking-wider">{newReg.competition}</h4>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest">Competition Guidelines</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Team Size</label>
-                    <input 
-                      type="number"
-                      min="2"
-                      max="20"
-                      value={newReg.team_size}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value);
-                        setNewReg({ ...newReg, team_size: isNaN(val) ? 0 : val });
-                      }}
-                      className="w-full bg-white/5 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#C9A84C]/50"
-                    />
+
+                  <div className="space-y-3 bg-white/5 p-6 rounded-2xl border border-white/10 mb-8">
+                    {eventGuidelines[newReg.competition]?.map((guide, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-1.5 shrink-0" />
+                        <p className="text-xs text-white/70 leading-relaxed">{guide}</p>
+                      </div>
+                    )) || <p className="text-xs text-white/40 italic">General event rules apply. Contact coordinator for details.</p>}
+                  </div>
+
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={() => { setShowRegModal(false); setRegStep(1); }}
+                      className="flex-1 py-4 border border-white/10 rounded-2xl text-white/60 hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => setRegStep(2)}
+                      className="flex-1 py-4 bg-gradient-to-r from-[#C9A84C] to-[#B8860B] text-[#080614] rounded-2xl font-bold uppercase text-xs tracking-widest hover:shadow-[0_10px_20px_rgba(201,168,76,0.2)] transition-all"
+                    >
+                      Accept & Continue
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-6">
+                  {/* Top Section: Details Left, QR Right */}
+                  <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
+                    <div className="flex-1 space-y-6">
+                      {newReg.entry_type === 'team' ? (
+                        <div>
+                          <label className="text-white/50 text-[10px] uppercase tracking-widest mb-2 block font-bold">Team Size</label>
+                          <div className="flex items-center gap-3">
+                            <input 
+                              type="number"
+                              min="2"
+                              max="20"
+                              value={newReg.team_size}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                setNewReg({ ...newReg, team_size: isNaN(val) ? 0 : val });
+                              }}
+                              className="w-24 bg-white/5 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#C9A84C]/50 text-sm"
+                            />
+                            <span className="text-[10px] text-white/30 uppercase tracking-widest font-bold">Members</span>
+                          </div>
+                          <p className="text-[9px] text-white/20 mt-2 italic">* Minimum 2 members required</p>
+                        </div>
+                      ) : (
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                          <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1 font-bold">Registration Mode</p>
+                          <p className="text-sm text-[#C9A84C] font-display">Individual Participant</p>
+                        </div>
+                      )}
+
+                      <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1 font-bold">Event Category</p>
+                        <p className="text-sm text-white/70 font-medium">{newReg.competition}</p>
+                      </div>
+                    </div>
+
+                    <div className="w-32 flex flex-col items-center gap-2">
+                      <div className="w-32 h-32 bg-white p-2 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                        <img 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=ahlaad2k26@upi&pn=Ahlaad%202K26&am=${newReg.entry_type === 'team' ? '500' : '200'}&cu=INR`} 
+                          alt="Payment QR" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">Scan to Pay</span>
+                    </div>
+                  </div>
+
+                  {/* Middle Section: Team Name (Full Width) */}
+                  {newReg.entry_type === 'team' && (
+                    <div className="bg-white/5 p-6 rounded-3xl border border-white/10 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-3">
+                        <Users className="w-4 h-4 text-[#C9A84C]/20 group-hover:text-[#C9A84C]/40 transition-colors" />
+                      </div>
+                      <label className="text-[#C9A84C] text-[10px] uppercase tracking-widest mb-3 block font-bold">Enter Team Name</label>
+                      <input 
+                        type="text" 
+                        value={newReg.team_name}
+                        onChange={(e) => setNewReg({ ...newReg, team_name: e.target.value })}
+                        placeholder="Type your creative team name here..."
+                        className="w-full bg-transparent border-b-2 border-white/10 py-2 text-xl text-white placeholder:text-white/10 focus:outline-none focus:border-[#C9A84C] transition-all font-display"
+                      />
+                    </div>
+                  )}
+
+                  {/* Bottom Section: UTR & Screenshot */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                      <label className="text-white/30 text-[9px] uppercase tracking-widest mb-2 block font-bold">UTR ID (12 Digits)</label>
+                      <input 
+                        type="text" 
+                        value={newReg.utr_id}
+                        onChange={(e) => setNewReg({ ...newReg, utr_id: e.target.value })}
+                        placeholder="Enter UTR Number"
+                        className="w-full bg-transparent text-white focus:outline-none text-sm font-mono tracking-wider"
+                        required
+                      />
+                    </div>
+                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                      <label className="text-white/30 text-[9px] uppercase tracking-widest mb-2 block font-bold">Payment Screenshot</label>
+                      <input 
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setPaymentFile(e.target.files ? e.target.files[0] : null)}
+                        className="w-full bg-transparent text-[10px] text-white file:hidden cursor-pointer"
+                        required
+                      />
+                      <p className="text-[8px] text-white/20 mt-1 truncate">
+                        {paymentFile ? paymentFile.name : 'No file selected'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-5 bg-gradient-to-br from-[#C9A84C]/10 to-transparent rounded-2xl border border-[#C9A84C]/20 flex justify-between items-center">
+                    <div>
+                      <p className="text-white/40 uppercase text-[9px] tracking-widest font-bold mb-1">Total Payable</p>
+                      <p className="text-[#39FF14] text-[10px] italic">Verified via manual review</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[#C9A84C] font-display text-3xl">{newReg.entry_type === 'team' ? '₹500' : '₹200'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-2">
+                    <button 
+                      onClick={() => setRegStep(1)}
+                      className="flex-1 py-4 border border-white/10 rounded-2xl text-white/60 hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
+                    >
+                      Back
+                    </button>
+                    <button 
+                      onClick={handleRegisterEvent}
+                      className="flex-1 py-4 bg-gradient-to-r from-[#C9A84C] to-[#B8860B] text-[#080614] rounded-2xl font-bold uppercase text-xs tracking-widest hover:shadow-[0_10px_30px_rgba(201,168,76,0.3)] transition-all"
+                    >
+                      Complete Registration
+                    </button>
                   </div>
                 </div>
               )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Payment UTR ID *</label>
-                  <input 
-                    type="text" 
-                    value={newReg.utr_id}
-                    onChange={(e) => setNewReg({ ...newReg, utr_id: e.target.value })}
-                    placeholder="12-digit UTR number"
-                    className="w-full bg-white/5 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#C9A84C]/50"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Payment Screenshot *</label>
-                  <input 
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setPaymentFile(e.target.files ? e.target.files[0] : null)}
-                    className="w-full bg-white/5 border border-white/20 rounded-xl py-2 px-4 text-xs text-white focus:outline-none focus:border-[#C9A84C]/50 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-[#C9A84C]/10 file:text-[#C9A84C] hover:file:bg-[#C9A84C]/20"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 mt-2">
-                <div className="flex justify-between items-center text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white/40 uppercase text-[10px] tracking-widest">Registration Fee</span>
-                  </div>
-                  <span className="text-[#C9A84C] font-display text-xl">{newReg.entry_type === 'team' ? '₹500' : '₹200'}</span>
-                </div>
-                <p className="text-[10px] text-white/20 mt-2 italic">Scan the QR at the registration desk or pay via the official UPI ID before uploading.</p>
-              </div>
-
-              <div className="flex gap-4 mt-8">
-                <button 
-                  onClick={() => setShowRegModal(false)}
-                  className="flex-1 py-3 border border-white/10 rounded-xl text-white/60 hover:bg-white/5 transition-all text-sm font-bold"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleRegisterEvent}
-                  className="flex-1 py-3 bg-[#C9A84C] text-[#080614] rounded-xl font-bold hover:opacity-90 transition-all text-sm"
-                >
-                  Confirm & Register
-                </button>
-              </div>
             </div>
           </div>
         </div>

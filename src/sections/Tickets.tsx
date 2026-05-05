@@ -32,19 +32,6 @@ const ticketTiers = [
       'Backstage access'
     ],
     popular: true
-  },
-  {
-    name: 'Spectator Pass',
-    price: 'FREE',
-    color: '#00FFFF',
-    features: [
-      'Watch all competitions',
-      'Attend DJ Night',
-      'Attend Grand Valedictory',
-      'Food court access',
-      'Campus tour'
-    ],
-    popular: false
   }
 ];
 
@@ -121,7 +108,7 @@ export default function Tickets() {
         {/* Ticket Cards */}
         <div 
           ref={cardsRef}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
         >
           {ticketTiers.map((tier, index) => (
             <div 

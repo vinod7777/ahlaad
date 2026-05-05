@@ -377,18 +377,32 @@
 .countdown-box {
   @apply relative flex flex-col items-center justify-center;
   @apply w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28;
-  background: rgba(8, 6, 20, 0.8);
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.countdown-box:hover {
+  background: rgba(201, 168, 76, 0.05);
+  border-color: rgba(201, 168, 76, 0.5);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3),
+              0 0 20px rgba(201, 168, 76, 0.2);
+  transform: translateY(-8px) scale(1.02);
 }
 
 .countdown-box::before {
   content: '';
   position: absolute;
-  inset: -1px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #C9A84C, #8B0000, #1a237e);
-  z-index: -1;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.5), transparent, rgba(139,0,0,0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   opacity: 0.5;
 }
 
@@ -401,7 +415,7 @@
 }
 
 .countdown-label {
-  @apply font-mono text-[10px] sm:text-xs uppercase tracking-wider text-white/60 mt-1;
+  @apply font-mono text-[10px] sm:text-xs uppercase tracking-wider text-[#C9A84C] mt-1 font-bold;
 }
 
 /* Schedule Timeline */
@@ -462,6 +476,11 @@
                0 0 40px rgba(139, 0, 0, 0.15);
 }
 
+.neon-text-glow-gold-subtle {
+  text-shadow: 0 0 10px rgba(201, 168, 76, 0.4),
+               0 0 20px rgba(201, 168, 76, 0.2);
+}
+
 .bg-gradient-neon {
   background: linear-gradient(135deg, rgba(255,0,128,0.1), rgba(191,0,255,0.1), rgba(0,255,255,0.1));
 }
@@ -490,4 +509,26 @@
 /* Scrollbar - Gold themed */
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #C9A84C, #8B0000);
+}
+
+.gold-neon-border {
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  box-shadow: 0 0 15px rgba(201, 168, 76, 0.4),
+              inset 0 0 15px rgba(201, 168, 76, 0.1);
+}
+
+@keyframes gold-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+    border-color: rgba(201, 168, 76, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(201, 168, 76, 0.6),
+                0 0 60px rgba(201, 168, 76, 0.2);
+    border-color: rgba(201, 168, 76, 0.8);
+  }
+}
+
+.animate-gold-pulse {
+  animation: gold-pulse 3s ease-in-out infinite;
 }
