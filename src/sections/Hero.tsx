@@ -153,7 +153,7 @@ export default function Hero() {
                 />
                 <div className="absolute inset-0 bg-[#C9A84C]/20 blur-3xl rounded-full scale-50 opacity-50 group-hover:opacity-100 transition-opacity" />
               </div>
-            <span className="text-[#C9A84C] text-[0.6em] font-bold relative -top-2" style={{ textShadow: '0 0 20px rgba(201,168,76,0.8)' }}>2K26</span>
+            <span className="font-display text-5xl md:text-7xl lg:text-8xl text-white tracking-tight leading-none mb-4 neon-text-glow-gold">2K26</span>
           </h1>
 
             {/* Accent Underline */}
