@@ -346,16 +346,16 @@ export default function Lineup() {
           <div className="mt-16 relative overflow-hidden rounded-2xl p-8 md:p-12 text-center" style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.12), rgba(201,168,76,0.08))' }}>
             <div className="absolute inset-0 border border-[#C9A84C]/20 rounded-2xl" />
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent opacity-60" />
-            <p className="font-mono text-sm text-[#C9A84C]/70 uppercase tracking-[0.3em] mb-4">Total Prize Pool</p>
+            <p className="font-mono text-sm text-[#C9A84C] uppercase tracking-[0.3em] mb-4 font-bold" style={{ textShadow: '0 0 10px rgba(201,168,76,0.3)' }}>Total Prize Pool</p>
             <img 
               src="/trophy.png" 
               alt="Trophy" 
               className="w-32 h-auto mx-auto mb-6 animate-float" 
               style={{ 
-                filter: 'drop-shadow(0 0 25px rgba(201,168,76,0.8)) drop-shadow(0 0 50px rgba(201,168,76,0.4))' 
+                filter: 'drop-shadow(0 0 25px rgba(201,168,76,0.9)) drop-shadow(0 0 50px rgba(201,168,76,0.4))' 
               }}
             />
-            <h3 className="font-display text-6xl md:text-8xl lg:text-9xl neon-text-glow-gold" style={{ color: '#C9A84C', textShadow: '0 0 30px rgba(201,168,76,0.6), 0 0 60px rgba(201,168,76,0.3), 0 0 100px rgba(201,168,76,0.15)' }}>
+            <h3 className="font-display text-6xl md:text-8xl lg:text-9xl text-white mb-4" style={{ textShadow: '0 0 30px rgba(201,168,76,0.9), 0 0 60px rgba(201,168,76,0.5), 0 0 90px rgba(201,168,76,0.3)' }}>
               ₹2,50,000
             </h3>
             <p className="text-white/50 text-sm mt-4 max-w-md mx-auto">

@@ -98,7 +98,8 @@ export default function BeThere() {
         ref={contentRef}
         className="relative z-10 text-center px-[6vw]"
       >
-        <div className="font-mono text-sm text-[#C9A84C] uppercase tracking-widest mb-4">
+        <div className="font-mono text-sm text-white uppercase tracking-widest mb-4" 
+          style={{ textShadow: '0 0 10px rgba(201,168,76,0.9), 0 0 20px rgba(201,168,76,0.5)' }}>
           JUNE 26–27, 2K26
         </div>
 

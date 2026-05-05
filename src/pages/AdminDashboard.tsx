@@ -300,40 +300,63 @@ export default function AdminDashboard() {
                 <Clock className="w-5 h-5 text-[#C9A84C]" />
                 Update Live Status
               </h3>
-              <div className="space-y-6">
-                {timeline.map(event => (
-                  <div key={event.id} className="p-5 border border-white/5 rounded-xl bg-white/5">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h4 className="font-display text-white">{event.name}</h4>
-                        <p className="text-xs text-white/40">{event.category} • {event.time_slot} • {event.venue}</p>
+              
+              <div className="space-y-12">
+                {/* Day 1 Management */}
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-[0.3em] text-[#C9A84C] font-bold mb-6 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#C9A84C]" />
+                    Day 1 Schedule
+                  </h4>
+                  <div className="space-y-4">
+                    {timeline.length === 0 ? (
+                      <p className="text-white/20 italic text-xs">No events loaded...</p>
+                    ) : timeline.map(event => (
+                      <div key={event.id} className="p-4 border border-white/5 rounded-xl bg-white/[0.02]">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h4 className="font-display text-sm text-white">{event.name}</h4>
+                            <p className="text-[10px] text-white/30">{event.time_slot} • {event.venue}</p>
+                          </div>
+                          <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${event.status === 'live' ? 'bg-[#39FF14]/20 text-[#39FF14]' : event.status === 'completed' ? 'bg-white/10 text-white/40' : 'bg-blue-500/20 text-blue-400'}`}>
+                            {event.status}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => handleUpdateTimeline(event.id, 'upcoming')}
+                            className={`flex-1 py-1 rounded-[4px] text-[9px] font-bold uppercase tracking-widest border border-white/10 transition-all ${event.status === 'upcoming' ? 'bg-white/20 border-white/40' : 'hover:bg-white/5'}`}
+                          >
+                            Upcoming
+                          </button>
+                          <button 
+                            onClick={() => handleUpdateTimeline(event.id, 'live')}
+                            className={`flex-1 py-1 rounded-[4px] text-[9px] font-bold uppercase tracking-widest border border-white/10 transition-all ${event.status === 'live' ? 'bg-[#39FF14]/20 border-[#39FF14]/40 text-[#39FF14]' : 'hover:bg-white/5'}`}
+                          >
+                            Go Live
+                          </button>
+                          <button 
+                            onClick={() => handleUpdateTimeline(event.id, 'completed')}
+                            className={`flex-1 py-1 rounded-[4px] text-[9px] font-bold uppercase tracking-widest border border-white/10 transition-all ${event.status === 'completed' ? 'bg-white/20 border-white/40' : 'hover:bg-white/5'}`}
+                          >
+                            Done
+                          </button>
+                        </div>
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${event.status === 'live' ? 'bg-[#39FF14]/20 text-[#39FF14]' : event.status === 'completed' ? 'bg-white/10 text-white/40' : 'bg-blue-500/20 text-blue-400'}`}>
-                        {event.status}
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => handleUpdateTimeline(event.id, 'upcoming')}
-                        className={`flex-1 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest border border-white/10 transition-all ${event.status === 'upcoming' ? 'bg-white/20 border-white/40' : 'hover:bg-white/5'}`}
-                      >
-                        Upcoming
-                      </button>
-                      <button 
-                        onClick={() => handleUpdateTimeline(event.id, 'live')}
-                        className={`flex-1 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest border border-white/10 transition-all ${event.status === 'live' ? 'bg-[#39FF14]/20 border-[#39FF14]/40 text-[#39FF14]' : 'hover:bg-white/5'}`}
-                      >
-                        Go Live
-                      </button>
-                      <button 
-                        onClick={() => handleUpdateTimeline(event.id, 'completed')}
-                        className={`flex-1 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest border border-white/10 transition-all ${event.status === 'completed' ? 'bg-white/20 border-white/40' : 'hover:bg-white/5'}`}
-                      >
-                        Complete
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Day 2 Placeholder */}
+                <div className="opacity-40">
+                  <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold mb-4 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-white/20" />
+                    Day 2 Schedule
+                  </h4>
+                  <div className="p-4 border border-dashed border-white/10 rounded-xl text-center">
+                    <p className="text-[10px] text-white/20 uppercase tracking-widest">Locked until Day 1 Completion</p>
+                  </div>
+                </div>
               </div>
             </div>
 

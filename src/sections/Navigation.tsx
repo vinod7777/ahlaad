@@ -52,9 +52,15 @@ export default function Navigation() {
             <SilverJubileeLogo size={48} />
             <div className="hidden sm:flex items-center gap-2">
               <img src="/ahlaad.png" alt="Ahlaad" className="h-7 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
-              <span className="font-display text-xl md:text-2xl text-[#C9A84C] tracking-wider">2K26</span>
+              <span className="font-display text-xl md:text-2xl text-white tracking-wider" 
+                style={{ textShadow: '0 0 10px rgba(201,168,76,0.9), 0 0 20px rgba(201,168,76,0.5)' }}>
+                2K26
+              </span>
             </div>
-            <span className="text-[10px] text-white/50 font-mono tracking-wider block sm:hidden">AHLAAD 2K26</span>
+            <span className="text-[10px] text-white font-mono tracking-wider block sm:hidden" 
+              style={{ textShadow: '0 0 8px rgba(201,168,76,0.8)' }}>
+              AHLAAD 2K26
+            </span>
           </a>
 
           {/* Desktop Navigation */}
