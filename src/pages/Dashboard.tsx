@@ -61,7 +61,6 @@ export default function Dashboard() {
   };
 
   const handleRegisterEvent = async () => {
-  const handleRegisterEvent = async () => {
     if (!newReg.utr_id || !paymentFile) {
       alert('Please provide UTR ID and payment screenshot');
       return;
@@ -697,4 +696,3 @@ export default function Dashboard() {
     </div>
   );
 }
-    
