@@ -532,3 +532,44 @@
 .animate-gold-pulse {
   animation: gold-pulse 3s ease-in-out infinite;
 }
+
+/* Print Styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  aside, 
+  header, 
+  button, 
+  .no-print,
+  nav,
+  .noise-overlay {
+    display: none !important;
+  }
+
+  main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .glass-card {
+    background: white !important;
+    border: 2px solid black !important;
+    color: black !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .text-gradient-gold,
+  .text-gradient-gold-maroon {
+    background: none !important;
+    -webkit-text-fill-color: black !important;
+    color: black !important;
+  }
+
+  .qr-code-container {
+    filter: invert(0) !important;
+  }
+}

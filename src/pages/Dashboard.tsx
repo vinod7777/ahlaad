@@ -1,6 +1,72 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Calendar, Plus, CheckCircle, Clock, MapPin, QrCode, CreditCard, Menu, X, Users } from 'lucide-react';
+import { QrCode, LogOut, LayoutDashboard, Calendar, Trophy, Users, CheckCircle, Clock, AlertCircle, CreditCard, ChevronRight, UserPlus, Trash2, Printer, User, Plus, MapPin, Menu, X } from 'lucide-react';
+
+const PassCard = ({ title, name, id, passId, role }: { title: string, name: string, id: string, passId: string, role: string }) => (
+  <div className="relative group pass-card-container mb-8">
+    <div className="relative glass-card rounded-[2rem] border border-[#C9A84C]/30 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-[#0d0b1e]">
+      {/* Ticket Top Section */}
+      <div className="p-10 relative">
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C9A84C 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+        
+        <div className="flex justify-between items-start mb-10 relative">
+          <div>
+            <p className="text-[#C9A84C] font-mono text-[10px] uppercase tracking-[0.3em] mb-2">Ahlaad 2K26 • {title}</p>
+            <h4 className="text-4xl font-display text-white tracking-tight">ENTRY <span className="text-gradient-gold">PASS</span></h4>
+          </div>
+          <div className="w-14 h-14 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center p-2 backdrop-blur-sm">
+             <img src="/ahlaad.png" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-12 gap-y-6 mb-10 relative">
+          <div>
+            <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-1 font-bold">Participant</p>
+            <p className="text-white font-display text-lg tracking-wide truncate">{name}</p>
+          </div>
+          <div>
+            <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-1 font-bold">ID / Role</p>
+            <p className="text-[#C9A84C] font-mono text-sm font-bold truncate">{id}</p>
+          </div>
+          <div className="col-span-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-4 h-4 text-[#C9A84C]" />
+                <div>
+                  <p className="text-white/20 text-[8px] uppercase tracking-widest font-bold">Status</p>
+                  <p className="text-[11px] text-[#39FF14] font-bold">VERIFIED {role}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-white/20 text-[8px] uppercase tracking-widest font-bold">Pass ID</p>
+                <p className="text-[11px] text-white/70 font-mono">{passId}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Ticket Divider */}
+      <div className="relative h-px border-t border-dashed border-white/20 mx-10">
+        <div className="absolute -left-12 -top-4 w-8 h-8 rounded-full bg-[#080614]" />
+        <div className="absolute -right-12 -top-4 w-8 h-8 rounded-full bg-[#080614]" />
+      </div>
+
+      {/* Ticket Bottom Section */}
+      <div className="p-10 bg-white flex flex-col items-center relative qr-code-container">
+        <div className="relative mb-6">
+          <QrCode className="w-32 h-32 text-[#080614]" />
+        </div>
+        <button 
+          onClick={() => window.print()}
+          className="no-print flex items-center gap-2 px-6 py-2 bg-[#080614] text-white rounded-full text-[10px] uppercase tracking-widest hover:bg-[#C9A84C] hover:text-[#080614] transition-colors"
+        >
+          <Printer className="w-4 h-4" /> Print This Pass
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -417,94 +483,35 @@ export default function Dashboard() {
           )}
 
           {activeTab === 'pass' && (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-display mb-8 text-center">Your Official <span className="text-gradient-gold">Entry Pass</span></h3>
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-2xl mx-auto pb-20">
+              <h3 className="text-2xl font-display mb-8 text-center">Your Official <span className="text-gradient-gold">Entry Passes</span></h3>
               
-              {registrations.some(r => r.status === 'confirmed') ? (
-                <div className="relative group">
-                  {/* Decorative Elements */}
-                  <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#C9A84C]/20 blur-[80px] rounded-full pointer-events-none" />
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#8B0000]/20 blur-[80px] rounded-full pointer-events-none" />
+              {registrations.filter(r => r.status === 'confirmed').length > 0 ? (
+                <div className="space-y-12">
+                  {registrations.filter(r => r.status === 'confirmed').map((reg) => (
+                    <div key={reg.id} className="space-y-8">
+                      {/* Leader Pass */}
+                      <PassCard 
+                        title={reg.competition} 
+                        name={user.name} 
+                        id={user.college_id} 
+                        passId={reg.pass_id} 
+                        role="TEAM LEADER"
+                      />
 
-                  <div className="relative glass-card rounded-[2rem] border border-[#C9A84C]/30 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                    {/* Ticket Top Section */}
-                    <div className="p-10 bg-[#0d0b1e] relative">
-                      {/* Decorative Background Pattern */}
-                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C9A84C 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                      
-                      {/* Side Punches */}
-                      <div className="absolute -left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#080614] border border-white/10 z-10" />
-                      <div className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#080614] border border-white/10 z-10" />
-
-                      <div className="flex justify-between items-start mb-10 relative">
-                        <div>
-                          <p className="text-[#C9A84C] font-mono text-[10px] uppercase tracking-[0.3em] mb-2">Ahlaad 2K26 • Entry Pass</p>
-                          <h4 className="text-4xl font-display text-white tracking-tight">SILVER <span className="text-gradient-gold">JUBILEE</span></h4>
-                        </div>
-                        <div className="w-14 h-14 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center p-2 backdrop-blur-sm shadow-xl">
-                           <img src="/ahlaad.png" alt="Logo" className="w-full h-full object-contain" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-x-12 gap-y-6 mb-10 relative">
-                        <div>
-                          <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-1 font-bold">Participant Name</p>
-                          <p className="text-white font-display text-lg tracking-wide truncate">{user.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-1 font-bold">Registration ID</p>
-                          <p className="text-[#C9A84C] font-mono text-sm font-bold">{user.college_id}</p>
-                        </div>
-                        <div className="col-span-2 p-4 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                              <Calendar className="w-4 h-4 text-[#C9A84C]" />
-                              <div>
-                                <p className="text-white/20 text-[8px] uppercase tracking-widest font-bold">Date & Venue</p>
-                                <p className="text-[11px] text-white/70">June 26-27, 2026 • AITAM Campus</p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-white/20 text-[8px] uppercase tracking-widest font-bold">Entry Status</p>
-                              <p className="text-[11px] text-[#39FF14] font-bold">ALL ACCESS</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      {/* Member Passes */}
+                      {reg.members?.map((member: any) => (
+                        <PassCard 
+                          key={member.id}
+                          title={reg.competition} 
+                          name={member.member_name} 
+                          id="TEAM MEMBER" 
+                          passId={member.pass_id} 
+                          role="MEMBER"
+                        />
+                      ))}
                     </div>
-
-                    {/* Ticket Divider */}
-                    <div className="relative h-px border-t border-dashed border-white/20 mx-10">
-                      <div className="absolute -left-10 -top-4 w-8 h-8 rounded-full bg-[#080614]" />
-                      <div className="absolute -right-10 -top-4 w-8 h-8 rounded-full bg-[#080614]" />
-                    </div>
-
-                    {/* Ticket Bottom Section */}
-                    <div className="p-10 bg-[#0d0b1e]/95 flex flex-col items-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#C9A84C]/5 to-transparent pointer-events-none" />
-                      
-                      <div className="relative group mb-8">
-                        <div className="absolute inset-0 bg-[#C9A84C]/20 blur-2xl rounded-full scale-75 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        <div className="relative p-6 bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform group-hover:scale-[1.02] transition-transform duration-500">
-                          <QrCode className="w-40 h-40 text-[#080614]" />
-                        </div>
-                      </div>
-
-                      <div className="text-center relative">
-                        <div className="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
-                          <p className="font-mono text-xs text-white/80 tracking-[0.4em]">ALH-2K26-{user.id + 1000}</p>
-                        </div>
-                        <p className="text-white/30 text-[10px] uppercase tracking-[0.2em] max-w-[200px]">Present this QR code at the event entrance for validation.</p>
-                      </div>
-                      
-                      <button 
-                        onClick={() => window.print()}
-                        className="mt-10 flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-[#C9A84C] to-[#B8860B] text-[#080614] rounded-2xl font-bold uppercase text-[11px] tracking-[0.2em] hover:shadow-[0_10px_30px_rgba(201,168,76,0.3)] active:scale-95 transition-all"
-                      >
-                        <CreditCard className="w-5 h-5" /> Get Digital Copy
-                      </button>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               ) : (
                 <div className="glass-card p-12 rounded-[2rem] border border-white/10 bg-white/5 text-center">

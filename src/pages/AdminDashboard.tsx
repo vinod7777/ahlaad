@@ -24,6 +24,10 @@ export default function AdminDashboard() {
     } else {
       setAdmin(userData);
       fetchAdminData();
+      
+      // Set up polling for real-time updates
+      const interval = setInterval(fetchAdminData, 5000);
+      return () => clearInterval(interval);
     }
   }, [navigate]);
 
