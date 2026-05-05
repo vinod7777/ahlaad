@@ -216,7 +216,6 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <img src="/ahlaad.png" alt="Ahlaad" className="h-8" />
-            <span className="font-display text-xl tracking-wider">AHLAAD</span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white">
             <X className="w-6 h-6" />
@@ -734,7 +733,7 @@ export default function Dashboard() {
       {/* Detail Modal */}
       {selectedReg && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-xl bg-black/40">
-          <div className="glass-card w-full max-w-md p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+          <div className="glass-card w-full max-w-4xl p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#C9A84C] to-[#8B0000]" />
             
             <div className="text-center mb-8">
@@ -743,7 +742,7 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
                   <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1 font-bold">Entry Type</p>
                   <p className="text-sm font-bold text-white/80">{selectedReg.entry_type}</p>
@@ -754,55 +753,57 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {selectedReg.entry_type === 'team' && (
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-4 font-bold">Team: {selectedReg.team_name}</h4>
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#C9A84C]/20 border border-[#C9A84C]/40 flex items-center justify-center text-[10px] text-[#C9A84C] font-bold shrink-0">
-                        {user.name[0]}
-                      </div>
-                      <p className="text-xs font-bold text-white/90">{user.name} <span className="text-[8px] text-white/20 ml-2 font-normal uppercase tracking-widest">(Lead)</span></p>
-                    </div>
-                    {selectedReg.members?.map((m: any) => (
-                      <div key={m.id} className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] text-white/80 font-bold shrink-0">
-                          {m.member_name[0]}
+              <div className="flex flex-col md:flex-row gap-6">
+                {selectedReg.entry_type === 'team' && (
+                  <div className="flex-1 p-6 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-4 font-bold">Team: {selectedReg.team_name}</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#C9A84C]/20 border border-[#C9A84C]/40 flex items-center justify-center text-[10px] text-[#C9A84C] font-bold shrink-0">
+                          {user.name[0]}
                         </div>
-                        <p className="text-xs font-bold text-white/90">{m.member_name}</p>
+                        <p className="text-xs font-bold text-white/90">{user.name} <span className="text-[8px] text-white/20 ml-2 font-normal uppercase tracking-widest">(Lead)</span></p>
                       </div>
-                    ))}
-                  </div>
-
-                  {(selectedReg.members?.length || 0) < (selectedReg.team_size - 1) && (
-                    <div className="pt-4 border-t border-white/5">
-                      <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Add Team Member</p>
-                      <div className="flex gap-2">
-                        <input 
-                          type="text"
-                          value={newMemberName}
-                          onChange={(e) => setNewMemberName(e.target.value)}
-                          placeholder="Member Name"
-                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
-                        />
-                        <button 
-                          onClick={() => handleAddMember(selectedReg.id)}
-                          className="px-4 py-2 bg-[#C9A84C]/10 text-[#C9A84C] rounded-xl text-xs font-bold hover:bg-[#C9A84C]/20 transition-all"
-                        >
-                          Add
-                        </button>
-                      </div>
+                      {selectedReg.members?.map((m: any) => (
+                        <div key={m.id} className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] text-white/80 font-bold shrink-0">
+                            {m.member_name[0]}
+                          </div>
+                          <p className="text-xs font-bold text-white/90">{m.member_name}</p>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
 
-              {selectedReg.status === 'confirmed' && (
-                <div className="p-6 bg-[#39FF14]/5 rounded-2xl border border-[#39FF14]/20 text-center">
-                  <QrCode className="w-24 h-24 text-white mx-auto mb-4 opacity-80" />
-                  <p className="font-mono text-xs text-[#39FF14] tracking-widest uppercase">Pass ID: {selectedReg.pass_id || 'ALH-REF-102'}</p>
-                </div>
-              )}
+                {selectedReg.entry_type === 'team' && (selectedReg.members?.length || 0) < (selectedReg.team_size - 1) && (
+                  <div className="flex-1 p-6 bg-white/5 rounded-2xl border border-white/10 flex flex-col justify-center">
+                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-bold">Add Team Member</p>
+                    <div className="flex flex-col gap-3">
+                      <input 
+                        type="text"
+                        value={newMemberName}
+                        onChange={(e) => setNewMemberName(e.target.value)}
+                        placeholder="Member Name"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
+                      />
+                      <button 
+                        onClick={() => handleAddMember(selectedReg.id)}
+                        className="w-full py-3 bg-[#C9A84C]/10 text-[#C9A84C] rounded-xl text-xs font-bold hover:bg-[#C9A84C]/20 transition-all"
+                      >
+                        Add Member
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {selectedReg.status === 'confirmed' && (
+                  <div className="flex-1 p-6 bg-[#39FF14]/5 rounded-2xl border border-[#39FF14]/20 flex flex-col items-center justify-center text-center">
+                    <QrCode className="w-24 h-24 text-white mx-auto mb-4 opacity-80" />
+                    <p className="font-mono text-xs text-[#39FF14] tracking-widest uppercase">Pass ID: {selectedReg.pass_id || 'ALH-REF-102'}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <button 

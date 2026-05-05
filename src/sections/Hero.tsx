@@ -153,7 +153,7 @@ export default function Hero() {
                 />
                 <div className="absolute inset-0 bg-[#C9A84C]/20 blur-3xl rounded-full scale-50 opacity-50 group-hover:opacity-100 transition-opacity" />
               </div>
-            <span className="text-[#C9A84C] text-[0.6em] font-bold relative -top-2" style={{ textShadow: '0 0 20px rgba(201,168,76,0.8)' }}>2K26</span>
+            <span className="text-white text-[0.6em] font-bold relative top-2 neon-text-glow-gold" style={{ textShadow: '0 0 20px rgba(201,168,76,0.8), 0 0 40px rgba(201,168,76,0.4)' }}>2K26</span>
           </h1>
 
             {/* Accent Underline */}
@@ -212,9 +212,9 @@ export default function Hero() {
 
           {/* RIGHT COLUMN - Prize Pool Highlight */}
           <div ref={logoRef} className="hidden lg:flex flex-col items-center justify-center w-[38vw]">
-            <div className="relative text-center p-10 rounded-2xl border border-[#C9A84C]/25" style={{ background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }}>
+            <div className="relative text-center p-10 rounded-2xl" style={{ background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }}>
               {/* Glow ring */}
-              <div className="absolute inset-0 rounded-2xl" style={{ boxShadow: 'inset 0 0 80px rgba(201,168,76,0.06), 0 0 50px rgba(201,168,76,0.1)' }} />
+              <div className="absolute inset-0 rounded-2xl" />
               
               <img 
                 src="/trophy.png" 

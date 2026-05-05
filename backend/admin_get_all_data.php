@@ -30,10 +30,20 @@ while($t = $timeline_res->fetch_assoc()) {
     $timeline[] = $t;
 }
 
+// Get settings
+$settings_res = $conn->query("SELECT * FROM settings WHERE setting_key = 'registration_enabled'");
+$registration_enabled = true;
+if ($s = $settings_res->fetch_assoc()) {
+    $registration_enabled = $s['setting_value'] === '1';
+}
+
 echo json_encode([
     'success' => true,
     'registrations' => $registrations,
-    'timeline' => $timeline
+    'timeline' => $timeline,
+    'settings' => [
+        'registration_enabled' => $registration_enabled
+    ]
 ]);
 
 $conn->close();

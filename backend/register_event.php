@@ -23,6 +23,15 @@ if (!$user_id || !$competition || !$utr_id || !isset($_FILES['payment_proof'])) 
 
 $conn = getDB();
 
+// Check if registration is enabled
+$settings_res = $conn->query("SELECT * FROM settings WHERE setting_key = 'registration_enabled'");
+if ($s = $settings_res->fetch_assoc()) {
+    if ($s['setting_value'] !== '1') {
+        echo json_encode(['success' => false, 'message' => 'Registration is currently closed.']);
+        exit();
+    }
+}
+
 // Handle File Upload
 $target_dir = "uploads/";
 $file_ext = pathinfo($_FILES["payment_proof"]["name"], PATHINFO_EXTENSION);
