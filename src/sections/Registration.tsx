@@ -1,4 +1,5 @@
 import { useRef, useLayoutEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
@@ -8,6 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 
 export default function Registration() {
+  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,7 @@ export default function Registration() {
     setErrorMsg('');
 
     try {
-      const response = await fetch('http://localhost/ahlaad_backend/signup.php', {
+      const response = await fetch('http://localhost/ahlaad/backend/signup.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -129,8 +131,8 @@ export default function Registration() {
                   <h4 className="font-display text-3xl text-white mb-2">Account Created! 🎉</h4>
                   <p className="text-white/60 mb-6">Your account is ready. You can now log in to the dashboard.</p>
                   <button
-                    className="btn-primary"
-                    onClick={() => window.location.href = '#login'}
+                    className="btn-primary px-8"
+                    onClick={() => navigate('/login')}
                   >
                     Go to Login
                   </button>
@@ -235,7 +237,7 @@ export default function Registration() {
                   </button>
 
                   <p className="text-white/30 text-xs text-center mt-2">
-                    Already have an account? <a href="#login" className="text-[#C9A84C] hover:underline">Log in</a>
+                    Already have an account? <Link to="/login" className="text-[#C9A84C] hover:underline">Log in</Link>
                   </p>
                 </form>
               )}

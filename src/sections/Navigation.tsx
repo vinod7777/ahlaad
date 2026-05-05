@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import SilverJubileeLogo from '../components/SilverJubileeLogo';
 
@@ -7,9 +8,10 @@ const navLinks = [
   { label: 'Competitions', href: '#competitions' },
   { label: 'Schedule', href: '#schedule' },
   { label: 'Register', href: '#register' },
-  { label: 'Login', href: '#login' },
+  { label: 'Login', href: '/login', isExternal: true },
   { label: 'Contact', href: '#contact' },
 ];
+
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -58,13 +60,23 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <button
-                key={link.label}
-                onClick={() => scrollToSection(link.href)}
-                className="text-sm text-white/80 hover:text-[#C9A84C] transition-colors font-medium tracking-wide"
-              >
-                {link.label}
-              </button>
+              link.isExternal ? (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-sm text-white/80 hover:text-[#C9A84C] transition-colors font-medium tracking-wide"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.label}
+                  onClick={() => scrollToSection(link.href)}
+                  className="text-sm text-white/80 hover:text-[#C9A84C] transition-colors font-medium tracking-wide"
+                >
+                  {link.label}
+                </button>
+              )
             ))}
             <button 
               onClick={() => scrollToSection('#register')}
@@ -93,19 +105,36 @@ export default function Navigation() {
         <div className="flex flex-col items-center justify-center h-full gap-8">
           <SilverJubileeLogo size={80} />
           {navLinks.map((link, index) => (
-            <button
-              key={link.label}
-              onClick={() => scrollToSection(link.href)}
-              className="font-display text-3xl text-white hover:text-[#C9A84C] transition-colors"
-              style={{ 
-                transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
-                opacity: isMobileMenuOpen ? 1 : 0,
-                transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(20px)'
-              }}
-            >
-              {link.label}
-            </button>
+            link.isExternal ? (
+              <Link
+                key={link.label}
+                to={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="font-display text-3xl text-white hover:text-[#C9A84C] transition-colors"
+                style={{ 
+                  transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
+                  opacity: isMobileMenuOpen ? 1 : 0,
+                  transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(20px)'
+                }}
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <button
+                key={link.label}
+                onClick={() => scrollToSection(link.href)}
+                className="font-display text-3xl text-white hover:text-[#C9A84C] transition-colors"
+                style={{ 
+                  transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
+                  opacity: isMobileMenuOpen ? 1 : 0,
+                  transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(20px)'
+                }}
+              >
+                {link.label}
+              </button>
+            )
           ))}
+
           <button 
             className="btn-primary mt-4"
             style={{ 

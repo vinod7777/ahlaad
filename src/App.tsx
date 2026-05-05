@@ -15,13 +15,13 @@ import Schedule from './sections/Schedule';
 import Unforgettable from './sections/Unforgettable';
 import Gallery from './sections/Gallery';
 import Registration from './sections/Registration';
-import Login from './sections/Login';
 import OrganiserBody from './sections/OrganiserBody';
 import Closing from './sections/Closing';
 import Contact from './sections/Contact';
 
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import LoginPage from './pages/LoginPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,7 +41,6 @@ function LandingPage() {
         <Unforgettable />
         <Gallery />
         <Registration />
-        <Login />
         <OrganiserBody />
         <Closing />
         <Contact />
@@ -64,6 +63,7 @@ function App() {
         
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<Navigate to="/" />} />
@@ -72,5 +72,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

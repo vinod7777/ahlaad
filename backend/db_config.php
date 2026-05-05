@@ -10,6 +10,7 @@ define('DB_PASS', '');
 define('DB_NAME', 'ahlaad_2026');
 
 function getDB() {
+    // Initial connection without database selection to ensure we can create the DB
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
     
     if ($conn->connect_error) {
@@ -25,7 +26,7 @@ function getDB() {
     $conn->select_db(DB_NAME);
     $conn->set_charset("utf8mb4");
 
-    // Create users table for authentication
+    // 1. Users table (for Dashboard authentication)
     $conn->query("
         CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -40,12 +41,46 @@ function getDB() {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
-    // Ensure admin user exists
-    $admin_email = 'admin@ahlaad.com';
-    $admin_pass = password_hash('admin123', PASSWORD_DEFAULT);
-    $conn->query("INSERT IGNORE INTO users (name, email, password, phone, college, college_id, role) VALUES ('Admin', '$admin_email', '$admin_pass', '0000000000', 'AITAM', 'ADMIN001', 'admin')");
+    // 2. Registrations table (Consolidated for both Dashboard and Direct flows)
+    $conn->query("
+        CREATE TABLE IF NOT EXISTS registrations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT DEFAULT NULL,
+            participant_name VARCHAR(255) DEFAULT NULL,
+            email VARCHAR(255) DEFAULT NULL,
+            phone VARCHAR(20) DEFAULT NULL,
+            college VARCHAR(255) DEFAULT NULL,
+            college_id VARCHAR(100) DEFAULT NULL,
+            competition VARCHAR(100) NOT NULL,
+            entry_type ENUM('individual', 'team') NOT NULL DEFAULT 'individual',
+            team_name VARCHAR(255) DEFAULT NULL,
+            team_size INT DEFAULT NULL,
+            fee DECIMAL(10,2) NOT NULL DEFAULT 200.00,
+            utr_id VARCHAR(100) DEFAULT NULL,
+            payment_proof VARCHAR(255) DEFAULT NULL,
+            pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
+            registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+            status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
 
-    // Create events_timeline table
+    // Add columns if they don't exist (for existing databases)
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS utr_id VARCHAR(100) DEFAULT NULL AFTER fee");
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_proof VARCHAR(255) DEFAULT NULL AFTER utr_id");
+
+    // 3. Registration Members table (for team members)
+    $conn->query("
+        CREATE TABLE IF NOT EXISTS registration_members (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            registration_id INT NOT NULL,
+            member_name VARCHAR(255) NOT NULL,
+            pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
+            FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+
+    // 4. Events Timeline table
     $conn->query("
         CREATE TABLE IF NOT EXISTS events_timeline (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -58,44 +93,24 @@ function getDB() {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
 
-    // Seed some events if empty
+    // Ensure default admin user exists
+    $admin_email = 'admin@ahlaad.com';
+    $res = $conn->query("SELECT id FROM users WHERE email = '$admin_email'");
+    if ($res->num_rows === 0) {
+        $admin_pass = password_hash('admin123', PASSWORD_DEFAULT);
+        $conn->query("INSERT INTO users (name, email, password, phone, college, college_id, role) VALUES ('Admin', '$admin_email', '$admin_pass', '0000000000', 'AITAM', 'ADMIN001', 'admin')");
+    }
+
+    // Seed initial events if timeline is empty
     $res = $conn->query("SELECT COUNT(*) as count FROM events_timeline");
-    if ($res->fetch_assoc()['count'] == 0) {
+    if ($res && $res->fetch_assoc()['count'] == 0) {
         $conn->query("INSERT INTO events_timeline (name, category, status, time_slot, venue) VALUES 
             ('Inauguration Ceremony', 'Main Event', 'upcoming', '9:00 AM', 'Open Air Theater'),
             ('Rock Band Battle', 'Music', 'upcoming', '11:00 AM', 'Main Stage'),
             ('Dance — Classical', 'Dance', 'upcoming', '2:00 PM', 'Auditorium')");
     }
 
-    // Create registrations table
-    $conn->query("
-        CREATE TABLE IF NOT EXISTS registrations (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            competition VARCHAR(100) NOT NULL,
-            entry_type ENUM('individual', 'team') NOT NULL DEFAULT 'individual',
-            team_name VARCHAR(255) DEFAULT NULL,
-            team_size INT DEFAULT NULL,
-            fee DECIMAL(10,2) NOT NULL DEFAULT 200.00,
-            pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
-            registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-            status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            UNIQUE KEY unique_user_competition (user_id, competition)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
-
-    // Create registration_members table for teams
-    $conn->query("
-        CREATE TABLE IF NOT EXISTS registration_members (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            registration_id INT NOT NULL,
-            member_name VARCHAR(255) NOT NULL,
-            pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
-            FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ");
-
     return $conn;
 }
+
 ?>

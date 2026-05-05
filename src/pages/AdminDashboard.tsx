@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock, MapPin, CheckCircle } from 'lucide-react';
+import { LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock, MapPin, CheckCircle, Menu, X } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState<any>(null);
@@ -8,6 +8,8 @@ export default function AdminDashboard() {
   const [timeline, setTimeline] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'timeline'>('overview');
+  const [selectedReg, setSelectedReg] = useState<any>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function AdminDashboard() {
 
   const fetchAdminData = async () => {
     try {
-      const response = await fetch('http://localhost/ahlaad_backend/admin_get_all_data.php');
+      const response = await fetch('http://localhost/ahlaad/backend/admin_get_all_data.php');
       const data = await response.json();
       if (data.success) {
         setRegistrations(data.registrations);
@@ -42,7 +44,7 @@ export default function AdminDashboard() {
 
   const handleApprove = async (regId: number) => {
     try {
-      const response = await fetch('http://localhost/ahlaad_backend/admin_approve_registration.php', {
+      const response = await fetch('http://localhost/ahlaad/backend/admin_approve_registration.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ registration_id: regId })
@@ -60,7 +62,7 @@ export default function AdminDashboard() {
 
   const handleUpdateTimeline = async (eventId: number, status: string) => {
     try {
-      const response = await fetch('http://localhost/ahlaad_backend/update_timeline.php', {
+      const response = await fetch('http://localhost/ahlaad/backend/update_timeline.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: eventId, status })
@@ -83,30 +85,43 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#080614] text-white flex">
+      {/* Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/10 bg-[#0d0b1e] p-6 flex flex-col fixed h-full z-[100]">
-        <div className="flex items-center gap-3 mb-10">
-          <img src="/ahlaad.png" alt="Ahlaad" className="h-6" />
-          <span className="font-display text-lg tracking-widest text-[#C9A84C]">ADMIN</span>
+      <aside className={`w-64 border-r border-white/10 bg-[#0d0b1e] p-6 flex flex-col fixed h-full z-[200] transition-transform duration-300 md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-3">
+            <img src="/ahlaad.png" alt="Ahlaad" className="h-6" />
+            <span className="font-display text-lg tracking-widest text-[#C9A84C]">ADMIN</span>
+          </div>
+          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white">
+            <X className="w-6 h-6" />
+          </button>
         </div>
 
         <nav className="space-y-2 flex-1">
           <button 
-            onClick={() => setActiveTab('overview')}
+            onClick={() => { setActiveTab('overview'); setIsMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-[#C9A84C]/10 text-[#C9A84C]' : 'text-white/60 hover:bg-white/5'}`}
           >
             <BarChart3 className="w-5 h-5" />
             Overview
           </button>
           <button 
-            onClick={() => setActiveTab('participants')}
+            onClick={() => { setActiveTab('participants'); setIsMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'participants' ? 'bg-[#C9A84C]/10 text-[#C9A84C]' : 'text-white/60 hover:bg-white/5'}`}
           >
             <Users className="w-5 h-5" />
             Registrations
           </button>
           <button 
-            onClick={() => setActiveTab('timeline')}
+            onClick={() => { setActiveTab('timeline'); setIsMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'timeline' ? 'bg-[#C9A84C]/10 text-[#C9A84C]' : 'text-white/60 hover:bg-white/5'}`}
           >
             <Clock className="w-5 h-5" />
@@ -124,11 +139,19 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-10">
-        <header className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-3xl font-display">{activeTab === 'overview' ? 'System Overview' : activeTab === 'participants' ? 'Manage Registrations' : 'Event Timeline'}</h1>
-            <p className="text-white/40">Ahlaad 2K26 Administrative Control Center</p>
+      <main className="flex-1 md:ml-64 p-4 md:p-10 min-h-screen">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 -ml-2 text-white/60 hover:text-white md:hidden"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-display">{activeTab === 'overview' ? 'System Overview' : activeTab === 'participants' ? 'Manage Registrations' : 'Event Timeline'}</h1>
+              <p className="text-xs md:text-sm text-white/40">Ahlaad 2K26 Administrative Control Center</p>
+            </div>
           </div>
           <div className="flex gap-4">
             <button className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold uppercase tracking-widest">
@@ -235,20 +258,28 @@ export default function AdminDashboard() {
                         {reg.pass_id && <p className="text-[10px] font-mono text-white/30 mt-1">{reg.pass_id}</p>}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        {reg.status === 'pending' ? (
+                        <div className="flex items-center justify-end gap-2">
                           <button 
-                            onClick={() => handleApprove(reg.id)}
-                            className="bg-[#39FF14] text-[#080614] px-3 py-1 rounded text-xs font-bold hover:opacity-80 transition-all flex items-center gap-1 ml-auto"
+                            onClick={() => setSelectedReg(reg)}
+                            className="bg-white/5 text-white/60 px-3 py-1 rounded text-xs font-bold hover:bg-white/10 transition-all border border-white/10"
                           >
-                            <Check className="w-3 h-3" />
-                            Approve
+                            View
                           </button>
-                        ) : (
-                          <span className="text-[#39FF14]/40 text-xs flex items-center justify-end gap-1 font-bold">
-                            <CheckCircle className="w-3 h-3" />
-                            Approved
-                          </span>
-                        )}
+                          {reg.status === 'pending' ? (
+                            <button 
+                              onClick={() => handleApprove(reg.id)}
+                              className="bg-[#39FF14] text-[#080614] px-3 py-1 rounded text-xs font-bold hover:opacity-80 transition-all flex items-center gap-1"
+                            >
+                              <Check className="w-3 h-3" />
+                              Approve
+                            </button>
+                          ) : (
+                            <span className="text-[#39FF14]/40 text-xs flex items-center justify-end gap-1 font-bold">
+                              <CheckCircle className="w-3 h-3" />
+                              Approved
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -321,6 +352,106 @@ export default function AdminDashboard() {
           </div>
         )}
       </main>
+
+      {/* Detail Modal */}
+      {selectedReg && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-xl bg-black/40">
+          <div className="glass-card w-full max-w-2xl p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#C9A84C] to-[#8B0000]" />
+            
+            <div className="flex justify-between items-start mb-8">
+              <div>
+                <h3 className="font-display text-3xl mb-1">{selectedReg.user_name}</h3>
+                <p className="text-white/40 text-sm">{selectedReg.college}</p>
+              </div>
+              <button 
+                onClick={() => setSelectedReg(null)}
+                className="text-white/20 hover:text-white transition-colors"
+              >
+                <Users className="w-6 h-6 rotate-45" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Participant Contact</h4>
+                  <div className="space-y-2">
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Email:</span> {selectedReg.user_email}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Phone:</span> {selectedReg.phone}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">College ID:</span> {selectedReg.college_id}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Competition Info</h4>
+                  <div className="space-y-2">
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Event:</span> {selectedReg.competition}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Type:</span> {selectedReg.entry_type}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Fee:</span> ₹{selectedReg.fee}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Reg Date:</span> {selectedReg.registration_date}</p>
+                  </div>
+                </div>
+              </div>
+
+              {selectedReg.entry_type === 'team' && (
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Team Details ({selectedReg.team_name})</h4>
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/10 max-h-[200px] overflow-y-auto">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#C9A84C]/20 border border-[#C9A84C]/40 flex items-center justify-center text-[10px] text-[#C9A84C] font-bold shrink-0">
+                          {selectedReg.user_name[0]}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white/90">{selectedReg.user_name}</p>
+                          <p className="text-[9px] text-white/30 uppercase tracking-tighter">Team Leader</p>
+                        </div>
+                      </div>
+                      {selectedReg.members.map((m: any) => (
+                        <div key={m.id} className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] text-white/60 font-bold shrink-0">
+                            {m.member_name[0]}
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white/90">{m.member_name}</p>
+                            <p className="text-[9px] text-white/30 uppercase tracking-tighter">Member</p>
+                          </div>
+                        </div>
+                      ))}
+                      {selectedReg.members.length === 0 && (
+                        <p className="text-[10px] text-white/20 text-center py-4">No team members added yet.</p>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-white/30 mt-3 text-right">Target Size: {selectedReg.team_size}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-10 flex gap-4">
+              <button 
+                onClick={() => setSelectedReg(null)}
+                className="flex-1 py-3 border border-white/10 rounded-xl text-white/60 hover:bg-white/5 transition-all text-sm font-bold uppercase tracking-widest"
+              >
+                Close
+              </button>
+              {selectedReg.status === 'pending' && (
+                <button 
+                  onClick={() => {
+                    handleApprove(selectedReg.id);
+                    setSelectedReg(null);
+                  }}
+                  className="flex-2 py-3 bg-[#39FF14] text-[#080614] rounded-xl font-bold hover:opacity-90 transition-all text-sm uppercase tracking-widest px-8"
+                >
+                  Approve Registration
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
