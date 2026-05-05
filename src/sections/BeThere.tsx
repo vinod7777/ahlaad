@@ -111,7 +111,7 @@ export default function BeThere() {
           <div className="relative mb-8 group">
             <div className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-[6px] border-[#C9A84C] p-2 transition-all duration-700 group-hover:scale-105"
               style={{ 
-                boxShadow: '0 0 60px rgba(201,168,76,0.4), inset 0 0 40px rgba(0,0,0,0.6)',
+                boxShadow: '0 0 60px rgba(201,168,76,0.4), 0 30px 60px rgba(0,0,0,0.8), inset 0 0 40px rgba(0,0,0,0.6)',
                 background: 'linear-gradient(135deg, #C9A84C, #8B0000, #C9A84C)'
               }}>
               <div className="w-full h-full rounded-full overflow-hidden bg-[#0d0b1e]">
@@ -132,9 +132,7 @@ export default function BeThere() {
           </div>
         </div>
 
-        
-
-        
+   
       </div>
     </section>
   );
