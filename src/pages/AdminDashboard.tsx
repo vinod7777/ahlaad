@@ -389,9 +389,32 @@ export default function AdminDashboard() {
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Event:</span> {selectedReg.competition}</p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Type:</span> {selectedReg.entry_type}</p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Fee:</span> ₹{selectedReg.fee}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">UTR ID:</span> <span className="text-blue-400 font-mono">{selectedReg.utr_id || 'N/A'}</span></p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Reg Date:</span> {selectedReg.registration_date}</p>
                   </div>
                 </div>
+
+                {selectedReg.payment_proof && (
+                  <div>
+                    <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Payment Proof</h4>
+                    <a 
+                      href={`http://localhost/ahlaad/backend/uploads/${selectedReg.payment_proof}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-[#C9A84C]/20 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-[#C9A84C]" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">View Screenshot</p>
+                          <p className="text-[10px] text-white/30 uppercase tracking-tighter">Opens in new tab</p>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                )}
               </div>
 
               {selectedReg.entry_type === 'team' && (

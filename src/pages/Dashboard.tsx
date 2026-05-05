@@ -8,7 +8,8 @@ export default function Dashboard() {
   const [timeline, setTimeline] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showRegModal, setShowRegModal] = useState(false);
-  const [newReg, setNewReg] = useState({ competition: '', entry_type: 'individual', team_name: '', team_size: 2 });
+  const [newReg, setNewReg] = useState({ competition: '', entry_type: 'individual', team_name: '', team_size: 2, utr_id: '' });
+  const [paymentFile, setPaymentFile] = useState<File | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
   const [selectedReg, setSelectedReg] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'events' | 'timeline' | 'pass'>('overview');
@@ -60,15 +61,31 @@ export default function Dashboard() {
   };
 
   const handleRegisterEvent = async () => {
+  const handleRegisterEvent = async () => {
+    if (!newReg.utr_id || !paymentFile) {
+      alert('Please provide UTR ID and payment screenshot');
+      return;
+    }
+    
     try {
+      const formData = new FormData();
+      formData.append('user_id', user.id);
+      formData.append('competition', newReg.competition);
+      formData.append('entry_type', newReg.entry_type);
+      formData.append('team_name', newReg.team_name || '');
+      formData.append('team_size', newReg.team_size.toString());
+      formData.append('utr_id', newReg.utr_id);
+      formData.append('payment_proof', paymentFile);
+
       const response = await fetch('http://localhost/ahlaad/backend/register_event.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newReg, user_id: user.id })
+        body: formData
       });
       const data = await response.json();
       if (data.success) {
         setShowRegModal(false);
+        setNewReg({ competition: '', entry_type: 'individual', team_name: '', team_size: 2, utr_id: '' });
+        setPaymentFile(null);
         fetchDashboardData(user.id);
       } else {
         alert(data.message);
@@ -541,11 +558,38 @@ export default function Dashboard() {
                 </div>
               )}
 
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Payment UTR ID *</label>
+                  <input 
+                    type="text" 
+                    value={newReg.utr_id}
+                    onChange={(e) => setNewReg({ ...newReg, utr_id: e.target.value })}
+                    placeholder="12-digit UTR number"
+                    className="w-full bg-white/5 border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#C9A84C]/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs uppercase tracking-widest mb-2 block font-medium">Payment Screenshot *</label>
+                  <input 
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setPaymentFile(e.target.files ? e.target.files[0] : null)}
+                    className="w-full bg-white/5 border border-white/20 rounded-xl py-2 px-4 text-xs text-white focus:outline-none focus:border-[#C9A84C]/50 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-[#C9A84C]/10 file:text-[#C9A84C] hover:file:bg-[#C9A84C]/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 mt-2">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-white/40">Registration Fee</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white/40 uppercase text-[10px] tracking-widest">Registration Fee</span>
+                  </div>
                   <span className="text-[#C9A84C] font-display text-xl">{newReg.entry_type === 'team' ? '₹500' : '₹200'}</span>
                 </div>
+                <p className="text-[10px] text-white/20 mt-2 italic">Scan the QR at the registration desk or pay via the official UPI ID before uploading.</p>
               </div>
 
               <div className="flex gap-4 mt-8">
