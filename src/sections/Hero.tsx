@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Calendar, MapPin, Trophy } from 'lucide-react';
 import CountdownTimer from '../components/CountdownTimer';
-import SilverJubileeLogo from '../components/SilverJubileeLogo';
+
 
 gsap.registerPlugin(ScrollTrigger);
 

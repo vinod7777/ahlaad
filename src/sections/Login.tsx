@@ -1,5 +1,4 @@
-import { useRef, useLayoutEffect, useState } from 'react';
-import { gsap } from 'gsap';
+import { useRef, useState } from 'react';
 import { LogIn, AlertCircle } from 'lucide-react';
 
 export default function Login() {

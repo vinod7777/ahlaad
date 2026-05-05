@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Calendar, Trophy, Settings, Plus, Users, CheckCircle, Clock, MapPin, QrCode, CreditCard } from 'lucide-react';
+import { User, LogOut, Calendar, Plus, CheckCircle, Clock, MapPin, QrCode, CreditCard } from 'lucide-react';
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -277,7 +277,7 @@ export default function Dashboard() {
               <div className="space-y-8 relative">
                 <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-white/5" />
                 
-                {timeline.map((event, idx) => (
+                {timeline.map((event) => (
                   <div key={event.id} className="relative pl-8 group">
                     <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-4 border-[#080614] z-10 transition-colors ${event.status === 'live' ? 'bg-[#39FF14] shadow-[0_0_10px_#39FF14]' : event.status === 'completed' ? 'bg-white/20' : 'bg-[#C9A84C]'}`} />
                     <p className={`text-[10px] font-mono uppercase tracking-[0.2em] mb-1 ${event.status === 'live' ? 'text-[#39FF14]' : 'text-white/40'}`}>

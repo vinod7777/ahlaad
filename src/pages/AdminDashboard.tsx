@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Users, FileText, Download, BarChart3, Search, Check, X, Clock, MapPin, Trophy, AlertCircle } from 'lucide-react';
+import { LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock, MapPin, CheckCircle } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState<any>(null);

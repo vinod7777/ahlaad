@@ -5,20 +5,7 @@ import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const competitionOptions = [
-  'Short Films',
-  'Rock Band',
-  'Photography',
-  'Singing',
-  'Cover Song',
-  'Dance — Classical Solo',
-  'Dance — Classical Group',
-  'Dance — Western Solo',
-  'Dance — Western Group',
-  'Drama / Skit',
-  'Painting',
-  'Handicrafts',
-];
+
 
 export default function Registration() {
   const sectionRef = useRef<HTMLElement>(null);
