@@ -25,6 +25,7 @@ import Contact from './sections/Contact';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
+import CheckIn from './pages/CheckIn';
 import { SplashCursor } from './pages/splash-cursor';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -77,7 +78,8 @@ function LandingPage() {
 
 function GlobalEffects() {
   const location = useLocation();
-  if (location.pathname === '/admin') return null;
+  const disabledPaths = ['/admin', '/dashboard', '/checkin'];
+  if (disabledPaths.includes(location.pathname)) return null;
   return <SplashCursor />;
 }
 
@@ -101,6 +103,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/checkin" element={<CheckIn />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

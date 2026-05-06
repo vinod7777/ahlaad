@@ -47,8 +47,12 @@ const PassCard = ({ title, name, id, passId, role }: { title: string, name: stri
 
       {/* Ticket Right Section - QR */}
       <div className="flex-[0.3] bg-white p-6 flex flex-col items-center justify-center relative">
-        <div className="relative mb-4 group-hover:scale-110 transition-transform duration-500">
-          <QrCode className="w-24 h-24 text-[#080614]" />
+        <div className="relative mb-4 group-hover:scale-110 transition-transform duration-500 w-24 h-24">
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(passId)}`} 
+            alt="Pass QR" 
+            className="w-full h-full object-contain"
+          />
         </div>
         <button 
           onClick={() => window.print()}
@@ -72,7 +76,7 @@ export default function Dashboard() {
   const [showRegModal, setShowRegModal] = useState(false);
   const [newReg, setNewReg] = useState({ competition: '', entry_type: 'individual', team_name: '', team_size: 2, utr_id: '' });
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
-  const [newMemberName, setNewMemberName] = useState('');
+  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', college: '', college_id: '' });
   const [selectedReg, setSelectedReg] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'events' | 'timeline' | 'pass'>('overview');
   const [regStep, setRegStep] = useState(1);
@@ -178,16 +182,26 @@ export default function Dashboard() {
   };
 
   const handleAddMember = async (regId: number) => {
-    if (!newMemberName) return;
+    if (!newMember.name || !newMember.email || !newMember.phone || !newMember.college || !newMember.college_id) {
+        alert("Please fill in all member details.");
+        return;
+    }
     try {
       const response = await fetch('http://localhost/ahlaad/backend/add_team_member.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ registration_id: regId, member_name: newMemberName })
+        body: JSON.stringify({ 
+          registration_id: regId, 
+          member_name: newMember.name,
+          email: newMember.email,
+          phone: newMember.phone,
+          college: newMember.college,
+          college_id: newMember.college_id
+        })
       });
       const data = await response.json();
       if (data.success) {
-        setNewMemberName('');
+        setNewMember({ name: '', email: '', phone: '', college: '', college_id: '' });
         fetchDashboardData(user.id);
       } else {
         alert(data.message);
@@ -778,18 +792,46 @@ export default function Dashboard() {
 
                 {selectedReg.entry_type === 'team' && (selectedReg.members?.length || 0) < (selectedReg.team_size - 1) && (
                   <div className="flex-1 p-6 bg-white/5 rounded-2xl border border-white/10 flex flex-col justify-center">
-                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-bold">Add Team Member</p>
+                    <p className="text-[10px] text-[#C9A84C] uppercase tracking-widest mb-3 font-bold">Add Team Member Details Below</p>
                     <div className="flex flex-col gap-3">
                       <input 
                         type="text"
-                        value={newMemberName}
-                        onChange={(e) => setNewMemberName(e.target.value)}
-                        placeholder="Member Name"
+                        value={newMember.name}
+                        onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                        placeholder="Full Name"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
+                      />
+                      <input 
+                        type="email"
+                        value={newMember.email}
+                        onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                        placeholder="Email Address"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
+                      />
+                      <input 
+                        type="tel"
+                        value={newMember.phone}
+                        onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
+                        placeholder="Phone Number"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
+                      />
+                      <input 
+                        type="text"
+                        value={newMember.college}
+                        onChange={(e) => setNewMember({ ...newMember, college: e.target.value })}
+                        placeholder="College Name"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
+                      />
+                      <input 
+                        type="text"
+                        value={newMember.college_id}
+                        onChange={(e) => setNewMember({ ...newMember, college_id: e.target.value })}
+                        placeholder="College ID"
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
                       />
                       <button 
                         onClick={() => handleAddMember(selectedReg.id)}
-                        className="w-full py-3 bg-[#C9A84C]/10 text-[#C9A84C] rounded-xl text-xs font-bold hover:bg-[#C9A84C]/20 transition-all"
+                        className="w-full py-3 mt-2 bg-[#C9A84C]/10 text-[#C9A84C] rounded-xl text-xs font-bold hover:bg-[#C9A84C]/20 transition-all"
                       >
                         Add Member
                       </button>

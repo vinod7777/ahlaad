@@ -15,7 +15,8 @@ export default function LoginPage() {
     const storedUser = localStorage.getItem('ahlaad_user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
-      if (user.role === 'admin') navigate('/admin');
+      if (user.email === 'desk@ahlaad.com') navigate('/checkin');
+      else if (user.role === 'admin') navigate('/admin');
       else navigate('/dashboard');
     }
   }, [navigate]);
@@ -36,7 +37,9 @@ export default function LoginPage() {
 
       if (data.success) {
         localStorage.setItem('ahlaad_user', JSON.stringify(data.user));
-        if (data.user.role === 'admin') {
+        if (data.user.email === 'desk@ahlaad.com') {
+          navigate('/checkin');
+        } else if (data.user.role === 'admin') {
           navigate('/admin');
         } else {
           navigate('/dashboard');

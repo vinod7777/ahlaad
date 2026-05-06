@@ -21,6 +21,11 @@ while($reg = $reg_res->fetch_assoc()) {
     $mem_res = $conn->query("SELECT * FROM registration_members WHERE registration_id = $reg_id");
     $reg['members'] = [];
     while($mem = $mem_res->fetch_assoc()) {
+        if (empty($mem['pass_id'])) {
+            $pass_id_member = "PASS-M-" . strtoupper(bin2hex(random_bytes(4)));
+            $conn->query("UPDATE registration_members SET pass_id = '$pass_id_member' WHERE id = " . $mem['id']);
+            $mem['pass_id'] = $pass_id_member;
+        }
         $reg['members'][] = $mem;
     }
     $registrations[] = $reg;

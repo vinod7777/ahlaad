@@ -36,9 +36,24 @@ function getDB() {
             phone VARCHAR(20) NOT NULL,
             college VARCHAR(255) NOT NULL,
             college_id VARCHAR(100) NOT NULL UNIQUE,
-            role ENUM('participant', 'admin') DEFAULT 'participant',
+            role ENUM('participant', 'admin', 'volunteer') DEFAULT 'participant',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+    
+    // Update existing users table if role needs modification
+    $conn->query("ALTER TABLE users MODIFY COLUMN role ENUM('participant', 'admin', 'volunteer') DEFAULT 'participant'");
+
+    // Tasks table for volunteers
+    $conn->query("
+        CREATE TABLE IF NOT EXISTS volunteer_tasks (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            volunteer_id INT NOT NULL,
+            task_description TEXT NOT NULL,
+            status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
+            assigned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (volunteer_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
 
     // 2. Registrations table (Consolidated for both Dashboard and Direct flows)
@@ -75,10 +90,26 @@ function getDB() {
             id INT AUTO_INCREMENT PRIMARY KEY,
             registration_id INT NOT NULL,
             member_name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) DEFAULT NULL,
+            phone VARCHAR(20) DEFAULT NULL,
+            college VARCHAR(255) DEFAULT NULL,
+            college_id VARCHAR(100) DEFAULT NULL,
             pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
             FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
+
+    // Add columns if they don't exist
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS email VARCHAR(255) DEFAULT NULL AFTER member_name");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS phone VARCHAR(20) DEFAULT NULL AFTER email");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS college VARCHAR(255) DEFAULT NULL AFTER phone");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS college_id VARCHAR(100) DEFAULT NULL AFTER college");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS checked_in TINYINT(1) DEFAULT 0");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS checked_in_at DATETIME DEFAULT NULL");
+
+    // Add checkin columns to registrations table too
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS checked_in TINYINT(1) DEFAULT 0");
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS checked_in_at DATETIME DEFAULT NULL");
 
     // 4. Events Timeline table
     $conn->query("
@@ -103,6 +134,14 @@ function getDB() {
     if ($res->num_rows === 0) {
         $admin_pass = password_hash('admin123', PASSWORD_DEFAULT);
         $conn->query("INSERT INTO users (name, email, password, phone, college, college_id, role) VALUES ('Admin', '$admin_email', '$admin_pass', '0000000000', 'AITAM', 'ADMIN001', 'admin')");
+    }
+
+    // Ensure default Registration Desk coordinator user exists
+    $desk_email = 'desk@ahlaad.com';
+    $res_desk = $conn->query("SELECT id FROM users WHERE email = '$desk_email'");
+    if ($res_desk->num_rows === 0) {
+        $desk_pass = password_hash('desk@ahlaad2k26', PASSWORD_DEFAULT);
+        $conn->query("INSERT INTO users (name, email, password, phone, college, college_id, role) VALUES ('Registration Desk', '$desk_email', '$desk_pass', '0000000000', 'AITAM', 'DESK001', 'volunteer')");
     }
 
     // Seed initial events if timeline is empty

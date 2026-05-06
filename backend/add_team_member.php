@@ -11,9 +11,13 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $registration_id = $input['registration_id'] ?? null;
 $member_name = $input['member_name'] ?? '';
+$email = $input['email'] ?? '';
+$phone = $input['phone'] ?? '';
+$college = $input['college'] ?? '';
+$college_id = $input['college_id'] ?? '';
 
-if (!$registration_id || !$member_name) {
-    echo json_encode(['success' => false, 'message' => 'Missing fields']);
+if (!$registration_id || !$member_name || !$email || !$phone || !$college || !$college_id) {
+    echo json_encode(['success' => false, 'message' => 'Please fill in all member details']);
     exit();
 }
 
@@ -28,8 +32,9 @@ if ($data['current_count'] >= ($data['team_size'] - 1)) { // -1 because team lea
     exit();
 }
 
-$stmt = $conn->prepare("INSERT INTO registration_members (registration_id, member_name) VALUES (?, ?)");
-$stmt->bind_param("is", $registration_id, $member_name);
+$pass_id_member = "PASS-M-" . strtoupper(bin2hex(random_bytes(4)));
+$stmt = $conn->prepare("INSERT INTO registration_members (registration_id, member_name, email, phone, college, college_id, pass_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("issssss", $registration_id, $member_name, $email, $phone, $college, $college_id, $pass_id_member);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Member added']);
