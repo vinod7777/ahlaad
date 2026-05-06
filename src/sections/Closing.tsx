@@ -94,9 +94,9 @@ export default function Closing() {
       {/* Content */}
       <div 
         ref={contentRef}
-        className="relative z-10 w-full px-[6vw]"
+        className="relative z-10 w-full px-[6vw] py-12 md:py-0"
       >
-        <div className="absolute right-[6vw] top-[12vh] font-mono text-xs text-white/60 uppercase">
+        <div className="block md:absolute right-auto md:right-[6vw] top-auto md:top-[12vh] font-mono text-xs text-white/60 uppercase mb-4 md:mb-0">
           SILVER JUBILEE EDITION
         </div>
 
@@ -104,29 +104,29 @@ export default function Closing() {
           Why Participate?
         </h2>
 
-        <h3 className="closing-subtitle font-display text-subsection text-white mb-6 max-w-[55vw]" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.6)' }}>
+        <h3 className="closing-subtitle font-display text-subsection text-white mb-6 max-w-full md:max-w-[55vw]" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.6)' }}>
           This isn't just a fest. It's <span className="text-gradient-gold">25 years</span> of legacy, talent, and celebration — all on one stage.
         </h3>
 
-        <p className="closing-subtitle text-lg text-white/70 max-w-[38vw] mb-10 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+        <p className="closing-subtitle text-lg text-white/70 max-w-full md:max-w-[38vw] mb-10 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
           Compete. Perform. Create. Win big. Whether you're a filmmaker, singer, dancer, or artist — Ahlaad 2K26 is your stage to shine.
         </p>
 
         {/* Stats + CTA */}
-        <div className="closing-stats flex flex-col sm:flex-row items-start gap-8">
-          <div className="flex gap-6">
+        <div className="closing-stats flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8 w-full">
+          <div className="grid grid-cols-3 gap-2 sm:gap-6 w-full md:w-auto">
             {reasons.map((r, i) => (
-              <div key={i} className="glass-card px-5 py-4 rounded-xl border border-[#C9A84C]/20 text-center hover:border-[#C9A84C]/50 transition-colors">
-                <r.icon className="w-5 h-5 text-[#C9A84C] mx-auto mb-2" />
-                <div className="font-display text-2xl text-white">{r.label}</div>
-                <div className="text-white/50 text-xs font-mono uppercase tracking-wider">{r.desc}</div>
+              <div key={i} className="glass-card px-2 sm:px-5 py-3 sm:py-4 rounded-xl border border-[#C9A84C]/20 text-center hover:border-[#C9A84C]/50 transition-colors">
+                <r.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#C9A84C] mx-auto mb-1.5 sm:mb-2" />
+                <div className="font-display text-lg sm:text-2xl text-white">{r.label}</div>
+                <div className="text-white/50 text-[9px] sm:text-xs font-mono uppercase tracking-wider">{r.desc}</div>
               </div>
             ))}
           </div>
 
           <button 
             onClick={() => document.querySelector('#register')?.scrollIntoView({ behavior: 'smooth' })}
-            className="btn-primary flex items-center gap-2 group self-center"
+            className="btn-primary flex items-center justify-center gap-2 group w-full md:w-auto self-center md:self-auto"
           >
             Register Now
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

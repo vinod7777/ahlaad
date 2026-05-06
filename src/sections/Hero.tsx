@@ -122,11 +122,11 @@ export default function Hero() {
       </div>
 
       {/* Content - Two Column Layout */}
-      <div className="relative z-10 w-full px-[6vw] pt-[14vh]">
+      <div className="relative z-10 w-full px-[6vw] pt-[12vh] md:pt-[14vh]">
         {/* Meta Label */}
         <div 
           ref={metaRef}
-          className="absolute right-[6vw] top-[14vh] font-mono text-xs text-[#C9A84C] uppercase font-bold tracking-[0.3em]"
+          className="block md:absolute right-auto md:right-[6vw] top-auto md:top-[14vh] font-mono text-xs text-[#C9A84C] uppercase font-bold tracking-[0.3em] mb-4 md:mb-0"
         >
           SILVER JUBILEE EDITION
         </div>
@@ -135,12 +135,12 @@ export default function Hero() {
           {/* LEFT COLUMN - Main Info */}
           <div className="flex-1">
             {/* AITAM Logo */}
-            <img src="/aitam.png" alt="AITAM" className="h-24 w-auto object-contain rounded-[10px] mb-4" style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
+            <img src="/aitam.png" alt="AITAM" className="h-16 md:h-24 w-auto object-contain rounded-[10px] mb-4" style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
 
             {/* Main Title */}
             <h1 
               ref={titleRef}
-              className="font-display text-hero text-white leading-none mb-3 flex items-end gap-4"
+              className="font-display text-hero text-white leading-none mb-3 flex flex-wrap items-end gap-2 md:gap-4"
             >
               <div className="relative group">
                 <img 
@@ -159,13 +159,13 @@ export default function Hero() {
             {/* Accent Underline */}
             <div 
               ref={underlineRef}
-              className="w-[28vw] h-[6px] bg-gradient-to-r from-[#C9A84C] via-[#8B0000] to-[#1a237e] mb-4 neon-glow-gold"
+              className="w-32 md:w-[28vw] h-[6px] bg-gradient-to-r from-[#C9A84C] via-[#8B0000] to-[#1a237e] mb-4 neon-glow-gold"
             />
 
             {/* Subtitle / Tagline */}
             <p 
               ref={subtitleRef}
-              className="text-lg md:text-2xl text-[#C9A84C] max-w-[34vw] mb-4 leading-relaxed font-bold italic drop-shadow-lg"
+              className="text-lg md:text-2xl text-[#C9A84C] max-w-full md:max-w-[34vw] mb-4 leading-relaxed font-bold italic drop-shadow-lg"
             >
               "Unleash Your Talent. Own the Stage."
             </p>
