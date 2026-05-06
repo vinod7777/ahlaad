@@ -16,7 +16,7 @@ const coordinators = [
     name: 'Sri Suresh Kumar Jaka',
     role: 'Co-Convener',
     designation: 'Assistant Professor, SAC',
-    image: '/suresh.webp',
+    image: '', // Image to be provided later
   },
 ];
 

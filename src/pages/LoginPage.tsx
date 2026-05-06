@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     // If already logged in, redirect
     const storedUser = localStorage.getItem('ahlaad_user');

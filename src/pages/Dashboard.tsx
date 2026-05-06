@@ -1,6 +1,68 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Calendar, Plus, CheckCircle, Clock, MapPin, QrCode, CreditCard, Menu, X, Users } from 'lucide-react';
+import { QrCode, LogOut, LayoutDashboard, Calendar, Trophy, Users, CheckCircle, Clock, AlertCircle, CreditCard, ChevronRight, UserPlus, Trash2, Printer, User, Plus, MapPin, Menu, X } from 'lucide-react';
+
+const PassCard = ({ title, name, id, passId, role }: { title: string, name: string, id: string, passId: string, role: string }) => (
+  <div className="relative group pass-card-container mb-8 h-[30vh] min-h-[220px]">
+    <div className="h-full flex flex-row glass-card rounded-[2rem] border border-[#C9A84C]/30 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-[#0d0b1e]">
+      {/* Ticket Left Section - Details */}
+      <div className="flex-[0.7] p-8 relative flex flex-col justify-between border-r border-dashed border-white/20">
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C9A84C 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+        
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-[#C9A84C] font-mono text-[10px] uppercase tracking-[0.3em] mb-1">Ahlaad 2K26 • {title}</p>
+            <h4 className="text-3xl font-display text-white tracking-tight">ENTRY <span className="text-gradient-gold">PASS</span></h4>
+          </div>
+          <img src="/ahlaad.png" alt="Logo" className="h-8 opacity-40 grayscale brightness-200" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-white/20 text-[8px] uppercase tracking-[0.2em] mb-1 font-bold">Participant</p>
+            <p className="text-white font-display text-lg tracking-wide truncate">{name}</p>
+          </div>
+          <div>
+            <p className="text-white/20 text-[8px] uppercase tracking-[0.2em] mb-1 font-bold">ID / Role</p>
+            <p className="text-[#C9A84C] font-mono text-xs font-bold truncate">{id}</p>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="w-4 h-4 text-[#39FF14]" />
+            <div>
+              <p className="text-[10px] text-[#39FF14] font-bold tracking-wider">VERIFIED {role}</p>
+              <p className="text-[8px] text-white/30 uppercase">Authorized Access</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-white/70 font-mono tracking-tighter">{passId}</p>
+          </div>
+        </div>
+
+        {/* Notches */}
+        <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#080614] z-10" />
+      </div>
+
+      {/* Ticket Right Section - QR */}
+      <div className="flex-[0.3] bg-white p-6 flex flex-col items-center justify-center relative">
+        <div className="relative mb-4 group-hover:scale-110 transition-transform duration-500">
+          <QrCode className="w-24 h-24 text-[#080614]" />
+        </div>
+        <button 
+          onClick={() => window.print()}
+          className="no-print flex items-center gap-2 px-6 py-2 bg-[#080614] text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-[#C9A84C] hover:text-[#080614] transition-all active:scale-95"
+        >
+          <Printer className="w-4 h-4" /> Print
+        </button>
+        
+        {/* Notches */}
+        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#080614] z-10" />
+      </div>
+    </div>
+  </div>
+);
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -53,6 +115,10 @@ export default function Dashboard() {
     } else {
       setUser(userData);
       fetchDashboardData(userData.id);
+      
+      // Set up polling for real-time synchronization
+      const interval = setInterval(() => fetchDashboardData(userData.id), 5000);
+      return () => clearInterval(interval);
     }
   }, [navigate]);
 
@@ -150,7 +216,6 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <img src="/ahlaad.png" alt="Ahlaad" className="h-8" />
-            <span className="font-display text-xl tracking-wider">AHLAAD</span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white">
             <X className="w-6 h-6" />
@@ -360,147 +425,120 @@ export default function Dashboard() {
           )}
 
           {activeTab === 'timeline' && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 max-w-4xl mx-auto">
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-display">Live <span className="text-gradient-gold">Timeline</span></h3>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#39FF14]/10 border border-[#39FF14]/20">
+                <div>
+                  <h3 className="text-3xl font-display mb-1">Event <span className="text-gradient-gold">Timeline</span></h3>
+                  <p className="text-white/40 text-xs uppercase tracking-[0.2em]">Two Days of Non-Stop Excellence</p>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#39FF14]/10 border border-[#39FF14]/20 shadow-[0_0_15px_rgba(57,255,20,0.1)]">
                   <div className="w-2 h-2 rounded-full bg-[#39FF14] animate-pulse" />
-                  <span className="text-[10px] font-bold text-[#39FF14] uppercase tracking-wider">Updates Live</span>
+                  <span className="text-[10px] font-bold text-[#39FF14] uppercase tracking-wider">Live Tracking Active</span>
                 </div>
               </div>
 
-              <div className="relative pl-8 space-y-12 before:content-[''] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-[#C9A84C] before:via-[#8B0000] before:to-transparent">
-                {timeline.map((item, idx) => (
-                  <div key={item.id} className="relative animate-in fade-in slide-in-from-left-4" style={{ animationDelay: `${idx * 100}ms` }}>
-                    <div className="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-[#080614] border-2 border-[#C9A84C] shadow-[0_0_10px_rgba(201,168,76,0.5)] z-10" />
-                    
-                    <div className="glass-card p-6 rounded-2xl border border-white/5 hover:border-[#C9A84C]/20 transition-all">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-[10px] font-mono text-[#C9A84C] bg-[#C9A84C]/10 px-2 py-0.5 rounded border border-[#C9A84C]/20">
-                              {item.time || item.time_slot}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${item.status === 'live' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'bg-white/10 text-white/40'}`}>
-                              {item.status}
-                            </span>
-                          </div>
-                          <h4 className="text-xl font-display text-white/90 mb-2">{item.event_name || item.name}</h4>
-                          <div className="flex items-center gap-4 text-white/40">
-                            <p className="text-[10px] uppercase tracking-widest flex items-center gap-2">
-                              <MapPin className="w-3 h-3 text-[#C9A84C]" /> {item.location || item.venue}
-                            </p>
-                            <p className="text-[10px] uppercase tracking-widest flex items-center gap-2 border-l border-white/10 pl-4">
-                              <Calendar className="w-3 h-3" /> {item.category || 'Main Stage'}
-                            </p>
+              <div className="space-y-12">
+                {/* Day 1 Section */}
+                <div>
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                    <span className="px-4 py-1 rounded-full border border-[#C9A84C]/30 bg-[#C9A84C]/5 text-[#C9A84C] text-[10px] font-bold uppercase tracking-[0.3em]">Day 01 — The Beginning</span>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                  </div>
+
+                  <div className="relative pl-8 space-y-6 before:content-[''] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-[#C9A84C] before:via-[#8B0000] before:to-white/5">
+                    {timeline.length === 0 ? (
+                      <p className="text-white/20 italic text-sm py-4">No events scheduled for Day 1 yet...</p>
+                    ) : timeline.map((item, idx) => (
+                      <div key={item.id} className="relative animate-in fade-in slide-in-from-left-4 group" style={{ animationDelay: `${idx * 100}ms` }}>
+                        <div className={`absolute -left-[41px] top-1 w-4 h-4 rounded-full border-2 z-10 transition-all duration-500 ${item.status === 'live' ? 'bg-[#39FF14] border-[#39FF14] shadow-[0_0_15px_#39FF14]' : 'bg-[#080614] border-[#C9A84C] group-hover:bg-[#C9A84C]'}`} />
+                        
+                        <div className={`glass-card p-6 rounded-2xl border transition-all duration-300 ${item.status === 'live' ? 'border-[#39FF14]/30 bg-[#39FF14]/5' : 'border-white/5 bg-white/[0.02] hover:border-white/20'}`}>
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3">
+                                <span className="text-[10px] font-mono text-[#C9A84C] bg-[#C9A84C]/10 px-2 py-0.5 rounded border border-[#C9A84C]/20">
+                                  {item.time || item.time_slot}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${item.status === 'live' ? 'bg-[#39FF14]/20 text-[#39FF14]' : item.status === 'completed' ? 'bg-white/10 text-white/40' : 'bg-blue-500/20 text-blue-400'}`}>
+                                  {item.status}
+                                </span>
+                              </div>
+                              <h4 className="text-xl font-display text-white mb-3 group-hover:text-[#C9A84C] transition-colors">{item.event_name || item.name}</h4>
+                              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white/40">
+                                <p className="text-[10px] uppercase tracking-widest flex items-center gap-2">
+                                  <MapPin className="w-3 h-3 text-[#C9A84C]" /> {item.location || item.venue}
+                                </p>
+                                <p className="text-[10px] uppercase tracking-widest flex items-center gap-2">
+                                  <Calendar className="w-3 h-3 text-[#C9A84C]" /> {item.category || 'Main Event'}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {item.status === 'live' && (
+                              <div className="flex items-center gap-3 px-4 py-2 bg-[#39FF14]/10 rounded-xl border border-[#39FF14]/20">
+                                <div className="relative">
+                                  <div className="w-3 h-3 bg-[#39FF14] rounded-full animate-ping absolute inset-0" />
+                                  <div className="w-3 h-3 bg-[#39FF14] rounded-full relative" />
+                                </div>
+                                <span className="text-[10px] font-bold text-[#39FF14] uppercase tracking-tighter">Event is Live</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        
-                        {item.status === 'live' && (
-                          <div className="flex items-center gap-2">
-                            <div className="w-12 h-12 rounded-full border border-[#39FF14]/30 bg-[#39FF14]/5 flex items-center justify-center">
-                              <Plus className="w-5 h-5 text-[#39FF14] animate-spin-slow" />
-                            </div>
-                            <span className="text-[10px] font-bold text-[#39FF14] uppercase">Live Now</span>
-                          </div>
-                        )}
                       </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Day 2 Placeholder if empty */}
+                {timeline.length > 0 && (
+                  <div className="opacity-50">
+                     <div className="flex items-center gap-4 mb-8">
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                      <span className="px-4 py-1 rounded-full border border-white/10 bg-white/5 text-white/40 text-[10px] font-bold uppercase tracking-[0.3em]">Day 02 — Grand Finale</span>
+                      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                    </div>
+                    <div className="glass-card p-12 rounded-3xl border border-white/5 bg-white/[0.01] text-center">
+                      <Clock className="w-10 h-10 text-white/10 mx-auto mb-4" />
+                      <p className="text-white/20 font-display text-sm uppercase tracking-widest">Day 2 Schedule will be updated soon</p>
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}
 
           {activeTab === 'pass' && (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-display mb-8 text-center">Your Official <span className="text-gradient-gold">Entry Pass</span></h3>
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-2xl mx-auto pb-20">
+              <h3 className="text-2xl font-display mb-8 text-center">Your Official <span className="text-gradient-gold">Entry Passes</span></h3>
               
-              {registrations.some(r => r.status === 'confirmed') ? (
-                <div className="relative group">
-                  {/* Decorative Elements */}
-                  <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#C9A84C]/20 blur-[80px] rounded-full pointer-events-none" />
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#8B0000]/20 blur-[80px] rounded-full pointer-events-none" />
+              {registrations.filter(r => r.status === 'confirmed').length > 0 ? (
+                <div className="space-y-12">
+                  {registrations.filter(r => r.status === 'confirmed').map((reg) => (
+                    <div key={reg.id} className="space-y-8">
+                      {/* Leader Pass */}
+                      <PassCard 
+                        title={reg.competition} 
+                        name={user.name} 
+                        id={user.college_id} 
+                        passId={reg.pass_id} 
+                        role="TEAM LEADER"
+                      />
 
-                  <div className="relative glass-card rounded-[2rem] border border-[#C9A84C]/30 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                    {/* Ticket Top Section */}
-                    <div className="p-10 bg-[#0d0b1e] relative">
-                      {/* Decorative Background Pattern */}
-                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C9A84C 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                      
-                      {/* Side Punches */}
-                      <div className="absolute -left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#080614] border border-white/10 z-10" />
-                      <div className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#080614] border border-white/10 z-10" />
-
-                      <div className="flex justify-between items-start mb-10 relative">
-                        <div>
-                          <p className="text-[#C9A84C] font-mono text-[10px] uppercase tracking-[0.3em] mb-2">Ahlaad 2K26 • Entry Pass</p>
-                          <h4 className="text-4xl font-display text-white tracking-tight">SILVER <span className="text-gradient-gold">JUBILEE</span></h4>
-                        </div>
-                        <div className="w-14 h-14 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center p-2 backdrop-blur-sm shadow-xl">
-                           <img src="/ahlaad.png" alt="Logo" className="w-full h-full object-contain" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-x-12 gap-y-6 mb-10 relative">
-                        <div>
-                          <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-1 font-bold">Participant Name</p>
-                          <p className="text-white font-display text-lg tracking-wide truncate">{user.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-1 font-bold">Registration ID</p>
-                          <p className="text-[#C9A84C] font-mono text-sm font-bold">{user.college_id}</p>
-                        </div>
-                        <div className="col-span-2 p-4 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                              <Calendar className="w-4 h-4 text-[#C9A84C]" />
-                              <div>
-                                <p className="text-white/20 text-[8px] uppercase tracking-widest font-bold">Date & Venue</p>
-                                <p className="text-[11px] text-white/70">June 26-27, 2026 • AITAM Campus</p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-white/20 text-[8px] uppercase tracking-widest font-bold">Entry Status</p>
-                              <p className="text-[11px] text-[#39FF14] font-bold">ALL ACCESS</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      {/* Member Passes */}
+                      {reg.members?.map((member: any) => (
+                        <PassCard 
+                          key={member.id}
+                          title={reg.competition} 
+                          name={member.member_name} 
+                          id="TEAM MEMBER" 
+                          passId={member.pass_id} 
+                          role="MEMBER"
+                        />
+                      ))}
                     </div>
-
-                    {/* Ticket Divider */}
-                    <div className="relative h-px border-t border-dashed border-white/20 mx-10">
-                      <div className="absolute -left-10 -top-4 w-8 h-8 rounded-full bg-[#080614]" />
-                      <div className="absolute -right-10 -top-4 w-8 h-8 rounded-full bg-[#080614]" />
-                    </div>
-
-                    {/* Ticket Bottom Section */}
-                    <div className="p-10 bg-[#0d0b1e]/95 flex flex-col items-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#C9A84C]/5 to-transparent pointer-events-none" />
-                      
-                      <div className="relative group mb-8">
-                        <div className="absolute inset-0 bg-[#C9A84C]/20 blur-2xl rounded-full scale-75 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        <div className="relative p-6 bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform group-hover:scale-[1.02] transition-transform duration-500">
-                          <QrCode className="w-40 h-40 text-[#080614]" />
-                        </div>
-                      </div>
-
-                      <div className="text-center relative">
-                        <div className="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
-                          <p className="font-mono text-xs text-white/80 tracking-[0.4em]">ALH-2K26-{user.id + 1000}</p>
-                        </div>
-                        <p className="text-white/30 text-[10px] uppercase tracking-[0.2em] max-w-[200px]">Present this QR code at the event entrance for validation.</p>
-                      </div>
-                      
-                      <button 
-                        onClick={() => window.print()}
-                        className="mt-10 flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-[#C9A84C] to-[#B8860B] text-[#080614] rounded-2xl font-bold uppercase text-[11px] tracking-[0.2em] hover:shadow-[0_10px_30px_rgba(201,168,76,0.3)] active:scale-95 transition-all"
-                      >
-                        <CreditCard className="w-5 h-5" /> Get Digital Copy
-                      </button>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               ) : (
                 <div className="glass-card p-12 rounded-[2rem] border border-white/10 bg-white/5 text-center">
@@ -695,7 +733,7 @@ export default function Dashboard() {
       {/* Detail Modal */}
       {selectedReg && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-xl bg-black/40">
-          <div className="glass-card w-full max-w-md p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+          <div className="glass-card w-full max-w-4xl p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#C9A84C] to-[#8B0000]" />
             
             <div className="text-center mb-8">
@@ -704,7 +742,7 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
                   <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1 font-bold">Entry Type</p>
                   <p className="text-sm font-bold text-white/80">{selectedReg.entry_type}</p>
@@ -715,55 +753,57 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {selectedReg.entry_type === 'team' && (
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-4 font-bold">Team: {selectedReg.team_name}</h4>
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#C9A84C]/20 border border-[#C9A84C]/40 flex items-center justify-center text-[10px] text-[#C9A84C] font-bold shrink-0">
-                        {user.name[0]}
-                      </div>
-                      <p className="text-xs font-bold text-white/90">{user.name} <span className="text-[8px] text-white/20 ml-2 font-normal uppercase tracking-widest">(Lead)</span></p>
-                    </div>
-                    {selectedReg.members?.map((m: any) => (
-                      <div key={m.id} className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] text-white/80 font-bold shrink-0">
-                          {m.member_name[0]}
+              <div className="flex flex-col md:flex-row gap-6">
+                {selectedReg.entry_type === 'team' && (
+                  <div className="flex-1 p-6 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-4 font-bold">Team: {selectedReg.team_name}</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#C9A84C]/20 border border-[#C9A84C]/40 flex items-center justify-center text-[10px] text-[#C9A84C] font-bold shrink-0">
+                          {user.name[0]}
                         </div>
-                        <p className="text-xs font-bold text-white/90">{m.member_name}</p>
+                        <p className="text-xs font-bold text-white/90">{user.name} <span className="text-[8px] text-white/20 ml-2 font-normal uppercase tracking-widest">(Lead)</span></p>
                       </div>
-                    ))}
-                  </div>
-
-                  {(selectedReg.members?.length || 0) < (selectedReg.team_size - 1) && (
-                    <div className="pt-4 border-t border-white/5">
-                      <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Add Team Member</p>
-                      <div className="flex gap-2">
-                        <input 
-                          type="text"
-                          value={newMemberName}
-                          onChange={(e) => setNewMemberName(e.target.value)}
-                          placeholder="Member Name"
-                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
-                        />
-                        <button 
-                          onClick={() => handleAddMember(selectedReg.id)}
-                          className="px-4 py-2 bg-[#C9A84C]/10 text-[#C9A84C] rounded-xl text-xs font-bold hover:bg-[#C9A84C]/20 transition-all"
-                        >
-                          Add
-                        </button>
-                      </div>
+                      {selectedReg.members?.map((m: any) => (
+                        <div key={m.id} className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] text-white/80 font-bold shrink-0">
+                            {m.member_name[0]}
+                          </div>
+                          <p className="text-xs font-bold text-white/90">{m.member_name}</p>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
 
-              {selectedReg.status === 'confirmed' && (
-                <div className="p-6 bg-[#39FF14]/5 rounded-2xl border border-[#39FF14]/20 text-center">
-                  <QrCode className="w-24 h-24 text-white mx-auto mb-4 opacity-80" />
-                  <p className="font-mono text-xs text-[#39FF14] tracking-widest uppercase">Pass ID: {selectedReg.pass_id || 'ALH-REF-102'}</p>
-                </div>
-              )}
+                {selectedReg.entry_type === 'team' && (selectedReg.members?.length || 0) < (selectedReg.team_size - 1) && (
+                  <div className="flex-1 p-6 bg-white/5 rounded-2xl border border-white/10 flex flex-col justify-center">
+                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3 font-bold">Add Team Member</p>
+                    <div className="flex flex-col gap-3">
+                      <input 
+                        type="text"
+                        value={newMemberName}
+                        onChange={(e) => setNewMemberName(e.target.value)}
+                        placeholder="Member Name"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
+                      />
+                      <button 
+                        onClick={() => handleAddMember(selectedReg.id)}
+                        className="w-full py-3 bg-[#C9A84C]/10 text-[#C9A84C] rounded-xl text-xs font-bold hover:bg-[#C9A84C]/20 transition-all"
+                      >
+                        Add Member
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {selectedReg.status === 'confirmed' && (
+                  <div className="flex-1 p-6 bg-[#39FF14]/5 rounded-2xl border border-[#39FF14]/20 flex flex-col items-center justify-center text-center">
+                    <QrCode className="w-24 h-24 text-white mx-auto mb-4 opacity-80" />
+                    <p className="font-mono text-xs text-[#39FF14] tracking-widest uppercase">Pass ID: {selectedReg.pass_id || 'ALH-REF-102'}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <button 

@@ -84,6 +84,7 @@ function getDB() {
     $conn->query("
         CREATE TABLE IF NOT EXISTS events_timeline (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            day INT DEFAULT 1,
             name VARCHAR(255) NOT NULL,
             category VARCHAR(100) NOT NULL,
             status ENUM('upcoming', 'live', 'completed') DEFAULT 'upcoming',
@@ -92,6 +93,9 @@ function getDB() {
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
+    
+    // Add day column if not exists
+    $conn->query("ALTER TABLE events_timeline ADD COLUMN IF NOT EXISTS day INT DEFAULT 1 AFTER id");
 
     // Ensure default admin user exists
     $admin_email = 'admin@ahlaad.com';
@@ -104,11 +108,25 @@ function getDB() {
     // Seed initial events if timeline is empty
     $res = $conn->query("SELECT COUNT(*) as count FROM events_timeline");
     if ($res && $res->fetch_assoc()['count'] == 0) {
-        $conn->query("INSERT INTO events_timeline (name, category, status, time_slot, venue) VALUES 
-            ('Inauguration Ceremony', 'Main Event', 'upcoming', '9:00 AM', 'Open Air Theater'),
-            ('Rock Band Battle', 'Music', 'upcoming', '11:00 AM', 'Main Stage'),
-            ('Dance — Classical', 'Dance', 'upcoming', '2:00 PM', 'Auditorium')");
+        $conn->query("INSERT INTO events_timeline (day, name, category, status, time_slot, venue) VALUES 
+            (1, 'Inauguration Ceremony', 'Main Event', 'upcoming', '9:00 AM', 'Open Air Theater'),
+            (1, 'Rock Band Battle', 'Music', 'upcoming', '11:00 AM', 'Main Stage'),
+            (1, 'Dance — Classical', 'Dance', 'upcoming', '2:00 PM', 'Auditorium'),
+            (2, 'Short Films Screening', 'Media', 'upcoming', '10:00 AM', 'Mini Auditorium'),
+            (2, 'Dance — Western Group', 'Dance', 'upcoming', '1:00 PM', 'Main Stage'),
+            (2, 'Valedictory & Prize Distribution', 'Main Event', 'upcoming', '4:30 PM', 'Open Air Theater')");
     }
+
+    // 5. Settings table
+    $conn->query("
+        CREATE TABLE IF NOT EXISTS settings (
+            setting_key VARCHAR(50) PRIMARY KEY,
+            setting_value VARCHAR(255) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+    
+    // Seed default setting
+    $conn->query("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('registration_enabled', '1')");
 
     return $conn;
 }

@@ -24,6 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+$conn = getDB();
+
+// Check if registration is enabled
+$settings_res = $conn->query("SELECT * FROM settings WHERE setting_key = 'registration_enabled'");
+if ($s = $settings_res->fetch_assoc()) {
+    if ($s['setting_value'] !== '1') {
+        echo json_encode(['success' => false, 'message' => 'Registration is currently closed.']);
+        exit();
+    }
+}
+
 // Parse JSON
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -106,9 +117,6 @@ if ($is_team) {
     $team_name = null;
     $team_size = null;
 }
-
-// ── DB Connection ──
-$conn = getDB();
 
 // ── Check duplicate: same email + same competition ──
 $check = $conn->prepare("SELECT id FROM registrations WHERE email = ? AND competition = ?");

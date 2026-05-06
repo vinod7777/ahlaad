@@ -153,7 +153,7 @@ export default function Hero() {
                 />
                 <div className="absolute inset-0 bg-[#C9A84C]/20 blur-3xl rounded-full scale-50 opacity-50 group-hover:opacity-100 transition-opacity" />
               </div>
-            <span className="text-[#C9A84C] text-[0.5em] neon-text-glow-gold-subtle font-bold">2K26</span>
+            <span className="text-white text-[0.6em] font-bold relative top-2 neon-text-glow-gold" style={{ textShadow: '0 0 20px rgba(201,168,76,0.8), 0 0 40px rgba(201,168,76,0.4)' }}>2K26</span>
           </h1>
 
             {/* Accent Underline */}
@@ -212,11 +212,18 @@ export default function Hero() {
 
           {/* RIGHT COLUMN - Prize Pool Highlight */}
           <div ref={logoRef} className="hidden lg:flex flex-col items-center justify-center w-[38vw]">
-            <div className="relative text-center p-10 rounded-2xl border border-[#C9A84C]/25" style={{ background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }}>
+            <div className="relative text-center p-10 rounded-2xl" style={{ background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }}>
               {/* Glow ring */}
-              <div className="absolute inset-0 rounded-2xl" style={{ boxShadow: 'inset 0 0 80px rgba(201,168,76,0.06), 0 0 50px rgba(201,168,76,0.1)' }} />
+              <div className="absolute inset-0 rounded-2xl" />
               
-              <Trophy className="w-14 h-14 text-[#C9A84C] mx-auto mb-4" style={{ filter: 'drop-shadow(0 0 16px rgba(201,168,76,0.8))' }} />
+              <img 
+                src="/trophy.png" 
+                alt="Trophy" 
+                className="w-24 h-24 object-contain mx-auto mb-2 animate-float" 
+                style={{ 
+                  filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.8)) drop-shadow(0 0 40px rgba(201,168,76,0.4))' 
+                }} 
+              />
               <p className="font-mono text-xs text-[#C9A84C] uppercase tracking-[0.4em] mb-3 font-bold">Total Prize Pool</p>
               <h2 className="font-display text-8xl xl:text-9xl text-gradient-gold leading-none mb-4" style={{ textShadow: '0 0 40px rgba(201,168,76,0.4), 0 0 80px rgba(201,168,76,0.2)' }}>
                 ₹2,50,000
