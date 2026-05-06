@@ -4,10 +4,10 @@
  * XAMPP + MySQL
  */
 
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'ahlaad_2026');
+define('DB_HOST', '148.222.53.74'); // Hostinger Remote MySQL IP
+define('DB_USER', 'u213825351_ahlaad');
+define('DB_PASS', 'Pandiit@6253'); 
+define('DB_NAME', 'u213825351_ahlaad');
 
 function getDB() {
     // Initial connection without database selection to ensure we can create the DB

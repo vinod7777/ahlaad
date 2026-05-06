@@ -10,13 +10,13 @@ const coordinators = [
     name: 'Dr. D. Yugandhar',
     role: 'Convener',
     designation: 'Associate Dean (A, CG & SAC)',
-    image: '', // Image to be provided later
+    image: '/yugandra.jpeg',
   },
   {
     name: 'Sri Suresh Kumar Jaka',
     role: 'Co-Convener',
     designation: 'Assistant Professor, SAC',
-    image: '', // Image to be provided later
+    image: '/suresh.webp',
   },
 ];
 
