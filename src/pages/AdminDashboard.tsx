@@ -17,6 +17,7 @@ export default function AdminDashboard() {
   const [selectedVolunteer, setSelectedVolunteer] = useState<any>(null);
   const [newTaskText, setNewTaskText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [registrationFilter, setRegistrationFilter] = useState<'all' | 'confirmed' | 'pending'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [checkinUsers, setCheckinUsers] = useState<any[]>([]);
   const [checkinSearchQuery, setCheckinSearchQuery] = useState('');
@@ -661,13 +662,18 @@ export default function AdminDashboard() {
 
   const filteredRegistrations = registrations.filter(reg => {
     const term = searchQuery.toLowerCase();
-    return (
+    const matchesSearch = (
       (reg.user_name || '').toLowerCase().includes(term) ||
       (reg.college || '').toLowerCase().includes(term) ||
       (reg.user_email || '').toLowerCase().includes(term) ||
       (reg.team_name || '').toLowerCase().includes(term) ||
       (reg.competition || '').toLowerCase().includes(term)
     );
+    const matchesFilter = 
+      registrationFilter === 'all' || 
+      reg.status === registrationFilter;
+      
+    return matchesSearch && matchesFilter;
   });
   const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
   const paginatedRegistrations = filteredRegistrations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -772,17 +778,17 @@ export default function AdminDashboard() {
               <p className="text-xs md:text-sm text-white/40">Ahlaad 2K26 Administrative Control Center</p>
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-3 md:gap-4 w-full md:w-auto">
             <button 
               onClick={handleToggleRegistration}
-              className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all text-xs font-bold uppercase tracking-widest ${registrationEnabled ? 'bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500/20' : 'bg-[#39FF14]/10 border-[#39FF14]/30 text-[#39FF14] hover:bg-[#39FF14]/20'}`}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 border rounded-lg transition-all text-xs font-bold uppercase tracking-widest ${registrationEnabled ? 'bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500/20' : 'bg-[#39FF14]/10 border-[#39FF14]/30 text-[#39FF14] hover:bg-[#39FF14]/20'}`}
             >
               {registrationEnabled ? 'Stop Registration' : 'Start Registration'}
             </button>
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-initial">
               <button 
                 onClick={() => setIsReportDropdownOpen(!isReportDropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold uppercase tracking-widest"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold uppercase tracking-widest"
               >
                 <Download className="w-4 h-4 text-[#C9A84C]" />
                 Reports
@@ -906,22 +912,46 @@ export default function AdminDashboard() {
 
         {activeTab === 'participants' && (
           <div className="glass-card rounded-2xl border border-white/10 overflow-hidden">
-            <div className="p-6 border-b border-white/10 flex justify-between items-center">
+            <div className="p-6 border-b border-white/10 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
               <h3 className="text-xl font-display">Registration List</h3>
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                <input 
-                  type="text" 
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                  placeholder="Search participant or college..." 
-                  className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#C9A84C]/50 transition-all w-80"
-                />
+              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-stretch sm:items-center">
+                {/* Status Filter Tab Buttons */}
+                <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
+                  <button
+                    onClick={() => { setRegistrationFilter('all'); setCurrentPage(1); }}
+                    className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'all' ? 'bg-[#C9A84C] text-[#080614] shadow-md' : 'text-white/60 hover:text-white'}`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => { setRegistrationFilter('confirmed'); setCurrentPage(1); }}
+                    className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'confirmed' ? 'bg-[#39FF14] text-[#080614] shadow-md' : 'text-white/60 hover:text-white'}`}
+                  >
+                    Approved
+                  </button>
+                  <button
+                    onClick={() => { setRegistrationFilter('pending'); setCurrentPage(1); }}
+                    className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'pending' ? 'bg-yellow-500 text-[#080614] shadow-md' : 'text-white/60 hover:text-white'}`}
+                  >
+                    Pending
+                  </button>
+                </div>
+
+                <div className="relative w-full sm:w-80">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                  <input 
+                    type="text" 
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    placeholder="Search participant or college..." 
+                    className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#C9A84C]/50 transition-all w-full"
+                  />
+                </div>
               </div>
             </div>
             
-            <div className="p-0">
-              <table className="w-full text-left border-collapse">
+            <div className="p-0 overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="text-[10px] uppercase tracking-widest text-white/30 border-b border-white/5 bg-white/5">
                     <th className="px-6 py-4 font-medium">Participant</th>
@@ -1444,8 +1474,8 @@ export default function AdminDashboard() {
 
       {/* Detail Modal */}
       {selectedReg && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-xl bg-black/40">
-          <div className="glass-card w-full max-w-2xl p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 sm:p-6 backdrop-blur-xl bg-black/40">
+          <div className="glass-card w-full max-w-2xl p-4 sm:p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden max-h-[90vh] overflow-y-auto">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#C9A84C] to-[#8B0000]" />
             
             <div className="flex justify-between items-start mb-8">
@@ -1566,8 +1596,8 @@ export default function AdminDashboard() {
 
       {/* User Edit Modal (God Mode) */}
       {selectedUser && (
-        <div className="fixed inset-0 z-[400] flex items-center justify-center p-6 backdrop-blur-xl bg-black/60">
-          <div className="glass-card w-full max-w-lg p-8 rounded-3xl border border-red-500/40 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-6 backdrop-blur-xl bg-black/60">
+          <div className="glass-card w-full max-w-lg p-4 sm:p-8 rounded-3xl border border-red-500/40 animate-in zoom-in-95 duration-300 relative overflow-hidden max-h-[90vh] overflow-y-auto">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 to-red-900" />
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-display text-white">Edit User <span className="text-red-400">#{selectedUser.id}</span></h3>
@@ -1625,8 +1655,8 @@ export default function AdminDashboard() {
 
       {/* Volunteer Task Management Modal */}
       {selectedVolunteer && (
-        <div className="fixed inset-0 z-[400] flex items-center justify-center p-6 backdrop-blur-xl bg-black/60">
-          <div className="glass-card w-full max-w-2xl p-8 rounded-3xl border border-blue-500/40 animate-in zoom-in-95 duration-300 relative overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-6 backdrop-blur-xl bg-black/60">
+          <div className="glass-card w-full max-w-2xl p-4 sm:p-8 rounded-3xl border border-blue-500/40 animate-in zoom-in-95 duration-300 relative overflow-hidden flex flex-col max-h-[90vh]">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 to-blue-800" />
             <div className="flex justify-between items-center mb-6">
               <div>

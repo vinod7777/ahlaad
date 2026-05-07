@@ -88,9 +88,9 @@ export default function LiveExperience() {
         className="absolute inset-0 w-full h-full"
       >
         <img 
-          src="/live_colorful.jpg"
+          src="/img/WhatsApp Image 2026-05-07 at 8.37.27 PM.jpeg"
           alt="Battle of the Bands"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-70"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#080614]/90 via-[#080614]/50 to-[#080614]/70" />
       </div>

@@ -109,9 +109,9 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full"
       >
         <img 
-          src="/hero_colorful.jpg" 
+          src="/img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg" 
           alt="Ahlaad 2K26 Hero"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-80"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#080614]/95 via-[#080614]/50 to-[#080614]/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080614] via-transparent to-transparent" />

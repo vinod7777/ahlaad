@@ -24,7 +24,7 @@ const competitions: Competition[] = [
   {
     name: 'Short Films',
     genre: 'Max 10 min, Original Content',
-    image: '/comp_shortfilms.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg',
     color: '#FF0080',
     icon: Film,
     fee: '₹500/team',
@@ -44,7 +44,7 @@ const competitions: Competition[] = [
   {
     name: 'Rock Band',
     genre: '15 min total incl. Sound Check',
-    image: '/comp_rockband.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg',
     color: '#00FFFF',
     icon: Guitar,
     fee: '₹500/team',
@@ -64,7 +64,7 @@ const competitions: Competition[] = [
   {
     name: 'Photography',
     genre: 'On-spot Theme, 2 Hours',
-    image: '/comp_photography.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg',
     color: '#BF00FF',
     icon: Camera,
     fee: '₹200/person',
@@ -85,7 +85,7 @@ const competitions: Competition[] = [
   {
     name: 'Singing',
     genre: 'Solo Vocal Performance',
-    image: '/comp_singing.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.29 PM.jpeg',
     color: '#C9A84C',
     icon: Mic,
     fee: '₹200/person',
@@ -105,7 +105,7 @@ const competitions: Competition[] = [
   {
     name: 'Cover Song',
     genre: 'Reimagine a Hit',
-    image: '/comp_coversong.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg',
     color: '#FF5E00',
     icon: Music,
     fee: '₹200/person',
@@ -125,7 +125,7 @@ const competitions: Competition[] = [
   {
     name: 'Dance',
     genre: 'Classical & Western · Solo & Group',
-    image: '/comp_dance.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg',
     color: '#39FF14',
     icon: PersonStanding,
     fee: '₹200 / ₹500',
@@ -146,7 +146,7 @@ const competitions: Competition[] = [
   {
     name: 'Drama / Skit',
     genre: 'Stage Play Performance',
-    image: '/comp_drama.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM (1).jpeg',
     color: '#0080FF',
     icon: Drama,
     fee: '₹500/team',
@@ -166,7 +166,7 @@ const competitions: Competition[] = [
   {
     name: 'Painting',
     genre: 'On-spot Theme, 2 Hours',
-    image: '/comp_painting.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM (1).jpeg',
     color: '#FF0080',
     icon: Palette,
     fee: '₹200/person',
@@ -186,7 +186,7 @@ const competitions: Competition[] = [
   {
     name: 'Handicrafts',
     genre: 'Creative Hand-made Art',
-    image: '/comp_handicrafts.png',
+    image: '/img/WhatsApp Image 2026-05-07 at 8.37.33 PM (1).jpeg',
     color: '#00FFFF',
     icon: Scissors,
     fee: '₹200/person',

@@ -85,9 +85,9 @@ export default function BeThere() {
         className="absolute inset-0 w-full h-full"
       >
         <img 
-          src="/crowd_colorful.jpg"
+          src="/img/WhatsApp Image 2026-05-07 at 8.37.28 PM.jpeg"
           alt="AITAM Ahlaad Crowd"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-70"
         />
         <div className="absolute inset-0 bg-[#080614]/70" />
         <div className="absolute inset-0 bg-gradient-radial from-[#080614]/40 via-[#080614]/70 to-[#080614]/95" />

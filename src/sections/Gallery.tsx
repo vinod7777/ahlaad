@@ -6,12 +6,12 @@ import { ArrowRight } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 const galleryImages = [
-  { src: '/gallery_colorful_01.jpg', alt: 'Stage', size: 'large' },
-  { src: '/gallery_colorful_02.jpg', alt: 'Drummer', size: 'small' },
-  { src: '/gallery_colorful_03.jpg', alt: 'Crowd', size: 'medium' },
-  { src: '/live_colorful.jpg', alt: 'Performance', size: 'medium' },
-  { src: '/featured_singer.jpg', alt: 'Singer', size: 'small' },
-  { src: '/crowd_colorful.jpg', alt: 'Festival', size: 'large' },
+  { src: '/img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg', alt: 'Grand Stage', size: 'large' },
+  { src: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM (1).jpeg', alt: 'Painting & Arts', size: 'small' },
+  { src: '/img/WhatsApp Image 2026-05-07 at 8.37.33 PM (1).jpeg', alt: 'Craft Exhibition', size: 'medium' },
+  { src: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM (1).jpeg', alt: 'College Drama Act', size: 'medium' },
+  { src: '/img/WhatsApp Image 2026-05-07 at 8.37.29 PM.jpeg', alt: 'Student Vocalist', size: 'small' },
+  { src: '/img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg', alt: 'Traditional Group Dance', size: 'large' },
 ];
 
 export default function Gallery() {

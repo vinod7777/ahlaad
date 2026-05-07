@@ -84,9 +84,9 @@ export default function Closing() {
         className="absolute inset-0 w-full h-full"
       >
         <img 
-          src="/group_colorful.jpg"
+          src="/img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg"
           alt="AITAM Group"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#080614]/90 via-[#080614]/60 to-[#080614]/80" />
       </div>
