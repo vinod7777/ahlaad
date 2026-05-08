@@ -1,0 +1,4 @@
+<?php
+// Neutralized
+exit();
+?>

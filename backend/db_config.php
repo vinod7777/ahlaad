@@ -4,10 +4,28 @@
  * XAMPP + MySQL
  */
 
-define('DB_HOST', '148.222.53.74'); // Hostinger Remote MySQL IP
-define('DB_USER', 'u213825351_ahlaad');
-define('DB_PASS', 'Pandiit@6253'); 
-define('DB_NAME', 'u213825351_ahlaad');
+// Detect if running on localhost (development) or production server (Hostinger)
+$is_localhost = isset($_SERVER['HTTP_HOST']) && (
+    $_SERVER['HTTP_HOST'] === 'localhost' || 
+    $_SERVER['HTTP_HOST'] === '127.0.0.1' || 
+    strpos($_SERVER['HTTP_HOST'], '192.168.') === 0 ||
+    strpos($_SERVER['HTTP_HOST'], '172.') === 0 ||
+    strpos($_SERVER['HTTP_HOST'], '10.') === 0
+);
+
+if ($is_localhost) {
+    // Local XAMPP Configuration
+    define('DB_HOST', 'localhost');
+    define('DB_USER', 'root');
+    define('DB_PASS', ''); 
+    define('DB_NAME', 'ahlaad_2026');
+} else {
+    // Hostinger Production Configuration
+    define('DB_HOST', 'localhost'); // Hostinger MySQL runs locally on the server
+    define('DB_USER', 'u213825351_ahlaad');
+    define('DB_PASS', 'Pandiit@6253'); 
+    define('DB_NAME', 'u213825351_ahlaad');
+}
 
 function getDB() {
     // Initial connection without database selection to ensure we can create the DB
@@ -76,6 +94,7 @@ function getDB() {
             pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
             registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
             status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+            decline_reason TEXT DEFAULT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
@@ -83,6 +102,9 @@ function getDB() {
     // Add columns if they don't exist (for existing databases)
     $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS utr_id VARCHAR(100) DEFAULT NULL AFTER fee");
     $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_proof VARCHAR(255) DEFAULT NULL AFTER utr_id");
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS tid VARCHAR(100) DEFAULT NULL AFTER payment_proof");
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS decline_reason TEXT DEFAULT NULL AFTER status");
+    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS team_id VARCHAR(50) DEFAULT NULL AFTER decline_reason");
 
     // 3. Registration Members table (for team members)
     $conn->query("
@@ -94,6 +116,7 @@ function getDB() {
             phone VARCHAR(20) DEFAULT NULL,
             college VARCHAR(255) DEFAULT NULL,
             college_id VARCHAR(100) DEFAULT NULL,
+            tid VARCHAR(100) DEFAULT NULL,
             pass_id VARCHAR(50) UNIQUE DEFAULT NULL,
             FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
@@ -104,6 +127,8 @@ function getDB() {
     $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS phone VARCHAR(20) DEFAULT NULL AFTER email");
     $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS college VARCHAR(255) DEFAULT NULL AFTER phone");
     $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS college_id VARCHAR(100) DEFAULT NULL AFTER college");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS tid VARCHAR(100) DEFAULT NULL AFTER college_id");
+    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS team_id VARCHAR(50) DEFAULT NULL AFTER tid");
     $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS checked_in TINYINT(1) DEFAULT 0");
     $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS checked_in_at DATETIME DEFAULT NULL");
 

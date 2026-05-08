@@ -61,6 +61,8 @@ $college_id  = trim($input['college_id']);
 $competition = trim($input['competition']);
 $team_name   = trim($input['team_name'] ?? '');
 $team_size   = intval($input['team_size'] ?? 0);
+$secretKey = bin2hex(random_bytes(16)); 
+$tid = $secretKey.substr($team_name, 0, 3).substr($college, 0, 3);
 
 // ── Validate email ──
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -164,14 +166,14 @@ if ($is_team && $team_name) {
 // ── Insert registration ──
 $stmt = $conn->prepare("
     INSERT INTO registrations 
-    (participant_name, email, phone, college, college_id, competition, entry_type, team_name, team_size, fee)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (participant_name, email, phone, college, college_id, competition, entry_type, team_name, team_size, fee,tid)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
 ");
 
 $stmt->bind_param(
-    "ssssssssid",
+    "ssssssssids",
     $name, $email, $phone, $college, $college_id,
-    $competition, $entry_type, $team_name, $team_size, $fee
+    $competition, $entry_type, $team_name, $team_size, $fee,$tid
 );
 
 if ($stmt->execute()) {
@@ -186,7 +188,8 @@ if ($stmt->execute()) {
             'competition' => $competition,
             'entry_type' => $entry_type,
             'team_name' => $team_name,
-            'fee' => $fee
+            'fee' => $fee,
+            'tid' => $tid
         ]
     ]);
 } else {

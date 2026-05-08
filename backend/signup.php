@@ -29,6 +29,44 @@ if (empty($name) || empty($email) || empty($password) || empty($phone) || empty(
     exit();
 }
 
+// ------------------- HIGH-SECURITY VALIDATIONS -------------------
+// 1. Full Name: Alphabetical and spaces only, >= 3 characters
+if (strlen($name) < 3 || !preg_match('/^[A-Za-z\s]+$/', $name)) {
+    echo json_encode(['success' => false, 'message' => 'Full Name must be at least 3 characters and contain only letters and spaces.']);
+    exit();
+}
+
+// 2. Email validation
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(['success' => false, 'message' => 'Please provide a valid email address.']);
+    exit();
+}
+
+// 3. Indian Phone number validation: 10 digits starting with 6,7,8 or 9
+if (!preg_match('/^[6-9][0-9]{9}$/', $phone)) {
+    echo json_encode(['success' => false, 'message' => 'Phone Number must be a valid 10-digit Indian mobile number.']);
+    exit();
+}
+
+// 4. College Name: >= 3 characters
+if (strlen($college) < 3) {
+    echo json_encode(['success' => false, 'message' => 'College Name must be at least 3 characters.']);
+    exit();
+}
+
+// 5. College ID: >= 2 characters
+if (strlen($college_id) < 2) {
+    echo json_encode(['success' => false, 'message' => 'College ID must be at least 2 characters.']);
+    exit();
+}
+
+// 6. Password: >= 6 characters
+if (strlen($password) < 6) {
+    echo json_encode(['success' => false, 'message' => 'Password must be at least 6 characters.']);
+    exit();
+}
+// -----------------------------------------------------------------
+
 $conn = getDB();
 
 // Check if user exists

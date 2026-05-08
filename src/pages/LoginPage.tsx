@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogIn, AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
 import SilverJubileeLogo from '../components/SilverJubileeLogo';
+import { API_BASE_URL } from '../config';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -27,7 +28,7 @@ export default function LoginPage() {
     setErrorMsg('');
 
     try {
-      const response = await fetch('http://localhost/ahlaad/backend/login.php', {
+      const response = await fetch(`${API_BASE_URL}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -128,9 +129,14 @@ export default function LoginPage() {
           </form>
         </div>
         
-        <p className="text-center text-[10px] text-white/20 mt-8 font-mono uppercase tracking-[0.2em]">
-          Ahlaad 2K26 — AITAM Silver Jubilee Celebration
-        </p>
+        <div className="py-6 border-t border-white/5 text-center mt-8">
+          <p className="text-xs text-white/30 font-mono uppercase tracking-[0.2em] mb-1.5">
+            Ahlaad 2K26 — AITAM Silver Jubilee Celebration
+          </p>
+          <p className="text-sm text-white/50 font-light">
+            Developed by <a href="https://www.linkedin.com/in/saisateeshwarareddy/" target="_blank" rel="noopener noreferrer" className="text-[#C9A84C] hover:text-[#E0C97F] transition-colors underline underline-offset-2 font-bold">T. Saisateeshwara Reddy</a> | Technical Trainer, IIC
+          </p>
+        </div>
       </div>
     </div>
   );

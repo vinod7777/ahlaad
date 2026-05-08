@@ -11,11 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require 'db_config.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
-$task_id = $input['task_id'] ?? null;
-$status = $input['status'] ?? '';
+$task_id = isset($input['task_id']) ? (int)$input['task_id'] : null;
+$status = trim($input['status'] ?? '');
 
-if (!$task_id || !$status) {
-    echo json_encode(['success' => false, 'message' => 'Task ID and Status are required']);
+if (!$task_id || !in_array($status, ['pending', 'completed'])) {
+    echo json_encode(['success' => false, 'message' => 'Valid Task ID and status (pending/completed) are required']);
     exit();
 }
 

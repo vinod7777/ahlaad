@@ -14,7 +14,7 @@ $conn = getDB();
 $list = [];
 
 // 1. Get confirmed/checked-in participants from registrations table (Leaders / Individuals)
-$q1 = "SELECT r.id, COALESCE(r.participant_name, u.name) as name, COALESCE(r.email, u.email) as email, 
+$q1 = "SELECT r.id, r.tid, r.team_id, COALESCE(r.participant_name, u.name) as name, COALESCE(r.email, u.email) as email, 
               COALESCE(r.phone, u.phone) as phone, COALESCE(r.college, u.college) as college, 
               COALESCE(r.college_id, u.college_id) as college_id, r.competition, r.entry_type, 
               r.team_name, r.pass_id, r.checked_in, r.checked_in_at 
@@ -27,6 +27,9 @@ if ($res1) {
     while ($row = $res1->fetch_assoc()) {
         $list[] = [
             'id' => (int)$row['id'],
+            'registration_id' => (int)$row['id'],
+            'tid' => $row['tid'] ?? '',
+            'team_id' => $row['team_id'] ?? '',
             'name' => $row['name'],
             'email' => $row['email'],
             'phone' => $row['phone'],
@@ -45,7 +48,8 @@ if ($res1) {
 
 // 2. Get confirmed team members
 $q2 = "SELECT rm.id, rm.member_name as name, rm.email, rm.phone, rm.college, rm.college_id, 
-              r.competition, r.team_name, rm.pass_id, rm.checked_in, rm.checked_in_at 
+              r.id as registration_id, r.competition, r.team_name, rm.pass_id, rm.checked_in, rm.checked_in_at,
+              COALESCE(rm.tid, r.tid) as tid, COALESCE(rm.team_id, r.team_id) as team_id
        FROM registration_members rm
        JOIN registrations r ON rm.registration_id = r.id
        WHERE r.status = 'confirmed'";
@@ -60,6 +64,9 @@ if ($res2) {
         }
         $list[] = [
             'id' => (int)$row['id'],
+            'registration_id' => (int)$row['registration_id'],
+            'tid' => $row['tid'] ?? '',
+            'team_id' => $row['team_id'] ?? '',
             'name' => $row['name'],
             'email' => $row['email'],
             'phone' => $row['phone'],

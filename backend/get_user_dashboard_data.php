@@ -12,6 +12,13 @@ if (!$user_id) {
 
 $conn = getDB();
 
+// Get user profile details
+$user_stmt = $conn->prepare("SELECT id, name, email, phone, college, college_id, role FROM users WHERE id = ?");
+$user_stmt->bind_param("i", $user_id);
+$user_stmt->execute();
+$user_data = $user_stmt->get_result()->fetch_assoc();
+$user_stmt->close();
+
 // Get registrations
 $reg_res = $conn->query("SELECT * FROM registrations WHERE user_id = $user_id");
 $registrations = [];
@@ -40,6 +47,7 @@ while($t = $timeline_res->fetch_assoc()) {
 
 echo json_encode([
     'success' => true, 
+    'user' => $user_data,
     'registrations' => $registrations,
     'timeline' => $timeline
 ]);

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QrCode, Search, CheckCircle, AlertCircle, RefreshCw, Download, LogOut, Check, X, ShieldAlert, ArrowLeft, Printer, Users } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export default function CheckIn() {
   const [deskUser, setDeskUser] = useState<any>(null);
@@ -86,7 +87,7 @@ export default function CheckIn() {
     setScanSuccess(false);
 
     try {
-      const response = await fetch(`http://localhost/ahlaad/backend/checkin_scan.php?action=get_details&pass_id=${encodeURIComponent(passId)}`);
+      const response = await fetch(`${API_BASE_URL}/checkin_scan.php?action=get_details&pass_id=${encodeURIComponent(passId)}`);
       const data = await response.json();
       
       if (data.success) {
@@ -170,7 +171,7 @@ export default function CheckIn() {
   const fetchParticipants = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost/ahlaad/backend/checkin_get_all.php');
+      const response = await fetch(`${API_BASE_URL}/checkin_get_all.php`);
       const data = await response.json();
       if (data.success) {
         setParticipants(data.data);
@@ -203,7 +204,7 @@ export default function CheckIn() {
     setScanSuccess(false);
 
     try {
-      const response = await fetch(`http://localhost/ahlaad/backend/checkin_scan.php?action=get_details&pass_id=${encodeURIComponent(passId)}`);
+      const response = await fetch(`${API_BASE_URL}/checkin_scan.php?action=get_details&pass_id=${encodeURIComponent(passId)}`);
       const data = await response.json();
       
       if (data.success) {
@@ -235,7 +236,7 @@ export default function CheckIn() {
 
   const executeCheckIn = async (passId: string) => {
     try {
-      const response = await fetch(`http://localhost/ahlaad/backend/checkin_scan.php?action=checkin&pass_id=${encodeURIComponent(passId)}`);
+      const response = await fetch(`${API_BASE_URL}/checkin_scan.php?action=checkin&pass_id=${encodeURIComponent(passId)}`);
       const data = await response.json();
       if (data.success) {
         setScanSuccess(true);
@@ -282,11 +283,14 @@ export default function CheckIn() {
 
   const filteredParticipants = participants.filter(p => {
     const term = searchQuery.toLowerCase();
+    const teamIdString = p.team_name ? `team-#${String(p.registration_id).padStart(3, '0')} team-${p.registration_id}` : '';
     const matchesSearch = 
       (p.name?.toLowerCase() || '').includes(term) ||
       (p.college?.toLowerCase() || '').includes(term) ||
       (p.college_id?.toLowerCase() || '').includes(term) ||
-      (p.pass_id?.toLowerCase() || '').includes(term);
+      (p.pass_id?.toLowerCase() || '').includes(term) ||
+      (p.team_name?.toLowerCase() || '').includes(term) ||
+      teamIdString.toLowerCase().includes(term);
 
     if (filter === 'checked_in') return matchesSearch && p.checked_in === 1;
     if (filter === 'pending') return matchesSearch && p.checked_in === 0;
@@ -660,6 +664,14 @@ export default function CheckIn() {
                         <td className="py-4 px-6">
                           <p className="font-bold text-white/90 group-hover:text-[#C9A84C] transition-all">{p.name}</p>
                           <p className="text-[10px] text-white/40 mt-0.5">{p.college_id} • {p.college}</p>
+                          {p.team_name && (
+                            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                              <span className="px-1 py-0.5 rounded text-[8px] font-mono font-bold bg-[#39FF14]/10 text-[#39FF14] border border-[#39FF14]/20">
+                                TEAM-#{String(p.registration_id).padStart(3, '0')}
+                              </span>
+                              <span className="text-[10px] text-[#C9A84C] font-semibold">{p.team_name}</span>
+                            </div>
+                          )}
                         </td>
                         <td className="py-4 px-6">
                           <p className="text-white/80 font-medium">{p.competition}</p>
@@ -712,6 +724,15 @@ export default function CheckIn() {
         </div>
 
       </main>
+
+      <footer className="py-8 border-t border-white/5 text-center mt-12">
+        <p className="text-xs text-white/30 font-mono uppercase tracking-[0.2em] mb-1.5">
+          Ahlaad 2K26 — AITAM Silver Jubilee Celebration
+        </p>
+        <p className="text-sm text-white/50 font-light">
+          Developed by <a href="https://www.linkedin.com/in/saisateeshwarareddy/" target="_blank" rel="noopener noreferrer" className="text-[#C9A84C] hover:text-[#E0C97F] transition-colors underline underline-offset-2 font-bold">T. Saisateeshwara Reddy</a> | Technical Trainer, IIC
+        </p>
+      </footer>
     </div>
   );
 }

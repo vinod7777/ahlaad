@@ -25,9 +25,14 @@ if (empty($email) || empty($password)) {
     exit();
 }
 
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(['success' => false, 'message' => 'Please enter a valid email address.']);
+    exit();
+}
+
 $conn = getDB();
 
-$stmt = $conn->prepare("SELECT id, name, email, password, role FROM users WHERE email = ?");
+$stmt = $conn->prepare("SELECT id, name, email, password, phone, college, college_id, role FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();

@@ -375,6 +375,7 @@ export default function Lineup() {
       {/* Modal via Portal */}
       {selectedComp && createPortal(
         <div 
+          data-lenis-prevent
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           onClick={() => setSelectedComp(null)}
         >

@@ -1,7 +1,7 @@
 import { useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Music, Users, Sparkles, Trophy, Calendar, Star } from 'lucide-react';
+import { ArrowRight, Crown, Boxes, Users, Trophy, Calendar, Star } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -121,7 +121,7 @@ export default function About() {
                 "Unleash Your Talent. Own the Stage."
               </p>
               <p>
-                With a <strong className="text-[#C9A84C] font-display text-2xl" style={{ textShadow: '0 0 15px rgba(201,168,76,0.5)' }}>₹2,50,000</strong> prize pool, 9 thrilling competitions, 
+                9 thrilling competitions, 
                 live DJ night, and the grand valedictory graced by chief guests 
                 <strong className="text-gradient-gold font-display text-xl tracking-wide"> MSK Prasad</strong> & <strong className="text-gradient-gold font-display text-xl tracking-wide">Rasi Singh</strong>, 
                 Ahlaad 2K26 is set to be the biggest cultural extravaganza in our history.
@@ -135,7 +135,7 @@ export default function About() {
                 <span className="text-white text-sm">2 Days of Events</span>
               </div>
               <div className="flex items-center gap-3 glass-card px-4 py-3 rounded-lg border border-[#FF0080]/30 hover:border-[#FF0080]/60 transition-colors">
-                <Music className="w-5 h-5 text-[#FF0080]" />
+                <Boxes className="w-5 h-5 text-[#FF0080]" />
                 <span className="text-white text-sm">9 Competitions</span>
               </div>
               <div className="flex items-center gap-3 glass-card px-5 py-4 rounded-lg border-2 border-[#C9A84C]/40 hover:border-[#C9A84C]/70 transition-colors" style={{ boxShadow: '0 0 20px rgba(201,168,76,0.15)' }}>
@@ -151,7 +151,7 @@ export default function About() {
                 <span className="text-white text-sm">Open to All UG/PG</span>
               </div>
               <div className="flex items-center gap-3 glass-card px-4 py-3 rounded-lg border border-[#FF5E00]/30 hover:border-[#FF5E00]/60 transition-colors">
-                <Sparkles className="w-5 h-5 text-[#FF5E00]" />
+                <Crown className="w-5 h-5 text-[#FF5E00]" />
                 <span className="text-white text-sm"><span className="text-gradient-gold font-semibold">MSK Prasad</span> & <span className="text-gradient-gold font-semibold">Rasi Singh</span></span>
               </div>
             </div>

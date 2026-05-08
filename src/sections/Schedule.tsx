@@ -9,48 +9,24 @@ const scheduleData = [
   {
     day: 'Day 01',
     date: 'June 26',
-    title: 'Inaugural + Competitions + DJ Night',
+    title: 'Day 1 — Inaugural & Live Events',
     color: '#C9A84C',
     icon: Music,
     events: [
-      { time: '09:00 AM', name: 'Inaugural Ceremony', location: 'Main Stage', artist: 'Silver Jubilee Address' },
-      { time: '10:00 AM', name: 'Singing Competition', location: 'Main Stage', artist: 'Solo Vocal' },
-      { time: '10:00 AM', name: 'Cover Song', location: 'Stage 2', artist: 'Reimagine a Hit' },
-      { time: '10:00 AM', name: 'Painting & Handicrafts', location: 'Art Hall', artist: 'On-spot Theme' },
-      { time: '01:00 PM', name: 'Lunch Break', location: 'Food Court', artist: '—' },
-      { time: '02:00 PM', name: 'Short Film Screenings', location: 'Auditorium', artist: 'Max 10 min, Original' },
-      { time: '02:00 PM', name: 'Photography Contest', location: 'Campus', artist: 'On-spot Theme, 2 hrs' },
-      { time: '02:00 PM', name: 'Drama / Skit', location: 'Main Stage', artist: 'Stage Play' },
-      { time: '06:30 PM', name: 'DJ NIGHT', location: 'Open Arena', artist: 'The Silver Jubilee Pulse 🔥' },
+      { time: '09:00 AM', name: 'Inauguration', location: 'Open Air Theater', artist: 'Silver Jubilee Address' },
+      { time: '10:00 AM', name: 'Competitions', location: 'Various Arenas', artist: 'Singing, Painting, Media, Photography' },
+      { time: '06:30 PM', name: 'DJ Night', location: 'Open Arena', artist: 'The Silver Jubilee Pulse 🔥' },
     ]
   },
   {
     day: 'Day 02',
     date: 'June 27',
-    title: 'Dance + Rock Band + Valedictory',
+    title: 'Day 2 — Competitions & Valedictory',
     color: '#FF0080',
     icon: Zap,
     events: [
-      { time: '09:30 AM', name: 'Dance — Classical (Solo)', location: 'Dance Arena', artist: '3-4 mins per performer' },
-      { time: '09:30 AM', name: 'Dance — Western (Solo)', location: 'Dance Arena', artist: '3-4 mins per performer' },
-      { time: '10:30 AM', name: 'Dance — Classical (Group)', location: 'Dance Arena', artist: '5-8 mins per group' },
-      { time: '10:30 AM', name: 'Dance — Western (Group)', location: 'Dance Arena', artist: '5-8 mins per group' },
-      { time: '01:00 PM', name: 'Lunch Break', location: 'Food Court', artist: '—' },
-      { time: '02:00 PM', name: 'Rock Band: Battle of the Bands', location: 'Main Stage', artist: '15 min total per band' },
-    ]
-  },
-  {
-    day: 'Finale',
-    date: 'June 27 Evening',
-    title: 'Grand Valedictory & Prize Distribution',
-    color: '#8B0000',
-    icon: Award,
-    events: [
-      { time: '05:30 PM', name: 'Grand Valedictory Ceremony', location: 'Main Stage', artist: 'All Performers' },
-      { time: '05:30 PM', name: 'Chief Guest: MSK Prasad', location: 'Main Stage', artist: 'Guest of Honour' },
-      { time: '05:30 PM', name: 'Chief Guest: Rasi Singh', location: 'Main Stage', artist: 'Guest of Honour' },
-      { time: '06:30 PM', name: 'Prize Distribution', location: 'Main Stage', artist: '₹2,50,000 Prize Pool 🏆' },
-      { time: '07:30 PM', name: 'Closing Ceremony', location: 'Main Stage', artist: 'Farewell & Celebrations' },
+      { time: '09:30 AM', name: 'Competitions', location: 'Various Arenas', artist: 'Western & Classical Dance, Rock Band' },
+      { time: '04:30 PM', name: 'Valedictory', location: 'Main Stage', artist: 'Prize Distribution & Closing Ceremony 🏆' },
     ]
   }
 ];

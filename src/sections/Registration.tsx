@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -58,8 +59,56 @@ export default function Registration() {
     setStatus('loading');
     setErrorMsg('');
 
+    // --- FRONTEND VALIDATIONS ---
+    const nameTrimmed = formData.name.trim();
+    if (nameTrimmed.length < 3) {
+      setStatus('error');
+      setErrorMsg('Full Name must be at least 3 characters.');
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(nameTrimmed)) {
+      setStatus('error');
+      setErrorMsg('Full Name can only contain letters and spaces.');
+      return;
+    }
+
+    const emailTrimmed = formData.email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+      setStatus('error');
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+
+    const phoneTrimmed = formData.phone.trim();
+    if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
+      setStatus('error');
+      setErrorMsg('Phone Number must be a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
+      return;
+    }
+
+    const collegeTrimmed = formData.college.trim();
+    if (collegeTrimmed.length < 3) {
+      setStatus('error');
+      setErrorMsg('College Name must be at least 3 characters.');
+      return;
+    }
+
+    const collegeIdTrimmed = formData.college_id.trim();
+    if (collegeIdTrimmed.length < 2) {
+      setStatus('error');
+      setErrorMsg('College ID must be at least 2 characters.');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setStatus('error');
+      setErrorMsg('Password must be at least 6 characters.');
+      return;
+    }
+    // ----------------------------
+
     try {
-      const response = await fetch('http://localhost/ahlaad/backend/signup.php', {
+      const response = await fetch(`${API_BASE_URL}/signup.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

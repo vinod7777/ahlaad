@@ -11,11 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require 'db_config.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
-$volunteer_id = $input['volunteer_id'] ?? null;
-$task_description = $input['task_description'] ?? '';
+$volunteer_id = isset($input['volunteer_id']) ? (int)$input['volunteer_id'] : null;
+$task_description = trim($input['task_description'] ?? '');
 
-if (!$volunteer_id || !$task_description) {
-    echo json_encode(['success' => false, 'message' => 'Volunteer ID and Task description are required']);
+if (!$volunteer_id || empty($task_description)) {
+    echo json_encode(['success' => false, 'message' => 'Volunteer ID and a non-empty Task description are required']);
     exit();
 }
 

@@ -11,12 +11,10 @@ import Hero from './sections/Hero';
 import About from './sections/About';
 import Featured from './sections/Featured';
 import Lineup from './sections/Lineup';
-import LiveExperience from './sections/LiveExperience';
 import Tickets from './sections/Tickets';
 import BeThere from './sections/BeThere';
 import Schedule from './sections/Schedule';
 import Unforgettable from './sections/Unforgettable';
-import Gallery from './sections/Gallery';
 import Registration from './sections/Registration';
 import OrganiserBody from './sections/OrganiserBody';
 import Closing from './sections/Closing';
@@ -48,25 +46,24 @@ function LandingPage() {
         <meta property="og:description" content="Experience the biggest cultural festival with a ₹2,50,000 prize pool across 9 competitions!" />
         <meta property="og:type" content="website" />
       </Helmet>
-      
+
       {/* Framer Motion Scroll Progress Bar */}
-      <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FF0080] to-[#BF00FF] origin-left z-[10000]" 
-        style={{ scaleX }} 
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FF0080] to-[#BF00FF] origin-left z-[10000]"
+        style={{ scaleX }}
       />
-      
+
       <Navigation />
       <main className="relative">
         <Hero />
         <About />
         <Featured />
         <Lineup />
-        <LiveExperience />
+
         <Tickets />
         <BeThere />
         <Schedule />
         <Unforgettable />
-        <Gallery />
         <Registration />
         <OrganiserBody />
         <Closing />
@@ -97,7 +94,7 @@ function App() {
           <GlobalEffects />
           <div className="relative bg-[#080614] min-h-screen">
             <div className="noise-overlay" />
-            
+
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />

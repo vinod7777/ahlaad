@@ -6,9 +6,14 @@ require_once 'db_config.php';
 $conn = getDB();
 
 // Get all registrations with user details
-$sql = "SELECT r.*, u.name as user_name, u.email as user_email, u.college, u.phone 
+$sql = "SELECT r.*, 
+               CASE WHEN r.participant_name IS NULL OR r.participant_name = '' THEN u.name ELSE r.participant_name END as user_name, 
+               CASE WHEN r.email IS NULL OR r.email = '' THEN u.email ELSE r.email END as user_email,
+               CASE WHEN r.phone IS NULL OR r.phone = '' THEN u.phone ELSE r.phone END as phone,
+               CASE WHEN r.college IS NULL OR r.college = '' THEN u.college ELSE r.college END as college,
+               CASE WHEN r.college_id IS NULL OR r.college_id = '' THEN u.college_id ELSE r.college_id END as college_id
         FROM registrations r 
-        JOIN users u ON r.user_id = u.id 
+        LEFT JOIN users u ON r.user_id = u.id
         ORDER BY r.registration_date DESC";
 $res = $conn->query($sql);
 $registrations = [];

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { LogIn, AlertCircle } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export default function Login() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -13,7 +14,7 @@ export default function Login() {
     setErrorMsg('');
 
     try {
-      const response = await fetch('http://localhost/ahlaad_backend/login.php', {
+      const response = await fetch(`${API_BASE_URL}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
