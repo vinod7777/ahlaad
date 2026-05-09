@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { QrCode, Search, CheckCircle, AlertCircle, RefreshCw, Download, LogOut, Check, X, ShieldAlert, ArrowLeft, Printer, Users } from 'lucide-react';
+import { QrCode, Search, AlertCircle, RefreshCw, Download, LogOut, Check, ArrowLeft } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { usePagination } from '../hooks/usePagination';
+import PaginationControls from '../components/PaginationControls';
 
 export default function CheckIn() {
   const [deskUser, setDeskUser] = useState<any>(null);
@@ -9,7 +11,6 @@ export default function CheckIn() {
   const [scannedPassId, setScannedPassId] = useState('');
   const [scannedData, setScannedData] = useState<any>(null);
   const [scanError, setScanError] = useState('');
-  const [scanSuccess, setScanSuccess] = useState(false);
   const [participants, setParticipants] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'checked_in' | 'pending'>('all');
@@ -52,7 +53,7 @@ export default function CheckIn() {
             async (decodedText: string) => {
               await handleDirectScan(decodedText);
             },
-            (error: any) => {
+            () => {
               // silent
             }
           ).then(() => {
@@ -84,7 +85,6 @@ export default function CheckIn() {
   const handleDirectScan = async (passId: string) => {
     if (!passId) return;
     setScanError('');
-    setScanSuccess(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/checkin_scan.php?action=get_details&pass_id=${encodeURIComponent(passId)}`);
@@ -96,8 +96,6 @@ export default function CheckIn() {
         
         if (data.data.checked_in === 0) {
           await executeCheckIn(passId);
-        } else {
-          setScanSuccess(true);
         }
       } else {
         setScanError(data.message || 'Pass ID not found.');
@@ -201,7 +199,6 @@ export default function CheckIn() {
     }
 
     setScanError('');
-    setScanSuccess(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/checkin_scan.php?action=get_details&pass_id=${encodeURIComponent(passId)}`);
@@ -214,8 +211,6 @@ export default function CheckIn() {
         // Auto check-in if not checked in already!
         if (data.data.checked_in === 0) {
           await executeCheckIn(passId);
-        } else {
-          setScanSuccess(true);
         }
       } else {
         setScanError(data.message || 'Pass ID not found.');
@@ -239,7 +234,6 @@ export default function CheckIn() {
       const response = await fetch(`${API_BASE_URL}/checkin_scan.php?action=checkin&pass_id=${encodeURIComponent(passId)}`);
       const data = await response.json();
       if (data.success) {
-        setScanSuccess(true);
         // Refresh scanned info state locally to show checked-in status
         setScannedData((prev: any) => prev ? { ...prev, checked_in: 1, checked_in_at: 'Just Now' } : null);
         fetchParticipants();
@@ -296,6 +290,9 @@ export default function CheckIn() {
     if (filter === 'pending') return matchesSearch && p.checked_in === 0;
     return matchesSearch;
   });
+
+  // Pagination for participants table
+  const pagination = usePagination(filteredParticipants, 10);
 
   const handleLogout = () => {
     localStorage.removeItem('ahlaad_user');

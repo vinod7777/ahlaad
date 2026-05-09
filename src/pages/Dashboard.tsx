@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { QrCode, LogOut, LayoutDashboard, Calendar, Trophy, Users, CheckCircle, Clock, AlertCircle, CreditCard, ChevronRight, UserPlus, Trash2, Printer, User, Plus, MapPin, Menu, X } from 'lucide-react';
+import { QrCode, LogOut, CheckCircle, Printer, User, Plus, Menu, X, AlertCircle, Clock, Trophy, Calendar, Users } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
 const PassCard = ({ title, name, id, passId, role }: { title: string, name: string, id: string, passId: string, role: string }) => (
@@ -791,17 +791,6 @@ export default function Dashboard() {
                         <p className="text-sm text-white/70 font-medium">{newReg.competition}</p>
                       </div>
                     </div>
-
-                    <div className="w-32 flex flex-col items-center gap-2">
-                      <div className="w-32 h-32 bg-white p-2 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=ahlaad2k26@upi&pn=Ahlaad%202K26&am=${newReg.entry_type === 'team' ? '500' : '200'}&cu=INR`}
-                          alt="Payment QR"
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <span className="text-[8px] text-white/40 uppercase tracking-[0.2em] font-bold">Scan to Pay</span>
-                    </div>
                   </div>
 
                   {/* Middle Section: Team Name (Full Width) */}
@@ -818,6 +807,24 @@ export default function Dashboard() {
                       className="w-full bg-transparent border-b-2 border-white/10 py-2 text-xl text-white placeholder:text-white/10 focus:outline-none focus:border-[#C9A84C] transition-all font-display"
                       required
                     />
+                  </div>
+                  <div className="p-5 bg-gradient-to-br from-[#C9A84C]/10 to-transparent rounded-2xl border border-[#C9A84C]/20 flex justify-between items-center">
+                    <div>
+                      <p className="text-white/40 uppercase text-[9px] tracking-widest font-bold mb-1">Total Payable</p>
+                      <p className="text-[#39FF14] text-[10px] italic">Verified via manual review</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[#C9A84C] font-display text-3xl">{newReg.entry_type === 'team' ? '₹500' : '₹200'}</span>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1 font-bold">Bank Details for Payment</p>
+                    <p className="text-[30px] text-[#C9A84C] font-display">Bank Name: <span className="text-white">Axis Bank Ltd.</span></p>
+                    <p className="text-[30px] text-[#C9A84C] font-display">Branch Name: <span className="text-white text-[20px]">Narasannapeta, Srikakulam, Andhra Pradesh - 532421.</span></p>
+                    <p className="text-[20px] text-[#C9A84C] font-display">IFSC Code: <span className="text-white">UTIB0003677</span></p>
+                    <p className="text-[30px] text-[#C9A84C] font-display">Account Number: <span className="text-white">924020006464520</span></p>
+                    <p className="text-[20px] text-[#C9A84C] font-display">Account Name: <span className="text-white">Aditya Institute of Technology and Management</span></p>
+
                   </div>
 
                   {/* Bottom Section: UTR & Screenshot */}
@@ -848,15 +855,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="p-5 bg-gradient-to-br from-[#C9A84C]/10 to-transparent rounded-2xl border border-[#C9A84C]/20 flex justify-between items-center">
-                    <div>
-                      <p className="text-white/40 uppercase text-[9px] tracking-widest font-bold mb-1">Total Payable</p>
-                      <p className="text-[#39FF14] text-[10px] italic">Verified via manual review</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[#C9A84C] font-display text-3xl">{newReg.entry_type === 'team' ? '₹500' : '₹200'}</span>
-                    </div>
-                  </div>
+                  
 
                   <div className="flex gap-4 pt-2">
                     <button

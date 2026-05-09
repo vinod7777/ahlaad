@@ -1,7 +1,7 @@
 import { useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import CountdownTimer from '../components/CountdownTimer';
 
 
@@ -130,8 +130,9 @@ export default function Hero() {
           <div className="flex flex-col items-center justify-center flex-1">
             {/* AITAM Logo */}
             <div className='flex '>
+              
+              <img src="/aitamsinglelogo.png" alt="25years" className="h-20 md:h-32 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
               <img src="/25years.png" alt="25years" className="h-20 md:h-32 w-auto object-contain rounded-[10px] " style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
-
             </div>
             {/* Main Title */}
             <h1

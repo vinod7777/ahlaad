@@ -1,7 +1,7 @@
 import { useRef, useLayoutEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Clock, MapPin, Calendar, ChevronRight, Music, Zap, Award } from 'lucide-react';
+import { Clock, MapPin, Calendar, ChevronRight, Music, Zap } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,9 +13,9 @@ const scheduleData = [
     color: '#C9A84C',
     icon: Music,
     events: [
-      { time: '09:00 AM', name: 'Inauguration', location: 'Open Air Theater', artist: 'Silver Jubilee Address' },
-      { time: '10:00 AM', name: 'Competitions', location: 'Various Arenas', artist: 'Singing, Painting, Media, Photography' },
-      { time: '06:30 PM', name: 'DJ Night', location: 'Open Arena', artist: 'The Silver Jubilee Pulse 🔥' },
+      { time: '09:30 AM', name: 'Inauguration', location: 'Open Air Theater', artist: 'Silver Jubilee Address' },
+      { time: '10:30 AM', name: 'Competitions', location: 'Various Arenas', artist: 'Singing, Painting, Media, Photography' },
+      { time: '08:00 PM', name: 'DJ Night', location: 'Open Arena', artist: 'The Silver Jubilee Pulse 🔥' },
     ]
   },
   {
@@ -25,8 +25,8 @@ const scheduleData = [
     color: '#FF0080',
     icon: Zap,
     events: [
-      { time: '09:30 AM', name: 'Competitions', location: 'Various Arenas', artist: 'Western & Classical Dance, Rock Band' },
-      { time: '04:30 PM', name: 'Valedictory', location: 'Main Stage', artist: 'Prize Distribution & Closing Ceremony 🏆' },
+      { time: '10:00 AM', name: 'Competitions', location: 'Various Arenas', artist: 'Western & Classical Dance, Rock Band' },
+      { time: '06:00 PM', name: 'Valedictory', location: 'Main Stage', artist: 'Prize Distribution & Closing Ceremony 🏆' },
     ]
   }
 ];
