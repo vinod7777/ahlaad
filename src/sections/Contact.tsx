@@ -1,7 +1,8 @@
 import { useRef, useLayoutEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Phone, MapPin, Mail, Instagram, Facebook } from 'lucide-react';
+import { Phone, MapPin, Mail, Instagram, Facebook, QrCode } from 'lucide-react';
 import SilverJubileeLogo from '../components/SilverJubileeLogo';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -130,7 +131,11 @@ export default function Contact() {
             </div>
           </div>
           
-          <div className="flex gap-6 text-sm text-white/60">
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
+            <Link to="/scan-pass" className="flex items-center gap-1.5 hover:text-[#C9A84C] transition-colors group">
+              <QrCode className="w-3.5 h-3.5 text-[#C9A84C]/60 group-hover:text-[#C9A84C]" />
+              Pass Scanner
+            </Link>
             <a href="https://www.adityatekkali.edu.in" target="_blank" rel="noopener noreferrer" className="hover:text-[#C9A84C] transition-colors">AITAM Website</a>
             <span>@AitamOfficial</span>
           </div>

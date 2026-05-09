@@ -1,17 +1,29 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock, CheckCircle, Menu, X, Settings, Upload, QrCode, Plus, Trash2 } from 'lucide-react';
+import {
+  LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock,
+  CheckCircle, Menu, X, Settings, Upload, QrCode, Plus, Trash2,
+  Trophy, Activity, TrendingUp
+} from 'lucide-react';
+import {
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, AreaChart, Area
+} from 'recharts';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { API_BASE_URL } from '../config';
 import { usePagination } from '../hooks/usePagination';
 import { useAdvancedSearch } from '../hooks/useAdvancedSearch';
 import PaginationControls from '../components/PaginationControls';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState<any>(null);
   const [registrations, setRegistrations] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'users' | 'volunteers' | 'checkin_status'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'users' | 'volunteers' | 'checkin_status' | 'teams_report'>('overview');
   const [selectedReg, setSelectedReg] = useState<any>(null);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,8 +45,13 @@ export default function AdminDashboard() {
   const [declineReason, setDeclineReason] = useState('');
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [newMember, setNewMember] = useState({ member_name: '', email: '', phone: '', college: '', college_id: '' });
-  const itemsPerPage = 10;
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [itemsPerPage = 10] = useState(10);
   const navigate = useNavigate();
+
+  const [reportSearchQuery, setReportSearchQuery] = useState('');
+
+
 
   useEffect(() => {
     if (selectedReg) {
@@ -550,16 +567,22 @@ export default function AdminDashboard() {
 
   const fetchAdminData = async () => {
     try {
-      const [res1, res2, res3, res4] = await Promise.all([
+      const [res1, res2, res3, res4, res5] = await Promise.all([
         fetch(`${API_BASE_URL}/admin_get_all_data.php`),
         fetch(`${API_BASE_URL}/admin_get_users.php`),
         fetch(`${API_BASE_URL}/admin_get_volunteers_tasks.php`),
-        fetch(`${API_BASE_URL}/checkin_get_all.php`)
+        fetch(`${API_BASE_URL}/checkin_get_all.php`),
+        fetch(`${API_BASE_URL}/admin_get_analytics.php`)
       ]);
       const data = await res1.json();
       const usersData = await res2.json();
       const volsData = await res3.json();
       const checkinData = await res4.json();
+      const analyticsRes = await res5.json();
+
+      if (analyticsRes.success) {
+        setAnalytics(analyticsRes);
+      }
       if (data.success) {
         setRegistrations(data.registrations);
         // Sync active registration details modal view in real-time
@@ -1077,6 +1100,13 @@ export default function AdminDashboard() {
             Check-In
           </button>
           <button
+            onClick={() => { setActiveTab('teams_report'); setIsMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'teams_report' ? 'bg-purple-500/10 text-purple-400 font-bold border border-purple-500/20' : 'text-white/60 hover:bg-white/5'}`}
+          >
+            <Trophy className="w-5 h-5 text-purple-400" />
+            Teams Report
+          </button>
+          <button
             onClick={() => { navigate('/checkin'); }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-all font-bold"
           >
@@ -1108,7 +1138,14 @@ export default function AdminDashboard() {
               <Menu className="w-6 h-6" />
             </button>
             <div>
-              <h1 className="text-2xl md:text-3xl font-display">{activeTab === 'overview' ? 'System Overview' : activeTab === 'participants' ? 'Manage Registrations' : activeTab === 'volunteers' ? 'Volunteers Management' : activeTab === 'checkin_status' ? 'Check-In Overview' : 'User Management'}</h1>
+              <h1 className="text-2xl md:text-3xl font-display">
+                {activeTab === 'overview' ? 'System Overview' :
+                  activeTab === 'participants' ? 'Manage Registrations' :
+                    activeTab === 'volunteers' ? 'Volunteers Management' :
+                      activeTab === 'checkin_status' ? 'Check-In Overview' :
+                        activeTab === 'teams_report' ? 'Teams Registration Report' :
+                          'User Management'}
+              </h1>
               <p className="text-xs md:text-sm text-white/40">Ahlaad 2K26 Administrative Control Center</p>
             </div>
           </div>
@@ -1118,6 +1155,13 @@ export default function AdminDashboard() {
               className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 border rounded-lg transition-all text-xs font-bold uppercase tracking-widest ${registrationEnabled ? 'bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500/20' : 'bg-[#39FF14]/10 border-[#39FF14]/30 text-[#39FF14] hover:bg-[#39FF14]/20'}`}
             >
               {registrationEnabled ? 'Stop Registration' : 'Start Registration'}
+            </button>
+            <button
+              onClick={fetchAdminData}
+              className="p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 text-white/60 transition-all flex items-center justify-center"
+              title="Refresh Data"
+            >
+              <Activity className="w-4 h-4 text-emerald-400" />
             </button>
             <div className="relative flex-1 sm:flex-initial">
               <button
@@ -1214,48 +1258,245 @@ export default function AdminDashboard() {
         </header>
 
         {activeTab === 'overview' && (
-          <div className="space-y-10">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-8 animate-in fade-in duration-700">
+            {/* Top Analytics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {[
-                { label: 'Total Users', value: registrations.length, icon: Users, color: '#C9A84C' },
-                { label: 'Confirmed', value: registrations.filter((r: any) => r.status === 'confirmed').length, icon: FileText, color: '#00FFFF' },
-                { label: 'Pending', value: registrations.filter((r: any) => r.status === 'pending').length, icon: Clock, color: '#FFD700' },
-                { label: 'Total Revenue', value: `₹${registrations.reduce((acc: number, curr: any) => acc + parseFloat(curr.fee), 0)}`, icon: BarChart3, color: '#39FF14' },
-              ].map((stat: any) => (
-                <div key={stat.label} className="glass-card p-6 rounded-xl border border-white/10">
-                  <div className="flex justify-between items-start mb-4">
-                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                { label: 'Registered', val: analytics?.stats?.total_participants || 0, icon: Users, col: '#C9A84C', sub: 'Total persons' },
+                { label: 'Payments', val: analytics?.stats?.approved_count || 0, icon: FileText, col: '#00FFFF', sub: 'Successful' },
+                { label: 'Approved', val: analytics?.stats?.approved_count || 0, icon: CheckCircle, col: '#39FF14', sub: 'Paid teams' },
+                { label: 'Passes', val: analytics?.stats?.passes_count || 0, icon: QrCode, col: '#FFD700', sub: 'Generated' },
+                { label: 'Checked-In', val: analytics?.stats?.checkin_count || 0, icon: Activity, col: '#39FF14', sub: 'At venue' },
+                { label: 'Teams In', val: analytics?.stats?.teams_in_count || 0, icon: Trophy, col: '#FF3131', sub: 'Team checkins' },
+              ].map((stat, i) => (
+                <div key={i} className="glass-card p-5 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.03] to-transparent hover:border-white/20 transition-all group">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="p-2 rounded-lg bg-white/5 group-hover:scale-110 transition-transform">
+                      <stat.icon className="w-5 h-5" style={{ color: stat.col }} />
+                    </div>
                   </div>
-                  <p className="text-3xl font-display mb-1">{stat.value}</p>
-                  <p className="text-xs text-white/40 uppercase tracking-widest">{stat.label}</p>
+                  <h4 className="text-2xl font-display text-white">{stat.val}</h4>
+                  <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mt-1">{stat.label}</p>
+                  <p className="text-[9px] text-white/20 mt-0.5 italic">{stat.sub}</p>
                 </div>
               ))}
             </div>
 
-            {/* Quick Actions */}
-            <div className="glass-card p-8 rounded-2xl border border-white/10">
-              <h3 className="text-xl font-display mb-6">Recent Activity</h3>
-              <div className="space-y-4">
-                {registrations.slice(0, 5).map((reg: any) => (
+            {/* Charts Row 1 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Daily Trend */}
+              <div className="lg:col-span-2 glass-card p-6 rounded-3xl border border-white/10 bg-white/[0.01]">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <h3 className="text-lg font-display flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-blue-400" />
+                      Registration Velocity
+                    </h3>
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Daily signup trends for last 14 days</p>
+                  </div>
+                </div>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={analytics?.daily_trend || []}>
+                      <defs>
+                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#C9A84C" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#C9A84C" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        stroke="#ffffff30"
+                        fontSize={10}
+                        tickFormatter={(val) => val ? val.split('-').slice(1).join('/') : ''}
+                      />
+                      <YAxis stroke="#ffffff30" fontSize={10} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#0d0b1e', border: '1px solid #ffffff10', borderRadius: '12px', fontSize: '12px' }}
+                      />
+                      <Area type="monotone" dataKey="count" stroke="#C9A84C" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Check-in Progress */}
+              <div className="glass-card p-6 rounded-3xl border border-white/10 bg-white/[0.01] flex flex-col">
+                <h3 className="text-lg font-display mb-2 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-[#39FF14]" />
+                  Check-in Status
+                </h3>
+                <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-6">Real-time attendance ratio</p>
+
+                <div className="h-[250px] w-full relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Checked In', value: analytics?.stats?.checkin_count || 0, color: '#39FF14' },
+                          { name: 'Pending', value: Math.max(0, (analytics?.stats?.total_participants || 0) - (analytics?.stats?.checkin_count || 0)), color: '#FF3131' }
+                        ]}
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={8}
+                        dataKey="value"
+                      >
+                        {[
+                          { name: 'Checked In', value: analytics?.stats?.checkin_count || 0, color: '#39FF14' },
+                          { name: 'Pending', value: Math.max(0, (analytics?.stats?.total_participants || 0) - (analytics?.stats?.checkin_count || 0)), color: '#FF3131' }
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-3xl font-display text-white">
+                      {Math.round(((analytics?.stats?.checkin_count || 0) / (analytics?.stats?.total_participants || 1)) * 100)}%
+                    </span>
+                    <span className="text-[8px] uppercase text-white/40 font-bold">Attendance</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mt-auto">
+                  {[
+                    { name: 'Checked In', value: analytics?.stats?.checkin_count || 0, color: '#39FF14' },
+                    { name: 'Pending', value: Math.max(0, (analytics?.stats?.total_participants || 0) - (analytics?.stats?.checkin_count || 0)), color: '#FF3131' }
+                  ].map((d, i) => (
+                    <div key={i} className="flex justify-between items-center text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <span className="text-white/60">{d.name}</span>
+                      </div>
+                      <span className="font-mono font-bold">{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity Grid */}
+            <div className="glass-card p-8 rounded-3xl border border-white/10 bg-white/[0.01]">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h3 className="text-lg font-display flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-[#C9A84C]" />
+                    Recent Activity
+                  </h3>
+                  <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Latest 9 registration events from the database</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(analytics?.recent_activity || []).map((reg: any, idx: number) => (
                   <div
-                    key={reg.id}
-                    className="flex items-center justify-between p-4 border border-white/5 rounded-xl hover:bg-white/5 transition-all cursor-pointer"
+                    key={idx}
+                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all cursor-pointer group"
                     onClick={() => setSelectedReg(reg)}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center font-bold">{reg.user_name[0]}</div>
-                      <div>
-                        <p className="text-sm font-bold">{reg.user_name} <span className="text-white/40 font-normal">registered for</span> {reg.competition}</p>
-                        <p className="text-xs text-white/20">{reg.registration_date}</p>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="w-8 h-8 rounded-full bg-[#C9A84C]/10 flex items-center justify-center text-[#C9A84C] font-bold text-xs">
+                        {reg.user_name[0]}
                       </div>
+                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${reg.status === 'confirmed' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                        {reg.status}
+                      </span>
                     </div>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${reg.status === 'confirmed' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'bg-yellow-500/20 text-yellow-500'}`}>
-                      {reg.status}
-                    </span>
+                    <p className="text-xs font-bold text-white group-hover:text-[#C9A84C] transition-colors line-clamp-1">{reg.user_name}</p>
+                    <p className="text-[10px] text-white/40 mb-2">{reg.competition}</p>
+                    <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                      <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">
+                        {reg.entry_type}
+                      </span>
+                      <span className="text-[9px] text-white/20">
+                        {reg.registration_date.split(' ')[0]}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+        {activeTab === 'teams_report' && (
+          <div className="glass-card rounded-2xl border border-white/10 overflow-hidden animate-in slide-in-from-bottom duration-500">
+            <div className="p-6 border-b border-white/10 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white/[0.02]">
+              <div>
+                <h3 className="text-xl font-display">Teams Registration Report</h3>
+                <p className="text-xs text-white/40 uppercase tracking-widest font-bold mt-1">Unified view of teams and individual participants</p>
+              </div>
+              <div className="relative w-full md:w-80">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                <input
+                  type="text"
+                  value={reportSearchQuery}
+                  onChange={(e) => setReportSearchQuery(e.target.value)}
+                  placeholder="Filter by Team Name or Event..."
+                  className="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#C9A84C]/50 transition-all w-full"
+                />
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[10px] uppercase tracking-widest text-white/30 border-b border-white/10 bg-white/5">
+                    <th className="px-8 py-5 font-bold">Team / Participant Name</th>
+                    <th className="px-8 py-5 font-bold">Event Category</th>
+                    <th className="px-8 py-5 font-bold text-center">Status</th>
+                    <th className="px-8 py-5 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm divide-y divide-white/5">
+                  {(analytics?.teams_report || [])
+                    .filter((r: any) => {
+                      const search = reportSearchQuery.toLowerCase();
+                      return (r.team_name?.toLowerCase() || r.leader_name?.toLowerCase()).includes(search) ||
+                        r.competition?.toLowerCase().includes(search);
+                    })
+                    .map((reg: any, idx: number) => (
+                      <tr key={idx} className="hover:bg-white/[0.02] transition-colors group">
+                        <td className="px-8 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-bold text-[#C9A84C]">
+                              {reg.entry_type === 'team' ? 'T' : 'I'}
+                            </div>
+                            <div>
+                              <p className="font-bold text-white group-hover:text-[#C9A84C] transition-colors">
+                                {reg.team_name || reg.leader_name}
+                              </p>
+                              <p className="text-[10px] text-white/40">
+                                {reg.entry_type === 'team' ? `Leader: ${reg.leader_name} (${reg.member_count} members)` : 'Individual'}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-4">
+                          <span className="text-white/60">{reg.competition}</span>
+                        </td>
+                        <td className="px-8 py-4 text-center">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${reg.status === 'confirmed' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                            {reg.status}
+                          </span>
+                        </td>
+                        <td className="px-8 py-4 text-right">
+                          <button
+                            onClick={() => {
+                              // We need to find the full registration object from the main 'registrations' state
+                              const fullReg = registrations.find(full => full.id === reg.id);
+                              setSelectedReg(fullReg || reg);
+                            }}
+                            className="px-4 py-1.5 bg-[#C9A84C]/10 border border-[#C9A84C]/20 text-[#C9A84C] rounded-lg hover:bg-[#C9A84C] hover:text-[#080614] transition-all text-xs font-bold"
+                          >
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -1825,8 +2066,25 @@ export default function AdminDashboard() {
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Event:</span> {selectedReg.competition}</p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Type:</span> {selectedReg.entry_type}</p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Fee:</span> ₹{selectedReg.fee}</p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">TID:</span> <span className="text-[#C9A84C] font-mono">{selectedReg.tid || 'N/A'}</span></p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">UTR ID:</span> <span className="text-blue-400 font-mono">{selectedReg.utr_id || 'N/A'}</span></p>
+                    <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Pass ID:</span> <span className="text-emerald-400 font-mono">{selectedReg.pass_id || 'N/A'}</span></p>
                     <p className="text-sm text-white/80 flex items-center gap-2"><span className="text-white/20 w-16">Reg Date:</span> {selectedReg.registration_date}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Check-in Status</h4>
+                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${selectedReg.checked_in === 1 ? 'bg-[#39FF14] shadow-[0_0_8px_#39FF14]' : 'bg-white/20'}`} />
+                      <p className="text-xs font-bold text-white">
+                        {selectedReg.checked_in === 1 ? 'Checked In' : 'Not Checked In'}
+                      </p>
+                    </div>
+                    {selectedReg.checked_in === 1 && (
+                      <p className="text-[10px] text-white/40 mt-1 ml-5">at {selectedReg.checked_in_at}</p>
+                    )}
                   </div>
                 </div>
 

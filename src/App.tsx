@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
@@ -25,6 +25,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import CheckIn from './pages/CheckIn';
 import { SplashCursor } from './pages/splash-cursor';
+
+import NotFound from './pages/NotFound';
+import PassScanner from './pages/PassScanner';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -75,7 +78,7 @@ function LandingPage() {
 
 function GlobalEffects() {
   const location = useLocation();
-  const disabledPaths = ['/admin', '/dashboard', '/checkin'];
+  const disabledPaths = ['/admin', '/dashboard', '/checkin', '/scan-pass'];
   if (disabledPaths.includes(location.pathname)) return null;
   return <SplashCursor />;
 }
@@ -101,7 +104,8 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/checkin" element={<CheckIn />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/scan-pass" element={<PassScanner />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </Router>

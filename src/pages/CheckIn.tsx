@@ -251,11 +251,12 @@ export default function CheckIn() {
   };
 
   const handleDownloadCSV = () => {
-    const headers = ['Name', 'Email', 'Phone', 'College', 'College ID', 'Role', 'Competition', 'Entry Type', 'Team Name', 'Pass ID', 'Checked In', 'Checked In At'];
+    const headers = ['TID', 'Name', 'Email', 'Phone', 'College', 'College ID', 'Role', 'Competition', 'Entry Type', 'Team Name', 'Pass ID', 'Checked In', 'Checked In At'];
     const csvRows = [headers.join(',')];
 
     participants.forEach(p => {
       const row = [
+        `"${p.tid || ''}"`,
         `"${p.name || ''}"`,
         `"${p.email || ''}"`,
         `"${p.phone || ''}"`,

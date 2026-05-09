@@ -96,6 +96,17 @@ if ($action === 'get_details') {
     if ($res_m && $res_m->num_rows > 0) {
         $row_m = $res_m->fetch_assoc();
         
+        // Get other registered events for this person by email
+        $other_events = [];
+        $email = $row_m['email'];
+        if ($email) {
+            $email_esc = $conn->real_escape_string($email);
+            $o_res = $conn->query("SELECT competition, entry_type, status, pass_id FROM registrations WHERE email = '$email_esc' AND pass_id != '$pass_id'");
+            while ($o = $o_res->fetch_assoc()) {
+                $other_events[] = $o;
+            }
+        }
+
         echo json_encode([
             'success' => true,
             'type' => 'team_member',
@@ -106,6 +117,7 @@ if ($action === 'get_details') {
                 'college' => $row_m['college'],
                 'college_id' => $row_m['college_id'],
                 'competition' => $row_m['competition'],
+                'tid' => $row_m['tid'],
                 'entry_type' => 'team',
                 'team_name' => $row_m['team_name'],
                 'fee' => $row_m['fee'],
@@ -115,7 +127,7 @@ if ($action === 'get_details') {
                 'checked_in_at' => $row_m['checked_in_at'],
                 'role' => 'TEAM MEMBER',
                 'members' => [],
-                'other_events' => []
+                'other_events' => $other_events
             ]
         ]);
         exit();
