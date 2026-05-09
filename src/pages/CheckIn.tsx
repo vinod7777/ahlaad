@@ -159,15 +159,20 @@ export default function CheckIn() {
     }
     setDeskUser(userData);
     fetchParticipants();
+
+    // Set up polling for real-time synchronization
+    const interval = setInterval(() => fetchParticipants(true), 5000);
     
     // Auto-focus scanner input
     if (scanInputRef.current) {
       scanInputRef.current.focus();
     }
+
+    return () => clearInterval(interval);
   }, [navigate]);
 
-  const fetchParticipants = async () => {
-    setLoading(true);
+  const fetchParticipants = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/checkin_get_all.php`);
       const data = await response.json();
@@ -178,7 +183,7 @@ export default function CheckIn() {
     } catch (error) {
       console.error('Failed to fetch participants:', error);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -589,7 +594,7 @@ export default function CheckIn() {
                   <Download className="w-4 h-4" /> Export Excel CSV
                 </button>
                 <button 
-                  onClick={fetchParticipants}
+                  onClick={() => fetchParticipants(false)}
                   className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-white/60 hover:text-white"
                   title="Reload list"
                 >

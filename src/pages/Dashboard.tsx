@@ -148,6 +148,12 @@ export default function Dashboard() {
       const data = await response.json();
       if (data.success) {
         setRegistrations(data.registrations);
+        // Live auto-sync: instantly update the opened modal view with the newly fetched data (including added members)
+        setSelectedReg(prevSelected => {
+          if (!prevSelected) return null;
+          const updated = data.registrations.find((r: any) => r.id === prevSelected.id);
+          return updated || prevSelected;
+        });
         if (data.user) {
           setUser(data.user);
           localStorage.setItem('ahlaad_user', JSON.stringify(data.user));
@@ -976,7 +982,7 @@ export default function Dashboard() {
                         type="text"
                         value={newMember.name}
                         onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-                        placeholder="Full Name"
+                        placeholder="Full Name (min 3 letters)"
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
                       />
                       <input
@@ -990,7 +996,7 @@ export default function Dashboard() {
                         type="tel"
                         value={newMember.phone}
                         onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
-                        placeholder="Phone Number"
+                        placeholder="Phone Number (10-digit Indian)"
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/50 transition-all"
                       />
                       <input
