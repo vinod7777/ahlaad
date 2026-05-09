@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QrCode, LogOut, CheckCircle, Printer, User, Plus, Menu, X, AlertCircle, Clock, Trophy, Calendar, Users } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { usePagination } from '../hooks/usePagination';
+import PaginationControls from '../components/PaginationControls';
 
 const PassCard = ({ title, name, id, passId, role }: { title: string, name: string, id: string, passId: string, role: string }) => (
   <div className="relative group pass-card-container mb-8 md:h-[30vh] md:min-h-[220px] h-auto">
@@ -131,6 +133,8 @@ export default function Dashboard() {
     }
   }, [navigate]);
 
+  const registrationsPagination = usePagination(registrations, 6);
+
   useEffect(() => {
     if (showRegModal || selectedReg) {
       document.body.style.overflow = 'hidden';
@@ -149,7 +153,7 @@ export default function Dashboard() {
       if (data.success) {
         setRegistrations(data.registrations);
         // Live auto-sync: instantly update the opened modal view with the newly fetched data (including added members)
-        setSelectedReg(prevSelected => {
+        setSelectedReg((prevSelected: any) => {
           if (!prevSelected) return null;
           const updated = data.registrations.find((r: any) => r.id === prevSelected.id);
           return updated || prevSelected;
@@ -528,7 +532,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  {registrations.map((reg) => (
+                  {registrationsPagination.paginatedItems.map((reg: any) => (
                     <div
                       key={reg.id}
                       onClick={() => setSelectedReg(reg)}
@@ -557,6 +561,19 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+              {registrationsPagination.totalPages > 1 && (
+                <div className="mt-8">
+                  <PaginationControls
+                    currentPage={registrationsPagination.currentPage}
+                    totalPages={registrationsPagination.totalPages}
+                    totalItems={registrationsPagination.totalItems}
+                    itemsPerPage={registrationsPagination.itemsPerPage}
+                    onNextPage={registrationsPagination.nextPage}
+                    onPrevPage={registrationsPagination.prevPage}
+                    onGoToPage={registrationsPagination.goToPage}
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -564,7 +581,7 @@ export default function Dashboard() {
             <div className="animate-in fade-in duration-500">
               <h3 className="text-2xl font-display mb-8">Available <span className="text-gradient-gold">Competitions</span></h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {competitions.map(comp => (
+                {competitions.map((comp: any) => (
                   <div key={comp} className="glass-card p-6 rounded-3xl border border-white/10 group hover:border-[#C9A84C]/30 transition-all flex flex-col justify-between">
                     <div>
                       <h4 className="text-lg font-display mb-2">{comp}</h4>

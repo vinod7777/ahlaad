@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock, CheckCircle, Menu, X, Settings, Upload, QrCode, Plus, Trash2 } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { usePagination } from '../hooks/usePagination';
+import { useAdvancedSearch } from '../hooks/useAdvancedSearch';
+import PaginationControls from '../components/PaginationControls';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState<any>(null);
@@ -21,11 +24,9 @@ export default function AdminDashboard() {
   const [usersSearchQuery, setUsersSearchQuery] = useState('');
   const [volunteersSearchQuery, setVolunteersSearchQuery] = useState('');
   const [registrationFilter, setRegistrationFilter] = useState<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [checkinUsers, setCheckinUsers] = useState<any[]>([]);
   const [checkinSearchQuery, setCheckinSearchQuery] = useState('');
   const [checkinFilter, setCheckinFilter] = useState<'all' | 'checked_in' | 'not_checked_in'>('all');
-  const [checkinCurrentPage, setCheckinCurrentPage] = useState(1);
   const [isReportDropdownOpen, setIsReportDropdownOpen] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [declineRegId, setDeclineRegId] = useState<number | null>(null);
@@ -145,8 +146,8 @@ export default function AdminDashboard() {
       const csvContent = "\uFEFF" + csvRows.join('\r\n');
       triggerDownload(csvContent, 'ahlaad_2k26_checkin_status_report.csv');
     } else if (type === 'teams') {
-      const teamRegs = registrations.filter(reg => 
-        reg.entry_type?.toLowerCase() === 'team' || 
+      const teamRegs = registrations.filter((reg: any) =>
+        reg.entry_type?.toLowerCase() === 'team' ||
         (reg.team_name && reg.team_name !== 'N/A' && reg.team_name !== '')
       );
       if (teamRegs.length === 0) {
@@ -157,7 +158,7 @@ export default function AdminDashboard() {
       const headers = ['Team ID', 'Team Name', 'TID', 'Registration ID', 'Role (Team Leader / Member)', 'Person Name', 'College ID', 'Mobile', 'Email', 'Pass ID'];
       const rows: any[] = [];
 
-      teamRegs.forEach(reg => {
+      teamRegs.forEach((reg: any) => {
         // Add Team Leader
         rows.push([
           reg.team_id || '',
@@ -562,7 +563,7 @@ export default function AdminDashboard() {
       if (data.success) {
         setRegistrations(data.registrations);
         // Sync active registration details modal view in real-time
-        setSelectedReg(prevSelected => {
+        setSelectedReg((prevSelected: any) => {
           if (!prevSelected) return null;
           const updated = data.registrations.find((r: any) => r.id === prevSelected.id);
           return updated || prevSelected;
@@ -574,7 +575,7 @@ export default function AdminDashboard() {
       if (usersData.success) {
         setAllUsers(usersData.users);
         // Sync active user details modal view in real-time
-        setSelectedUser(prevSelected => {
+        setSelectedUser((prevSelected: any) => {
           if (!prevSelected) return null;
           const updated = usersData.users.find((u: any) => u.id === prevSelected.id);
           return updated || prevSelected;
@@ -583,7 +584,7 @@ export default function AdminDashboard() {
       if (volsData.success) {
         setVolunteers(volsData.volunteers);
         // Sync active volunteer details modal view in real-time
-        setSelectedVolunteer(prevSelected => {
+        setSelectedVolunteer((prevSelected: any) => {
           if (!prevSelected) return null;
           const updated = volsData.volunteers.find((v: any) => v.id === prevSelected.id);
           return updated || prevSelected;
@@ -671,7 +672,7 @@ export default function AdminDashboard() {
       alert('Please fill in all member details.');
       return;
     }
-    
+
     // Validations (matching add_team_member.php standards for high security)
     if (newMember.member_name.trim().length < 3 || !/^[A-Za-z\s]+$/.test(newMember.member_name)) {
       alert('Member Name must be at least 3 characters and contain only letters and spaces.');
@@ -935,7 +936,7 @@ export default function AdminDashboard() {
 
   const handleDownloadTemplate = () => {
     const csvContent = "Name,Email,Phone,College,College ID\n";
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -948,25 +949,71 @@ export default function AdminDashboard() {
   };
 
 
-  const filteredRegistrations = registrations.filter(reg => {
-    const term = searchQuery.toLowerCase();
-    const teamIdString = reg.team_name ? `team-#${String(reg.id).padStart(3, '0')} team-${reg.id}` : '';
-    const matchesSearch = (
-      (reg.user_name || '').toLowerCase().includes(term) ||
-      (reg.college || '').toLowerCase().includes(term) ||
-      (reg.user_email || '').toLowerCase().includes(term) ||
-      (reg.team_name || '').toLowerCase().includes(term) ||
-      (reg.competition || '').toLowerCase().includes(term) ||
-      teamIdString.toLowerCase().includes(term)
-    );
-    const matchesFilter =
-      registrationFilter === 'all' ||
-      reg.status === registrationFilter;
+  // --- SEARCH AND PAGINATION HOOKS ---
 
-    return matchesSearch && matchesFilter;
-  });
-  const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
-  const paginatedRegistrations = filteredRegistrations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  // 1. Participants (Registrations)
+  const filteredRegsByStatus = useMemo(() => {
+    return registrations.filter((reg: any) => registrationFilter === 'all' || reg.status === registrationFilter);
+  }, [registrations, registrationFilter]);
+
+  const searchResultsRegs = useAdvancedSearch(
+    filteredRegsByStatus,
+    searchQuery,
+    ['user_name', 'college', 'user_email', 'team_name', 'competition', 'pass_id', 'utr_id']
+  );
+
+  const finalRegs = useMemo(() => {
+    return searchQuery.trim() ? searchResultsRegs.map((r: any) => r.item) : filteredRegsByStatus;
+  }, [searchQuery, searchResultsRegs, filteredRegsByStatus]);
+
+  const regsPagination = usePagination(finalRegs, itemsPerPage);
+
+  // 2. Users
+  const searchResultsUsers = useAdvancedSearch(
+    allUsers,
+    usersSearchQuery,
+    ['name', 'email', 'phone', 'college', 'college_id', 'role']
+  );
+
+  const finalUsers = useMemo(() => {
+    return usersSearchQuery.trim() ? searchResultsUsers.map((r: any) => r.item) : allUsers;
+  }, [usersSearchQuery, searchResultsUsers, allUsers]);
+
+  const usersPagination = usePagination(finalUsers, itemsPerPage);
+
+  // 3. Volunteers
+  const searchResultsVolunteers = useAdvancedSearch(
+    volunteers,
+    volunteersSearchQuery,
+    ['name', 'email', 'phone', 'college', 'college_id']
+  );
+
+  const finalVolunteers = useMemo(() => {
+    return volunteersSearchQuery.trim() ? searchResultsVolunteers.map((r: any) => r.item) : volunteers;
+  }, [volunteersSearchQuery, searchResultsVolunteers, volunteers]);
+
+  const volunteersPagination = usePagination(finalVolunteers, 9); // 3x3 grid
+
+  // 4. Check-ins
+  const filteredCheckinByStatus = useMemo(() => {
+    return checkinUsers.filter((u: any) => {
+      if (checkinFilter === 'checked_in') return u.checked_in === 1;
+      if (checkinFilter === 'not_checked_in') return u.checked_in !== 1;
+      return true;
+    });
+  }, [checkinUsers, checkinFilter]);
+
+  const searchResultsCheckin = useAdvancedSearch(
+    filteredCheckinByStatus,
+    checkinSearchQuery,
+    ['name', 'email', 'phone', 'college', 'pass_id', 'team_name', 'competition']
+  );
+
+  const finalCheckin = useMemo(() => {
+    return checkinSearchQuery.trim() ? searchResultsCheckin.map((r: any) => r.item) : filteredCheckinByStatus;
+  }, [checkinSearchQuery, searchResultsCheckin, filteredCheckinByStatus]);
+
+  const checkinPagination = usePagination(finalCheckin, itemsPerPage);
 
   if (!admin || loading) return <div className="min-h-screen bg-[#080614] flex items-center justify-center text-white font-display">Loading Admin Control...</div>;
 
@@ -1172,10 +1219,10 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { label: 'Total Users', value: registrations.length, icon: Users, color: '#C9A84C' },
-                { label: 'Confirmed', value: registrations.filter(r => r.status === 'confirmed').length, icon: FileText, color: '#00FFFF' },
-                { label: 'Pending', value: registrations.filter(r => r.status === 'pending').length, icon: Clock, color: '#FFD700' },
-                { label: 'Total Revenue', value: `₹${registrations.reduce((acc, curr) => acc + parseFloat(curr.fee), 0)}`, icon: BarChart3, color: '#39FF14' },
-              ].map((stat) => (
+                { label: 'Confirmed', value: registrations.filter((r: any) => r.status === 'confirmed').length, icon: FileText, color: '#00FFFF' },
+                { label: 'Pending', value: registrations.filter((r: any) => r.status === 'pending').length, icon: Clock, color: '#FFD700' },
+                { label: 'Total Revenue', value: `₹${registrations.reduce((acc: number, curr: any) => acc + parseFloat(curr.fee), 0)}`, icon: BarChart3, color: '#39FF14' },
+              ].map((stat: any) => (
                 <div key={stat.label} className="glass-card p-6 rounded-xl border border-white/10">
                   <div className="flex justify-between items-start mb-4">
                     <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
@@ -1190,7 +1237,7 @@ export default function AdminDashboard() {
             <div className="glass-card p-8 rounded-2xl border border-white/10">
               <h3 className="text-xl font-display mb-6">Recent Activity</h3>
               <div className="space-y-4">
-                {registrations.slice(0, 5).map(reg => (
+                {registrations.slice(0, 5).map((reg: any) => (
                   <div
                     key={reg.id}
                     className="flex items-center justify-between p-4 border border-white/5 rounded-xl hover:bg-white/5 transition-all cursor-pointer"
@@ -1221,25 +1268,25 @@ export default function AdminDashboard() {
                 {/* Status Filter Tab Buttons */}
                 <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
                   <button
-                    onClick={() => { setRegistrationFilter('all'); setCurrentPage(1); }}
+                    onClick={() => { setRegistrationFilter('all'); regsPagination.goToPage(1); }}
                     className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'all' ? 'bg-[#C9A84C] text-[#080614] shadow-md' : 'text-white/60 hover:text-white'}`}
                   >
                     All
                   </button>
                   <button
-                    onClick={() => { setRegistrationFilter('confirmed'); setCurrentPage(1); }}
+                    onClick={() => { setRegistrationFilter('confirmed'); regsPagination.goToPage(1); }}
                     className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'confirmed' ? 'bg-[#39FF14] text-[#080614] shadow-md' : 'text-white/60 hover:text-white'}`}
                   >
                     Approved
                   </button>
                   <button
-                    onClick={() => { setRegistrationFilter('pending'); setCurrentPage(1); }}
+                    onClick={() => { setRegistrationFilter('pending'); regsPagination.goToPage(1); }}
                     className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'pending' ? 'bg-yellow-500 text-[#080614] shadow-md' : 'text-white/60 hover:text-white'}`}
                   >
                     Pending
                   </button>
                   <button
-                    onClick={() => { setRegistrationFilter('cancelled'); setCurrentPage(1); }}
+                    onClick={() => { setRegistrationFilter('cancelled'); regsPagination.goToPage(1); }}
                     className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${registrationFilter === 'cancelled' ? 'bg-red-500 text-white shadow-md' : 'text-white/60 hover:text-white'}`}
                   >
                     Declined
@@ -1251,7 +1298,7 @@ export default function AdminDashboard() {
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    onChange={(e) => { setSearchQuery(e.target.value); regsPagination.goToPage(1); }}
                     placeholder="Search participant or college..."
                     className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#C9A84C]/50 transition-all w-full"
                   />
@@ -1271,7 +1318,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  {paginatedRegistrations.map(reg => (
+                  {regsPagination.paginatedItems.map((reg: any) => (
                     <tr
                       key={reg.id}
                       className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group cursor-pointer"
@@ -1304,13 +1351,12 @@ export default function AdminDashboard() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          reg.status === 'confirmed' 
-                            ? 'bg-[#39FF14]/20 text-[#39FF14]' 
-                            : reg.status === 'cancelled'
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${reg.status === 'confirmed'
+                          ? 'bg-[#39FF14]/20 text-[#39FF14]'
+                          : reg.status === 'cancelled'
                             ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                             : 'bg-yellow-500/20 text-yellow-500'
-                        }`}>
+                          }`}>
                           {reg.status === 'cancelled' ? 'declined' : reg.status}
                         </span>
                         {reg.pass_id && <p className="text-[10px] font-mono text-white/30 mt-1">{reg.pass_id}</p>}
@@ -1333,10 +1379,10 @@ export default function AdminDashboard() {
                                 Approve
                               </button>
                               <button
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  setDeclineRegId(reg.id); 
-                                  setShowDeclineModal(true); 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeclineRegId(reg.id);
+                                  setShowDeclineModal(true);
                                 }}
                                 className="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-red-600 transition-all flex items-center gap-1 shrink-0"
                               >
@@ -1373,30 +1419,15 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
 
-              {totalPages > 1 && (
-                <div className="p-4 border-t border-white/10 flex items-center justify-between">
-                  <p className="text-xs text-white/40">
-                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredRegistrations.length)} of {filteredRegistrations.length} entries
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="px-3 py-1 bg-white/5 border border-white/10 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-xs transition-colors"
-                    >
-                      Previous
-                    </button>
-                    <span className="text-xs text-white/60">Page {currentPage} of {totalPages}</span>
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                      className="px-3 py-1 bg-white/5 border border-white/10 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-xs transition-colors"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              )}
+              <PaginationControls
+                currentPage={regsPagination.currentPage}
+                totalPages={regsPagination.totalPages}
+                totalItems={regsPagination.totalItems}
+                itemsPerPage={regsPagination.itemsPerPage}
+                onNextPage={regsPagination.nextPage}
+                onPrevPage={regsPagination.prevPage}
+                onGoToPage={regsPagination.goToPage}
+              />
             </div>
           </div>
         )}
@@ -1404,32 +1435,19 @@ export default function AdminDashboard() {
 
 
         {activeTab === 'users' && (() => {
-          const filtered = allUsers.filter(u => {
-            const term = usersSearchQuery.toLowerCase();
-            return (
-              (u.name || '').toLowerCase().includes(term) ||
-              (u.email || '').toLowerCase().includes(term) ||
-              (u.phone || '').toLowerCase().includes(term) ||
-              (u.college || '').toLowerCase().includes(term) ||
-              (u.college_id || '').toLowerCase().includes(term) ||
-              (u.role || '').toLowerCase().includes(term) ||
-              String(u.id).includes(term)
-            );
-          });
-
           return (
             <div className="glass-card rounded-2xl border border-red-500/30 overflow-hidden shadow-[0_0_30px_rgba(255,0,0,0.1)]">
               <div className="p-6 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-red-500/5">
                 <div>
                   <h3 className="text-xl font-display text-red-400 flex items-center gap-2"><Settings className="w-5 h-5" />  User Management</h3>
-                  <p className="text-xs text-white/40">Total Users: {allUsers.length} {usersSearchQuery && `(Found ${filtered.length})`}</p>
+                  <p className="text-xs text-white/40">Total Users: {allUsers.length} {usersSearchQuery && `(Found ${usersPagination.totalItems})`}</p>
                 </div>
                 <div className="relative w-full md:w-80">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
                   <input
                     type="text"
                     value={usersSearchQuery}
-                    onChange={(e) => setUsersSearchQuery(e.target.value)}
+                    onChange={(e) => { setUsersSearchQuery(e.target.value); usersPagination.goToPage(1); }}
                     placeholder="Search name, email, college, ID..."
                     className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-red-500/50 transition-all w-full text-white"
                   />
@@ -1448,7 +1466,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-sm">
-                    {filtered.map(u => (
+                    {usersPagination.paginatedItems.map((u: any) => (
                       <tr key={u.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-4 font-mono text-xs text-white/40">{u.id}</td>
                         <td className="px-6 py-4">
@@ -1485,36 +1503,35 @@ export default function AdminDashboard() {
                         </td>
                       </tr>
                     ))}
-                    {filtered.length === 0 && (
+                    {usersPagination.totalItems === 0 && (
                       <tr>
                         <td colSpan={6} className="text-center py-12 text-white/30 italic">No users found matching your search.</td>
                       </tr>
                     )}
                   </tbody>
                 </table>
+
+                <PaginationControls
+                  currentPage={usersPagination.currentPage}
+                  totalPages={usersPagination.totalPages}
+                  totalItems={usersPagination.totalItems}
+                  itemsPerPage={usersPagination.itemsPerPage}
+                  onNextPage={usersPagination.nextPage}
+                  onPrevPage={usersPagination.prevPage}
+                  onGoToPage={usersPagination.goToPage}
+                />
               </div>
             </div>
           );
         })()}
 
         {activeTab === 'volunteers' && (() => {
-          const filtered = volunteers.filter(v => {
-            const term = volunteersSearchQuery.toLowerCase();
-            return (
-              (v.name || '').toLowerCase().includes(term) ||
-              (v.email || '').toLowerCase().includes(term) ||
-              (v.phone || '').toLowerCase().includes(term) ||
-              (v.college || '').toLowerCase().includes(term) ||
-              (v.college_id || '').toLowerCase().includes(term)
-            );
-          });
-
           return (
             <div className="glass-card rounded-2xl border border-blue-500/30 overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.1)]">
               <div className="p-6 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-500/5">
                 <div>
                   <h3 className="text-xl font-display text-blue-400 flex items-center gap-2"><CheckCircle className="w-5 h-5" /> Volunteers Directory</h3>
-                  <p className="text-xs text-white/40">Total Volunteers: {volunteers.length} {volunteersSearchQuery && `(Found ${filtered.length})`}</p>
+                  <p className="text-xs text-white/40">Total Volunteers: {volunteers.length} {volunteersSearchQuery && `(Found ${volunteersPagination.totalItems})`}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
                   {/* Search Box */}
@@ -1523,14 +1540,14 @@ export default function AdminDashboard() {
                     <input
                       type="text"
                       value={volunteersSearchQuery}
-                      onChange={(e) => setVolunteersSearchQuery(e.target.value)}
+                      onChange={(e) => { setVolunteersSearchQuery(e.target.value); volunteersPagination.goToPage(1); }}
                       placeholder="Search volunteer..."
                       className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all w-full text-white"
                     />
                   </div>
 
                   {/* Download Template */}
-                  <button 
+                  <button
                     onClick={handleDownloadTemplate}
                     className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all text-xs font-bold uppercase tracking-widest w-full sm:w-auto"
                   >
@@ -1555,7 +1572,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-[#080614]">
-                {filtered.map(v => (
+                {volunteersPagination.paginatedItems.map((v: any) => (
                   <div key={v.id} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all cursor-pointer flex flex-col justify-between" onClick={() => setSelectedVolunteer(v)}>
                     <div>
                       <div className="flex items-start justify-between mb-4">
@@ -1578,7 +1595,7 @@ export default function AdminDashboard() {
                     <button className="w-full py-2 bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-widest rounded hover:bg-blue-500/20 transition-all">Manage Tasks</button>
                   </div>
                 ))}
-                {filtered.length === 0 && (
+                {volunteersPagination.totalItems === 0 && (
                   <div className="col-span-full py-12 text-center border border-dashed border-white/10 rounded-xl">
                     <CheckCircle className="w-8 h-8 text-white/20 mx-auto mb-3" />
                     <p className="text-white/40 text-sm">No volunteers found</p>
@@ -1586,6 +1603,16 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+
+              <PaginationControls
+                currentPage={volunteersPagination.currentPage}
+                totalPages={volunteersPagination.totalPages}
+                totalItems={volunteersPagination.totalItems}
+                itemsPerPage={volunteersPagination.itemsPerPage}
+                onNextPage={volunteersPagination.nextPage}
+                onPrevPage={volunteersPagination.prevPage}
+                onGoToPage={volunteersPagination.goToPage}
+              />
             </div>
           );
         })()}
@@ -1639,19 +1666,19 @@ export default function AdminDashboard() {
                   {/* Filters */}
                   <div className="flex bg-white/5 p-1 rounded-lg border border-white/10">
                     <button
-                      onClick={() => { setCheckinFilter('all'); setCheckinCurrentPage(1); }}
+                      onClick={() => { setCheckinFilter('all'); checkinPagination.goToPage(1); }}
                       className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${checkinFilter === 'all' ? 'bg-[#C9A84C] text-[#080614]' : 'text-white/60 hover:text-white'}`}
                     >
                       All
                     </button>
                     <button
-                      onClick={() => { setCheckinFilter('checked_in'); setCheckinCurrentPage(1); }}
+                      onClick={() => { setCheckinFilter('checked_in'); checkinPagination.goToPage(1); }}
                       className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${checkinFilter === 'checked_in' ? 'bg-emerald-500 text-[#080614]' : 'text-white/60 hover:text-white'}`}
                     >
                       Checked In
                     </button>
                     <button
-                      onClick={() => { setCheckinFilter('not_checked_in'); setCheckinCurrentPage(1); }}
+                      onClick={() => { setCheckinFilter('not_checked_in'); checkinPagination.goToPage(1); }}
                       className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${checkinFilter === 'not_checked_in' ? 'bg-red-500 text-white' : 'text-white/60 hover:text-white'}`}
                     >
                       Not Checked In
@@ -1664,7 +1691,7 @@ export default function AdminDashboard() {
                     <input
                       type="text"
                       value={checkinSearchQuery}
-                      onChange={(e) => { setCheckinSearchQuery(e.target.value); setCheckinCurrentPage(1); }}
+                      onChange={(e) => { setCheckinSearchQuery(e.target.value); checkinPagination.goToPage(1); }}
                       placeholder="Search name, college, or Pass ID..."
                       className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all w-full"
                     />
@@ -1684,121 +1711,70 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-sm">
-                    {(() => {
-                      const filtered = checkinUsers.filter(u => {
-                        const matchesSearch =
-                          (u.name || '').toLowerCase().includes(checkinSearchQuery.toLowerCase()) ||
-                          (u.email || '').toLowerCase().includes(checkinSearchQuery.toLowerCase()) ||
-                          (u.phone || '').toLowerCase().includes(checkinSearchQuery.toLowerCase()) ||
-                          (u.college || '').toLowerCase().includes(checkinSearchQuery.toLowerCase()) ||
-                          (u.pass_id || '').toLowerCase().includes(checkinSearchQuery.toLowerCase()) ||
-                          (u.team_name || '').toLowerCase().includes(checkinSearchQuery.toLowerCase()) ||
-                          (u.competition || '').toLowerCase().includes(checkinSearchQuery.toLowerCase());
-
-                        if (checkinFilter === 'checked_in') {
-                          return matchesSearch && u.checked_in === 1;
-                        }
-                        if (checkinFilter === 'not_checked_in') {
-                          return matchesSearch && u.checked_in !== 1;
-                        }
-                        return matchesSearch;
-                      });
-
-                      const totalCheckinPages = Math.ceil(filtered.length / itemsPerPage);
-                      const paginated = filtered.slice((checkinCurrentPage - 1) * itemsPerPage, checkinCurrentPage * itemsPerPage);
-
-                      if (paginated.length === 0) {
-                        return (
-                          <tr>
-                            <td colSpan={5} className="text-center py-12 text-white/30 italic">
-                              No participants match the selected criteria.
-                            </td>
-                          </tr>
-                        );
-                      }
-
-                      return (
-                        <>
-                          {paginated.map(u => (
-                            <tr key={`${u.role}-${u.id}`} className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
-                              <td className="px-6 py-4">
-                                <p className="font-bold text-white">{u.name}</p>
-                                <p className="text-xs text-white/40">{u.email}</p>
-                                <p className="text-xs text-white/40">{u.phone}</p>
-                              </td>
-                              <td className="px-6 py-4">
-                                <p className="font-medium text-white/80">{u.college}</p>
-                                <p className="text-xs text-white/30">{u.college_id}</p>
-                              </td>
-                              <td className="px-6 py-4">
-                                <p className="font-semibold text-[#C9A84C]">{u.competition}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${u.role === 'TEAM LEADER' ? 'bg-[#C9A84C]/20 text-[#C9A84C]' :
-                                    u.role === 'MEMBER' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
-                                    }`}>
-                                    {u.role}
-                                  </span>
-                                  {u.team_name && (
-                                    <span className="text-[10px] text-white/40 font-mono">({u.team_name})</span>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 font-mono text-xs text-[#00FFFF]">
-                                {u.pass_id || 'Generating...'}
-                              </td>
-                              <td className="px-6 py-4">
-                                {u.checked_in === 1 ? (
-                                  <div>
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                      Checked In
-                                    </span>
-                                    <p className="text-[10px] text-white/30 mt-1 font-mono">{u.checked_in_at}</p>
-                                  </div>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-white/5 text-white/40 border border-white/10">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                                    Not Checked In
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-
-                          {/* Pagination Row inside the Table Container */}
-                          {totalCheckinPages > 1 && (
-                            <tr>
-                              <td colSpan={5} className="p-4 border-t border-white/10">
-                                <div className="flex items-center justify-between">
-                                  <p className="text-xs text-white/40">
-                                    Showing {(checkinCurrentPage - 1) * itemsPerPage + 1} to {Math.min(checkinCurrentPage * itemsPerPage, filtered.length)} of {filtered.length} entries
-                                  </p>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => setCheckinCurrentPage(prev => Math.max(prev - 1, 1))}
-                                      disabled={checkinCurrentPage === 1}
-                                      className="px-3 py-1 bg-white/5 border border-white/10 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-xs transition-colors text-white"
-                                    >
-                                      Previous
-                                    </button>
-                                    <span className="text-xs text-white/60">Page {checkinCurrentPage} of {totalCheckinPages}</span>
-                                    <button
-                                      onClick={() => setCheckinCurrentPage(prev => Math.min(prev + 1, totalCheckinPages))}
-                                      disabled={checkinCurrentPage === totalCheckinPages}
-                                      className="px-3 py-1 bg-white/5 border border-white/10 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-xs transition-colors text-white"
-                                    >
-                                      Next
-                                    </button>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
+                    {checkinPagination.paginatedItems.map((u: any) => (
+                      <tr key={`${u.role}-${u.id}`} className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-white">{u.name}</p>
+                          <p className="text-xs text-white/40">{u.email}</p>
+                          <p className="text-xs text-white/40">{u.phone}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-medium text-white/80">{u.college}</p>
+                          <p className="text-xs text-white/30">{u.college_id}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-semibold text-[#C9A84C]">{u.competition}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${u.role === 'TEAM LEADER' ? 'bg-[#C9A84C]/20 text-[#C9A84C]' :
+                              u.role === 'MEMBER' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'
+                              }`}>
+                              {u.role}
+                            </span>
+                            {u.team_name && (
+                              <span className="text-[10px] text-white/40 font-mono">({u.team_name})</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-mono text-xs text-[#00FFFF]">
+                          {u.pass_id || 'Generating...'}
+                        </td>
+                        <td className="px-6 py-4">
+                          {u.checked_in === 1 ? (
+                            <div>
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                Checked In
+                              </span>
+                              <p className="text-[10px] text-white/30 mt-1 font-mono">{u.checked_in_at}</p>
+                            </div>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-white/5 text-white/40 border border-white/10">
+                              <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                              Not Checked In
+                            </span>
                           )}
-                        </>
-                      );
-                    })()}
+                        </td>
+                      </tr>
+                    ))}
+                    {checkinPagination.totalItems === 0 && (
+                      <tr>
+                        <td colSpan={5} className="text-center py-12 text-white/30 italic">
+                          No participants match the selected criteria.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
+
+                <PaginationControls
+                  currentPage={checkinPagination.currentPage}
+                  totalPages={checkinPagination.totalPages}
+                  totalItems={checkinPagination.totalItems}
+                  itemsPerPage={checkinPagination.itemsPerPage}
+                  onNextPage={checkinPagination.nextPage}
+                  onPrevPage={checkinPagination.prevPage}
+                  onGoToPage={checkinPagination.goToPage}
+                />
               </div>
             </div>
           </div>
@@ -1929,7 +1905,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </div>
-                  
+
                   {selectedReg.entry_type === 'team' && (
                     <div className="mt-3">
                       {!showAddMemberForm ? (
@@ -2200,12 +2176,12 @@ export default function AdminDashboard() {
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 to-red-900" />
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-display text-white">Decline Registration</h3>
-              <button 
+              <button
                 onClick={() => {
                   setShowDeclineModal(false);
                   setDeclineReason('');
                   setDeclineRegId(null);
-                }} 
+                }}
                 className="text-white/40 hover:text-white"
               >
                 <X className="w-6 h-6" />
@@ -2231,11 +2207,10 @@ export default function AdminDashboard() {
                       key={reason}
                       type="button"
                       onClick={() => setDeclineReason(reason)}
-                      className={`text-xs px-3 py-1.5 rounded-xl border transition-all ${
-                        declineReason === reason
-                          ? 'bg-red-500/20 text-red-400 border-red-500/40 font-bold'
-                          : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
-                      }`}
+                      className={`text-xs px-3 py-1.5 rounded-xl border transition-all ${declineReason === reason
+                        ? 'bg-red-500/20 text-red-400 border-red-500/40 font-bold'
+                        : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                        }`}
                     >
                       {reason}
                     </button>

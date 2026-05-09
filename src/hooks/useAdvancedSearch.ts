@@ -19,20 +19,20 @@ export interface SearchResult<T> {
 const fuzzyMatch = (term: string, text: string): number => {
   const lowerTerm = term.toLowerCase();
   const lowerText = text.toLowerCase();
-  
+
   if (lowerText === lowerTerm) return 1; // Exact match
   if (lowerText.includes(lowerTerm)) return 0.8; // Substring
-  
+
   let score = 0;
   let termIndex = 0;
-  
+
   for (let i = 0; i < lowerText.length && termIndex < lowerTerm.length; i++) {
     if (lowerText[i] === lowerTerm[termIndex]) {
       score += 1;
       termIndex++;
     }
   }
-  
+
   return termIndex === lowerTerm.length ? score / lowerText.length : 0;
 };
 
@@ -71,17 +71,14 @@ export const useAdvancedSearch = <T extends Record<string, any>>(
 
         if (compareText) {
           let fieldScore = 0;
-          let matchType: 'exact' | 'partial' | 'fuzzy' = 'partial';
 
           if (compareText === term) {
             fieldScore = 1;
-            matchType = 'exact';
             hasExactMatch = true;
           } else if (compareText.includes(term)) {
             // Boost score for position - early matches score higher
             const position = compareText.indexOf(term);
             fieldScore = 0.8 + (0.2 * (1 - position / compareText.length));
-            matchType = 'partial';
           } else if (fuzzy) {
             fieldScore = fuzzyMatch(term, textValue);
           }
@@ -97,7 +94,7 @@ export const useAdvancedSearch = <T extends Record<string, any>>(
       if (matchCount > 0) {
         // Normalize score
         const normalizedScore = totalScore / matchCount;
-        
+
         // Boost exact matches to top
         const finalScore = prioritizeExactMatches && hasExactMatch ? normalizedScore + 1 : normalizedScore;
 
@@ -114,7 +111,7 @@ export const useAdvancedSearch = <T extends Record<string, any>>(
     return results.sort((a, b) => {
       const scoreCompare = b.score - a.score;
       if (scoreCompare !== 0) return scoreCompare;
-      
+
       const matchTypeOrder = { exact: 3, partial: 2, fuzzy: 1 };
       return matchTypeOrder[b.matchType] - matchTypeOrder[a.matchType];
     });
@@ -143,15 +140,15 @@ export const useSort = <T,>(
 ): T[] => {
   return useMemo(() => {
     if (!sortKey) return items;
-    
+
     const sorted = [...items].sort((a, b) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
-      
+
       if (aVal === bVal) return 0;
       if (aVal === null || aVal === undefined) return 1;
       if (bVal === null || bVal === undefined) return -1;
-      
+
       let comparison = 0;
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         comparison = aVal.localeCompare(bVal);
@@ -160,10 +157,10 @@ export const useSort = <T,>(
       } else {
         comparison = String(aVal).localeCompare(String(bVal));
       }
-      
+
       return direction === 'asc' ? comparison : -comparison;
     });
-    
+
     return sorted;
   }, [items, sortKey, direction]);
 };
