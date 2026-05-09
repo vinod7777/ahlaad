@@ -27,6 +27,13 @@ if ($is_localhost) {
     define('DB_NAME', 'u213825351_ahlaad');
 }
 
+function addColumnIfNeeded($conn, $table, $column, $definition) {
+    $result = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+    if ($result && $result->num_rows === 0) {
+        $conn->query("ALTER TABLE `$table` ADD `$column` $definition");
+    }
+}
+
 function getDB() {
     // Initial connection without database selection to ensure we can create the DB
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
@@ -100,11 +107,12 @@ function getDB() {
     ");
 
     // Add columns if they don't exist (for existing databases)
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS utr_id VARCHAR(100) DEFAULT NULL AFTER fee");
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_proof VARCHAR(255) DEFAULT NULL AFTER utr_id");
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS tid VARCHAR(100) DEFAULT NULL AFTER payment_proof");
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS decline_reason TEXT DEFAULT NULL AFTER status");
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS team_id VARCHAR(50) DEFAULT NULL AFTER decline_reason");
+    addColumnIfNeeded($conn, 'registrations', 'utr_id', "VARCHAR(100) DEFAULT NULL AFTER fee");
+    addColumnIfNeeded($conn, 'registrations', 'payment_proof', "VARCHAR(255) DEFAULT NULL AFTER utr_id");
+    addColumnIfNeeded($conn, 'registrations', 'tid', "VARCHAR(100) DEFAULT NULL AFTER payment_proof");
+    addColumnIfNeeded($conn, 'registrations', 'decline_reason', "TEXT DEFAULT NULL AFTER status");
+    addColumnIfNeeded($conn, 'registrations', 'team_id', "VARCHAR(50) DEFAULT NULL AFTER decline_reason");
+    addColumnIfNeeded($conn, 'registrations', 'pass_id', "VARCHAR(50) UNIQUE DEFAULT NULL AFTER team_id");
 
     // 3. Registration Members table (for team members)
     $conn->query("
@@ -123,18 +131,19 @@ function getDB() {
     ");
 
     // Add columns if they don't exist
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS email VARCHAR(255) DEFAULT NULL AFTER member_name");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS phone VARCHAR(20) DEFAULT NULL AFTER email");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS college VARCHAR(255) DEFAULT NULL AFTER phone");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS college_id VARCHAR(100) DEFAULT NULL AFTER college");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS tid VARCHAR(100) DEFAULT NULL AFTER college_id");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS team_id VARCHAR(50) DEFAULT NULL AFTER tid");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS checked_in TINYINT(1) DEFAULT 0");
-    $conn->query("ALTER TABLE registration_members ADD COLUMN IF NOT EXISTS checked_in_at DATETIME DEFAULT NULL");
+    addColumnIfNeeded($conn, 'registration_members', 'email', "VARCHAR(255) DEFAULT NULL AFTER member_name");
+    addColumnIfNeeded($conn, 'registration_members', 'phone', "VARCHAR(20) DEFAULT NULL AFTER email");
+    addColumnIfNeeded($conn, 'registration_members', 'college', "VARCHAR(255) DEFAULT NULL AFTER phone");
+    addColumnIfNeeded($conn, 'registration_members', 'college_id', "VARCHAR(100) DEFAULT NULL AFTER college");
+    addColumnIfNeeded($conn, 'registration_members', 'tid', "VARCHAR(100) DEFAULT NULL AFTER college_id");
+    addColumnIfNeeded($conn, 'registration_members', 'team_id', "VARCHAR(50) DEFAULT NULL AFTER tid");
+    addColumnIfNeeded($conn, 'registration_members', 'pass_id', "VARCHAR(50) UNIQUE DEFAULT NULL AFTER team_id");
+    addColumnIfNeeded($conn, 'registration_members', 'checked_in', "TINYINT(1) DEFAULT 0");
+    addColumnIfNeeded($conn, 'registration_members', 'checked_in_at', "DATETIME DEFAULT NULL");
 
     // Add checkin columns to registrations table too
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS checked_in TINYINT(1) DEFAULT 0");
-    $conn->query("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS checked_in_at DATETIME DEFAULT NULL");
+    addColumnIfNeeded($conn, 'registrations', 'checked_in', "TINYINT(1) DEFAULT 0");
+    addColumnIfNeeded($conn, 'registrations', 'checked_in_at', "DATETIME DEFAULT NULL");
 
     // 4. Events Timeline table
     $conn->query("

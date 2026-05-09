@@ -567,23 +567,32 @@ export default function AdminDashboard() {
 
   const fetchAdminData = async () => {
     try {
-      const [res1, res2, res3, res4, res5] = await Promise.all([
-        fetch(`${API_BASE_URL}/admin_get_all_data.php`),
-        fetch(`${API_BASE_URL}/admin_get_users.php`),
-        fetch(`${API_BASE_URL}/admin_get_volunteers_tasks.php`),
-        fetch(`${API_BASE_URL}/checkin_get_all.php`),
-        fetch(`${API_BASE_URL}/admin_get_analytics.php`)
-      ]);
-      const data = await res1.json();
-      const usersData = await res2.json();
-      const volsData = await res3.json();
-      const checkinData = await res4.json();
-      const analyticsRes = await res5.json();
+      const safeFetchJson = async (url: string) => {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            console.warn(`Fetch to ${url} failed with status: ${res.status}`);
+            return { success: false, status: res.status };
+          }
+          return await res.json();
+        } catch (err) {
+          console.error(`Failed to parse/fetch JSON from ${url}:`, err);
+          return { success: false, error: err };
+        }
+      };
 
-      if (analyticsRes.success) {
+      const [data, usersData, volsData, checkinData, analyticsRes] = await Promise.all([
+        safeFetchJson(`${API_BASE_URL}/admin_get_all_data.php`),
+        safeFetchJson(`${API_BASE_URL}/admin_get_users.php`),
+        safeFetchJson(`${API_BASE_URL}/admin_get_volunteers_tasks.php`),
+        safeFetchJson(`${API_BASE_URL}/checkin_get_all.php`),
+        safeFetchJson(`${API_BASE_URL}/admin_get_analytics.php`)
+      ]);
+
+      if (analyticsRes && analyticsRes.success) {
         setAnalytics(analyticsRes);
       }
-      if (data.success) {
+      if (data && data.success) {
         setRegistrations(data.registrations);
         // Sync active registration details modal view in real-time
         setSelectedReg((prevSelected: any) => {
@@ -595,7 +604,7 @@ export default function AdminDashboard() {
           setRegistrationEnabled(data.settings.registration_enabled);
         }
       }
-      if (usersData.success) {
+      if (usersData && usersData.success) {
         setAllUsers(usersData.users);
         // Sync active user details modal view in real-time
         setSelectedUser((prevSelected: any) => {
@@ -604,7 +613,7 @@ export default function AdminDashboard() {
           return updated || prevSelected;
         });
       }
-      if (volsData.success) {
+      if (volsData && volsData.success) {
         setVolunteers(volsData.volunteers);
         // Sync active volunteer details modal view in real-time
         setSelectedVolunteer((prevSelected: any) => {
@@ -613,7 +622,7 @@ export default function AdminDashboard() {
           return updated || prevSelected;
         });
       }
-      if (checkinData.success) {
+      if (checkinData && checkinData.success) {
         setCheckinUsers(checkinData.data);
       }
       setLoading(false);
@@ -1394,7 +1403,10 @@ export default function AdminDashboard() {
                   <div
                     key={idx}
                     className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all cursor-pointer group"
-                    onClick={() => setSelectedReg(reg)}
+                    onClick={() => {
+                      const fullReg = registrations.find(full => full.id === reg.id);
+                      setSelectedReg(fullReg || reg);
+                    }}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="w-8 h-8 rounded-full bg-[#C9A84C]/10 flex items-center justify-center text-[#C9A84C] font-bold text-xs">
@@ -2137,7 +2149,7 @@ export default function AdminDashboard() {
                           <p className="text-[9px] text-white/30 uppercase tracking-tighter">Team Leader / Participant</p>
                         </div>
                       </div>
-                      {selectedReg.entry_type === 'team' && selectedReg.members.map((m: any) => (
+                      {selectedReg.entry_type === 'team' && selectedReg.members && selectedReg.members.map((m: any) => (
                         <div key={m.id} className="flex items-center justify-between gap-3 bg-white/[0.02] p-2 rounded-xl border border-white/5">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] text-white/60 font-bold shrink-0">
@@ -2158,7 +2170,7 @@ export default function AdminDashboard() {
                           </button>
                         </div>
                       ))}
-                      {selectedReg.entry_type === 'team' && selectedReg.members.length === 0 && (
+                      {selectedReg.entry_type === 'team' && (!selectedReg.members || selectedReg.members.length === 0) && (
                         <p className="text-[10px] text-white/20 text-center py-4">No team members added yet.</p>
                       )}
                     </div>
