@@ -561,20 +561,33 @@ export default function AdminDashboard() {
       const checkinData = await res4.json();
       if (data.success) {
         setRegistrations(data.registrations);
+        // Sync active registration details modal view in real-time
+        setSelectedReg(prevSelected => {
+          if (!prevSelected) return null;
+          const updated = data.registrations.find((r: any) => r.id === prevSelected.id);
+          return updated || prevSelected;
+        });
         if (data.settings && data.settings.registration_enabled !== undefined) {
           setRegistrationEnabled(data.settings.registration_enabled);
         }
       }
       if (usersData.success) {
         setAllUsers(usersData.users);
+        // Sync active user details modal view in real-time
+        setSelectedUser(prevSelected => {
+          if (!prevSelected) return null;
+          const updated = usersData.users.find((u: any) => u.id === prevSelected.id);
+          return updated || prevSelected;
+        });
       }
       if (volsData.success) {
         setVolunteers(volsData.volunteers);
-        // Refresh selected volunteer if open
-        if (selectedVolunteer) {
-          const updated = volsData.volunteers.find((v: any) => v.id === selectedVolunteer.id);
-          if (updated) setSelectedVolunteer(updated);
-        }
+        // Sync active volunteer details modal view in real-time
+        setSelectedVolunteer(prevSelected => {
+          if (!prevSelected) return null;
+          const updated = volsData.volunteers.find((v: any) => v.id === prevSelected.id);
+          return updated || prevSelected;
+        });
       }
       if (checkinData.success) {
         setCheckinUsers(checkinData.data);
