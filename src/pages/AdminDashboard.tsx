@@ -2,8 +2,8 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock,
-  CheckCircle, Menu, X, Settings, Upload, QrCode, Plus, Trash2,
-  Trophy, Activity, TrendingUp
+  CheckCircle, Menu, X, Settings, QrCode, Plus, Trash2,
+  Trophy, Activity, TrendingUp, Shield
 } from 'lucide-react';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -23,18 +23,14 @@ export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'users' | 'volunteers' | 'checkin_status' | 'teams_report'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'users' | 'checkin_status' | 'teams_report'>('overview');
   const [selectedReg, setSelectedReg] = useState<any>(null);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [registrationEnabled, setRegistrationEnabled] = useState(true);
   const [allUsers, setAllUsers] = useState<any[]>([]);
-  const [volunteers, setVolunteers] = useState<any[]>([]);
-  const [selectedVolunteer, setSelectedVolunteer] = useState<any>(null);
-  const [newTaskText, setNewTaskText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [usersSearchQuery, setUsersSearchQuery] = useState('');
-  const [volunteersSearchQuery, setVolunteersSearchQuery] = useState('');
   const [registrationFilter, setRegistrationFilter] = useState<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');
   const [checkinUsers, setCheckinUsers] = useState<any[]>([]);
   const [checkinSearchQuery, setCheckinSearchQuery] = useState('');
@@ -50,8 +46,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const [reportSearchQuery, setReportSearchQuery] = useState('');
-
-
+  const [selectedEventForModal, setSelectedEventForModal] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedReg) {
@@ -555,7 +550,7 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   useEffect(() => {
-    if (selectedReg || selectedUser || selectedVolunteer || showDeclineModal) {
+    if (selectedReg || selectedUser || showDeclineModal) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -563,7 +558,7 @@ export default function AdminDashboard() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [selectedReg, selectedUser, selectedVolunteer, showDeclineModal]);
+  }, [selectedReg, selectedUser, showDeclineModal]);
 
   const fetchAdminData = async () => {
     try {
@@ -581,10 +576,9 @@ export default function AdminDashboard() {
         }
       };
 
-      const [data, usersData, volsData, checkinData, analyticsRes] = await Promise.all([
+      const [data, usersData, checkinData, analyticsRes] = await Promise.all([
         safeFetchJson(`${API_BASE_URL}/admin_get_all_data.php`),
         safeFetchJson(`${API_BASE_URL}/admin_get_users.php`),
-        safeFetchJson(`${API_BASE_URL}/admin_get_volunteers_tasks.php`),
         safeFetchJson(`${API_BASE_URL}/checkin_get_all.php`),
         safeFetchJson(`${API_BASE_URL}/admin_get_analytics.php`)
       ]);
@@ -610,15 +604,6 @@ export default function AdminDashboard() {
         setSelectedUser((prevSelected: any) => {
           if (!prevSelected) return null;
           const updated = usersData.users.find((u: any) => u.id === prevSelected.id);
-          return updated || prevSelected;
-        });
-      }
-      if (volsData && volsData.success) {
-        setVolunteers(volsData.volunteers);
-        // Sync active volunteer details modal view in real-time
-        setSelectedVolunteer((prevSelected: any) => {
-          if (!prevSelected) return null;
-          const updated = volsData.volunteers.find((v: any) => v.id === prevSelected.id);
           return updated || prevSelected;
         });
       }
@@ -876,109 +861,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAssignTask = async (volunteerId: number) => {
-    if (!newTaskText) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/admin_assign_task.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ volunteer_id: volunteerId, task_description: newTaskText })
-      });
-      const data = await response.json();
-      if (data.success) {
-        setNewTaskText('');
-        fetchAdminData();
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      alert('Failed to assign task');
-    }
-  };
 
-  const handleUpdateTaskStatus = async (taskId: number, status: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/admin_update_task.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task_id: taskId, status })
-      });
-      const data = await response.json();
-      if (data.success) {
-        fetchAdminData();
-      }
-    } catch (error) {
-      alert('Failed to update task');
-    }
-  };
-
-  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const text = event.target?.result as string;
-      const rows = text.split('\n').map(row => row.split(',').map(col => col.trim().replace(/^"|"$/g, '')));
-
-      const headers = rows[0].map(h => h.toLowerCase());
-      const nameIdx = headers.findIndex(h => h.includes('name'));
-      const emailIdx = headers.findIndex(h => h.includes('email'));
-      const phoneIdx = headers.findIndex(h => h.includes('phone'));
-      const colIdx = headers.findIndex(h => h.includes('college') && !h.includes('id'));
-      const colIdIdx = headers.findIndex(h => h.includes('id') && h.includes('college'));
-
-      const parsedVolunteers = [];
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        if (row.length < 2 || (!row[nameIdx !== -1 ? nameIdx : 0] && !row[emailIdx !== -1 ? emailIdx : 1])) continue;
-
-        parsedVolunteers.push({
-          name: nameIdx !== -1 ? row[nameIdx] : row[0],
-          email: emailIdx !== -1 ? row[emailIdx] : row[1],
-          phone: phoneIdx !== -1 ? row[phoneIdx] : (row[2] || ''),
-          college: colIdx !== -1 ? row[colIdx] : (row[3] || ''),
-          college_id: colIdIdx !== -1 ? row[colIdIdx] : (row[4] || '')
-        });
-      }
-
-      if (parsedVolunteers.length === 0) {
-        alert("No valid rows found in CSV. Make sure you export as a CSV (Comma Delimited) file.");
-        return;
-      }
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/admin_import_volunteers.php`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ volunteers: parsedVolunteers })
-        });
-        const data = await response.json();
-        alert(data.message);
-        if (data.success) {
-          fetchAdminData();
-        }
-      } catch (error) {
-        alert("Failed to upload volunteer data");
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = ''; // reset
-  };
-
-  const handleDownloadTemplate = () => {
-    const csvContent = "Name,Email,Phone,College,College ID\n";
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "volunteers_template.csv");
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
 
   // --- SEARCH AND PAGINATION HOOKS ---
@@ -1013,18 +896,7 @@ export default function AdminDashboard() {
 
   const usersPagination = usePagination(finalUsers, itemsPerPage);
 
-  // 3. Volunteers
-  const searchResultsVolunteers = useAdvancedSearch(
-    volunteers,
-    volunteersSearchQuery,
-    ['name', 'email', 'phone', 'college', 'college_id']
-  );
 
-  const finalVolunteers = useMemo(() => {
-    return volunteersSearchQuery.trim() ? searchResultsVolunteers.map((r: any) => r.item) : volunteers;
-  }, [volunteersSearchQuery, searchResultsVolunteers, volunteers]);
-
-  const volunteersPagination = usePagination(finalVolunteers, 9); // 3x3 grid
 
   // 4. Check-ins
   const filteredCheckinByStatus = useMemo(() => {
@@ -1094,13 +966,7 @@ export default function AdminDashboard() {
             <Settings className="w-5 h-5" />
             Manage Users
           </button>
-          <button
-            onClick={() => { setActiveTab('volunteers'); setIsMobileMenuOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'volunteers' ? 'bg-blue-500/10 text-blue-400' : 'text-white/60 hover:bg-white/5'}`}
-          >
-            <CheckCircle className="w-5 h-5" />
-            Volunteers
-          </button>
+
           <button
             onClick={() => { setActiveTab('checkin_status'); setIsMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === 'checkin_status' ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'text-white/60 hover:bg-white/5'}`}
@@ -1150,10 +1016,9 @@ export default function AdminDashboard() {
               <h1 className="text-2xl md:text-3xl font-display">
                 {activeTab === 'overview' ? 'System Overview' :
                   activeTab === 'participants' ? 'Manage Registrations' :
-                    activeTab === 'volunteers' ? 'Volunteers Management' :
-                      activeTab === 'checkin_status' ? 'Check-In Overview' :
-                        activeTab === 'teams_report' ? 'Teams Registration Report' :
-                          'User Management'}
+                    activeTab === 'checkin_status' ? 'Check-In Overview' :
+                      activeTab === 'teams_report' ? 'Teams Registration Report' :
+                        'User Management'}
               </h1>
               <p className="text-xs md:text-sm text-white/40">Ahlaad 2K26 Administrative Control Center</p>
             </div>
@@ -1384,51 +1249,113 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Recent Activity Grid */}
-            <div className="glass-card p-8 rounded-3xl border border-white/10 bg-white/[0.01]">
-              <div className="flex justify-between items-center mb-8">
-                <div>
-                  <h3 className="text-lg font-display flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-[#C9A84C]" />
-                    Recent Activity
-                  </h3>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Latest 9 registration events from the database</p>
+              {/* Recent Activity Grid */}
+              <div className="lg:col-span-2 glass-card p-8 rounded-3xl border border-white/10 bg-white/[0.01]">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <h3 className="text-lg font-display flex items-center gap-2">
+                      <Activity className="w-5 h-5 text-[#C9A84C]" />
+                      Recent Activity
+                    </h3>
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Latest 9 registration events from the database</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(analytics?.recent_activity || []).map((reg: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all cursor-pointer group"
+                      onClick={() => {
+                        const fullReg = registrations.find(full => full.id === reg.id);
+                        setSelectedReg(fullReg || reg);
+                      }}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="w-8 h-8 rounded-full bg-[#C9A84C]/10 flex items-center justify-center text-[#C9A84C] font-bold text-xs">
+                          {reg.user_name[0]}
+                        </div>
+                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${reg.status === 'confirmed' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                          {reg.status}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-white group-hover:text-[#C9A84C] transition-colors line-clamp-1">{reg.user_name}</p>
+                      <p className="text-[10px] text-white/40 mb-2">{reg.competition}</p>
+                      <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                        <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">
+                          {reg.entry_type}
+                        </span>
+                        <span className="text-[9px] text-white/20">
+                          {reg.registration_date.split(' ')[0]}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(analytics?.recent_activity || []).map((reg: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all cursor-pointer group"
-                    onClick={() => {
-                      const fullReg = registrations.find(full => full.id === reg.id);
-                      setSelectedReg(fullReg || reg);
-                    }}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="w-8 h-8 rounded-full bg-[#C9A84C]/10 flex items-center justify-center text-[#C9A84C] font-bold text-xs">
-                        {reg.user_name[0]}
-                      </div>
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${reg.status === 'confirmed' ? 'bg-[#39FF14]/20 text-[#39FF14]' : 'bg-yellow-500/20 text-yellow-500'}`}>
-                        {reg.status}
-                      </span>
-                    </div>
-                    <p className="text-xs font-bold text-white group-hover:text-[#C9A84C] transition-colors line-clamp-1">{reg.user_name}</p>
-                    <p className="text-[10px] text-white/40 mb-2">{reg.competition}</p>
-                    <div className="flex justify-between items-center pt-2 border-t border-white/5">
-                      <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">
-                        {reg.entry_type}
-                      </span>
-                      <span className="text-[9px] text-white/20">
-                        {reg.registration_date.split(' ')[0]}
-                      </span>
-                    </div>
+              {/* Event Standings & Registration Summary */}
+              <div className="glass-card p-6 rounded-3xl border border-white/10 bg-white/[0.01] flex flex-col justify-between">
+                <div>
+                  <h3 className="text-lg font-display mb-2 flex items-center gap-2 text-[#C9A84C]">
+                    <Trophy className="w-5 h-5 text-[#C9A84C]" />
+                    Event Analytics
+                  </h3>
+                  <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">Registration & Check-In Summary</p>
+                  
+                  <div data-lenis-prevent className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                    {[
+                      'Short Films', 'Rock Band', 'Photography', 'Singing', 'Cover Song',
+                      'Dance — Classical Solo', 'Dance — Classical Group',
+                      'Dance — Western Solo', 'Dance — Western Group',
+                      'Drama / Skit', 'Painting', 'Handicrafts'
+                    ].map((evt) => {
+                      const eventRegs = registrations.filter(r => r.competition === evt && r.status === 'confirmed');
+                      const registeredCount = eventRegs.length;
+                      const checkedInCount = eventRegs.filter(r => {
+                        return checkinUsers.some(u => u.registration_id == r.id && u.checked_in === 1);
+                      }).length;
+
+                      return (
+                        <div 
+                          key={evt}
+                          onClick={() => setSelectedEventForModal(evt)}
+                          className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.06] hover:border-[#C9A84C]/40 transition-all cursor-pointer flex justify-between items-center group"
+                        >
+                          <div className="space-y-0.5">
+                            <h4 className="text-xs font-bold text-white group-hover:text-[#C9A84C] transition-colors line-clamp-1">{evt}</h4>
+                            <p className="text-[9px] text-white/40 uppercase tracking-wider font-semibold font-mono">
+                              Reg: <span className="text-white font-bold">{registeredCount}</span>
+                            </p>
+                          </div>
+                          <div className="text-right flex flex-col items-end">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold font-mono ${checkedInCount === registeredCount && registeredCount > 0 ? 'bg-[#39FF14]/20 text-[#39FF14]' : checkedInCount > 0 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-white/5 text-white/30'}`}>
+                              IN: {checkedInCount} / {registeredCount}
+                            </span>
+                            {/* Progress track bar */}
+                            <div className="w-14 bg-white/5 h-1 rounded-full overflow-hidden mt-1">
+                              <div 
+                                className="bg-gradient-to-r from-[#C9A84C] to-[#39FF14] h-full rounded-full transition-all duration-500"
+                                style={{ width: `${registeredCount > 0 ? (checkedInCount / registeredCount) * 100 : 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-white/30 font-mono">
+                  <span>SYSTEM STATUS:</span>
+                  <span className="flex items-center gap-1.5 text-green-400 font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                    ONLINE
+                  </span>
+                </div>
               </div>
+
             </div>
           </div>
         )}
@@ -1778,97 +1705,7 @@ export default function AdminDashboard() {
           );
         })()}
 
-        {activeTab === 'volunteers' && (() => {
-          return (
-            <div className="glass-card rounded-2xl border border-blue-500/30 overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.1)]">
-              <div className="p-6 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-500/5">
-                <div>
-                  <h3 className="text-xl font-display text-blue-400 flex items-center gap-2"><CheckCircle className="w-5 h-5" /> Volunteers Directory</h3>
-                  <p className="text-xs text-white/40">Total Volunteers: {volunteers.length} {volunteersSearchQuery && `(Found ${volunteersPagination.totalItems})`}</p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-                  {/* Search Box */}
-                  <div className="relative w-full sm:w-64">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                    <input
-                      type="text"
-                      value={volunteersSearchQuery}
-                      onChange={(e) => { setVolunteersSearchQuery(e.target.value); volunteersPagination.goToPage(1); }}
-                      placeholder="Search volunteer..."
-                      className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all w-full text-white"
-                    />
-                  </div>
 
-                  {/* Download Template */}
-                  <button
-                    onClick={handleDownloadTemplate}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all text-xs font-bold uppercase tracking-widest w-full sm:w-auto"
-                  >
-                    <Download className="w-4 h-4" />
-                    Template
-                  </button>
-
-                  {/* CSV Upload */}
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept=".csv"
-                      onChange={handleCSVUpload}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      title="Upload Excel as CSV"
-                    />
-                    <button className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-lg hover:bg-blue-500/20 transition-all text-xs font-bold uppercase tracking-widest w-full">
-                      <Upload className="w-4 h-4" />
-                      Upload CSV
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-[#080614]">
-                {volunteersPagination.paginatedItems.map((v: any) => (
-                  <div key={v.id} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all cursor-pointer flex flex-col justify-between" onClick={() => setSelectedVolunteer(v)}>
-                    <div>
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center border border-blue-500/30">{v.name[0]}</div>
-                          <div>
-                            <h4 className="font-bold text-white">{v.name}</h4>
-                            <p className="text-[10px] text-white/40 font-mono">{v.college_id}</p>
-                          </div>
-                        </div>
-                        <span className="px-2 py-1 bg-white/5 rounded text-[10px] uppercase tracking-widest text-white/60 border border-white/10">
-                          {v.tasks?.length || 0} Tasks
-                        </span>
-                      </div>
-                      <div className="space-y-1 mb-6">
-                        <p className="text-xs text-white/60"><span className="text-white/20 w-12 inline-block">Phone:</span> {v.phone}</p>
-                        <p className="text-xs text-white/60"><span className="text-white/20 w-12 inline-block">Email:</span> {v.email}</p>
-                      </div>
-                    </div>
-                    <button className="w-full py-2 bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-widest rounded hover:bg-blue-500/20 transition-all">Manage Tasks</button>
-                  </div>
-                ))}
-                {volunteersPagination.totalItems === 0 && (
-                  <div className="col-span-full py-12 text-center border border-dashed border-white/10 rounded-xl">
-                    <CheckCircle className="w-8 h-8 text-white/20 mx-auto mb-3" />
-                    <p className="text-white/40 text-sm">No volunteers found</p>
-                    <p className="text-white/20 text-xs mt-1">Change a user's role to 'volunteer' in Manage Users tab or try a different search.</p>
-                  </div>
-                )}
-              </div>
-
-              <PaginationControls
-                currentPage={volunteersPagination.currentPage}
-                totalPages={volunteersPagination.totalPages}
-                totalItems={volunteersPagination.totalItems}
-                itemsPerPage={volunteersPagination.itemsPerPage}
-                onNextPage={volunteersPagination.nextPage}
-                onPrevPage={volunteersPagination.prevPage}
-                onGoToPage={volunteersPagination.goToPage}
-              />
-            </div>
-          );
-        })()}
 
         {activeTab === 'checkin_status' && (
           <div className="space-y-6">
@@ -2041,6 +1878,102 @@ export default function AdminDashboard() {
           </p>
         </footer>
       </main>
+
+      {/* Event Details Modal */}
+      {selectedEventForModal && (() => {
+        const eventRegs = registrations.filter(r => r.competition === selectedEventForModal && r.status === 'confirmed');
+        return (
+          <div data-lenis-prevent className="fixed inset-0 z-[300] flex items-center justify-center p-4 sm:p-6 backdrop-blur-xl bg-black/40 animate-in fade-in duration-300">
+            <div className="glass-card w-full max-w-4xl p-6 sm:p-8 rounded-3xl border border-[#C9A84C]/30 animate-in zoom-in-95 duration-300 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#C9A84C] to-[#8B0000]" />
+
+              {/* Header */}
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <span className="text-[#C9A84C] text-[10px] uppercase tracking-widest font-bold">Event Standing & Analytics</span>
+                  <h3 className="font-display text-3xl text-white mt-1">{selectedEventForModal}</h3>
+                  <p className="text-xs text-white/40 uppercase tracking-widest font-bold mt-1">
+                    Registered Teams & Individuals ({eventRegs.length} Confirmed)
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedEventForModal(null)}
+                  className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 text-white/60 transition-all font-bold text-xs"
+                >
+                  ✕ Close
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="overflow-x-auto">
+                {eventRegs.length === 0 ? (
+                  <p className="text-center text-white/40 italic py-8">No confirmed registrations for this event yet.</p>
+                ) : (
+                  <table className="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                      <tr className="text-[10px] uppercase tracking-widest text-white/30 border-b border-white/10 pb-3">
+                        <th className="pb-3 font-bold px-4">Team / Participant Name</th>
+                        <th className="pb-3 font-bold px-4">Type</th>
+                        <th className="pb-3 font-bold px-4 text-center">Members Count</th>
+                        <th className="pb-3 font-bold px-4 text-center">Check-In Status</th>
+                        <th className="pb-3 font-bold px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-sm">
+                      {eventRegs.map((r, index) => {
+                        const isCheckedIn = checkinUsers.some(u => u.registration_id == r.id && u.checked_in === 1);
+                        const memberCount = r.entry_type === 'team' ? (1 + (r.members?.length || 0)) : 1;
+                        return (
+                          <tr key={index} className="hover:bg-white/[0.01] transition-colors group">
+                            <td className="py-4 px-4">
+                              <p className="font-bold text-white group-hover:text-[#C9A84C] transition-colors">
+                                {r.team_name || r.leader_name || r.name}
+                              </p>
+                              {r.entry_type === 'team' && (
+                                <p className="text-[10px] text-white/40">Leader: {r.leader_name}</p>
+                              )}
+                            </td>
+                            <td className="py-4 px-4 uppercase text-xs font-semibold text-white/60">
+                              {r.entry_type}
+                            </td>
+                            <td className="py-4 px-4 text-center font-mono text-xs">
+                              {memberCount}
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              {isCheckedIn ? (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                  Checked In
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 text-white/40 border border-white/10">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                                  Pending
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <button
+                                onClick={() => {
+                                  setSelectedReg(r);
+                                  setSelectedEventForModal(null);
+                                }}
+                                className="px-3 py-1 bg-[#C9A84C]/10 border border-[#C9A84C]/20 text-[#C9A84C] rounded-lg hover:bg-[#C9A84C] hover:text-[#080614] transition-all text-xs font-bold"
+                              >
+                                View Details
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Detail Modal */}
       {selectedReg && (
@@ -2378,66 +2311,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Volunteer Task Management Modal */}
-      {selectedVolunteer && (
-        <div data-lenis-prevent className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-6 backdrop-blur-xl bg-black/60">
-          <div className="glass-card w-full max-w-2xl p-4 sm:p-8 rounded-3xl border border-blue-500/40 animate-in zoom-in-95 duration-300 relative overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 to-blue-800" />
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-2xl font-display text-white mb-1">Tasks for <span className="text-blue-400">{selectedVolunteer.name}</span></h3>
-                <p className="text-xs text-white/40">{selectedVolunteer.college} • {selectedVolunteer.phone}</p>
-              </div>
-              <button onClick={() => setSelectedVolunteer(null)} className="text-white/40 hover:text-white"><X className="w-6 h-6" /></button>
-            </div>
 
-            <div className="flex gap-2 mb-6 shrink-0">
-              <input
-                type="text"
-                value={newTaskText}
-                onChange={e => setNewTaskText(e.target.value)}
-                placeholder="Describe new task..."
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50"
-              />
-              <button
-                onClick={() => handleAssignTask(selectedVolunteer.id)}
-                className="px-6 py-3 bg-blue-500/20 text-blue-400 font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-blue-500/30 transition-all border border-blue-500/30"
-              >
-                Assign
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-              {(!selectedVolunteer.tasks || selectedVolunteer.tasks.length === 0) ? (
-                <p className="text-center text-white/30 text-xs py-8">No tasks assigned yet.</p>
-              ) : (
-                selectedVolunteer.tasks.map((task: any) => (
-                  <div key={task.id} className="p-4 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <p className="text-sm text-white/90">{task.task_description}</p>
-                      <p className="text-[10px] text-white/30 mt-1">{task.assigned_at}</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <select
-                        value={task.status}
-                        onChange={(e) => handleUpdateTaskStatus(task.id, e.target.value)}
-                        className={`text-xs font-bold uppercase tracking-wider rounded px-3 py-1.5 focus:outline-none appearance-none cursor-pointer ${task.status === 'completed' ? 'bg-[#39FF14]/20 text-[#39FF14] border border-[#39FF14]/30' :
-                          task.status === 'in_progress' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' :
-                            'bg-white/10 text-white/60 border border-white/20'
-                          }`}
-                      >
-                        <option value="pending" className="bg-[#080614]">Pending</option>
-                        <option value="in_progress" className="bg-[#080614]">In Progress</option>
-                        <option value="completed" className="bg-[#080614]">Completed</option>
-                      </select>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Decline Reason Modal */}
       {showDeclineModal && (
