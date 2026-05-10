@@ -109,7 +109,7 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full"
       >
         <img
-          src="/img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg"
+          src="img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg"
           alt="Ahlaad 2K26 Hero"
           className="w-full h-full object-cover opacity-80"
         />
@@ -131,8 +131,8 @@ export default function Hero() {
             {/* AITAM Logo */}
             <div className='flex '>
               
-              <img src="/aitamsinglelogo.png" alt="25years" className="h-20 md:h-32 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
-              <img src="/25years.png" alt="25years" className="h-20 md:h-32 w-auto object-contain rounded-[10px] " style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
+              <img src="aitamsinglelogo.png" alt="25years" className="h-20 md:h-32 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
+              <img src="25years.png" alt="25years" className="h-20 md:h-32 w-auto object-contain rounded-[10px] " style={{ filter: 'drop-shadow(0 0 10px rgba(201,168,76,0.3))' }} />
             </div>
             {/* Main Title */}
             <h1
@@ -141,7 +141,7 @@ export default function Hero() {
             >
               <div className="relative group">
                 <img
-                  src="/ahlaad.png"
+                  src="ahlaad.png"
                   alt="Ahlaad"
                   className="h-[0.8em] w-auto object-contain transition-all duration-700"
                   style={{
