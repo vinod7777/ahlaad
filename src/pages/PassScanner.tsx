@@ -300,8 +300,8 @@ export default function PublicScanner() {
           Official AHLAAD 2K26 Pass Verification System
         </p>
         <p className="text-sm text-white/50 font-light">
-          AITAM Silver Jubilee Celebration | <span className="text-[#C9A84C] font-bold">March 2026</span>
-        </p>
+            Developed by <a href="https://www.linkedin.com/in/saisateeshwarareddy/" target="_blank" rel="noopener noreferrer" className="text-[#C9A84C] hover:text-[#E0C97F] transition-colors underline underline-offset-2 font-bold">T. Saisateeshwara Reddy</a> | Technical Trainer, IIC
+          </p>
       </footer>
     </div>
   );
