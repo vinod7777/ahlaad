@@ -1002,7 +1002,7 @@ export default function AdminDashboard() {
       <aside className={`w-64 border-r border-white/10 bg-[#0d0b1e] p-6 flex flex-col fixed h-full z-[200] transition-transform duration-300 md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
-            <img src="/ahlaad.png" alt="Ahlaad" className="h-6" />
+            <img src="ahlaad.png" alt="Ahlaad" className="h-6" />
             <span className="font-display text-lg tracking-widest text-[#C9A84C]">ADMIN</span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white">

@@ -24,7 +24,7 @@ const competitions: Competition[] = [
   {
     name: 'Short Films',
     genre: 'Max 10 min, Original Content',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg',
     color: '#FF0080',
     icon: Film,
     fee: '₹500/team',
@@ -44,7 +44,7 @@ const competitions: Competition[] = [
   {
     name: 'Rock Band',
     genre: '15 min total incl. Sound Check',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg',
     color: '#00FFFF',
     icon: Guitar,
     fee: '₹500/team',
@@ -64,7 +64,7 @@ const competitions: Competition[] = [
   {
     name: 'Photography',
     genre: 'On-spot Theme, 2 Hours',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg',
     color: '#BF00FF',
     icon: Camera,
     fee: '₹200/person',
@@ -85,7 +85,7 @@ const competitions: Competition[] = [
   {
     name: 'Singing',
     genre: 'Solo Vocal Performance',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.29 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.29 PM.jpeg',
     color: '#C9A84C',
     icon: Mic,
     fee: '₹200/person',
@@ -105,7 +105,7 @@ const competitions: Competition[] = [
   {
     name: 'Cover Song',
     genre: 'Reimagine a Hit',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg',
     color: '#FF5E00',
     icon: Music,
     fee: '₹200/person',
@@ -125,7 +125,7 @@ const competitions: Competition[] = [
   {
     name: 'Dance',
     genre: 'Classical & Western · Solo & Group',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg',
     color: '#39FF14',
     icon: PersonStanding,
     fee: '₹200 / ₹500',
@@ -146,7 +146,7 @@ const competitions: Competition[] = [
   {
     name: 'Drama / Skit',
     genre: 'Stage Play Performance',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.25 PM (1).jpeg',
     color: '#0080FF',
     icon: Drama,
     fee: '₹500/team',
@@ -166,7 +166,7 @@ const competitions: Competition[] = [
   {
     name: 'Painting',
     genre: 'On-spot Theme, 2 Hours',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.35 PM (1).jpeg',
     color: '#FF0080',
     icon: Palette,
     fee: '₹200/person',
@@ -186,7 +186,7 @@ const competitions: Competition[] = [
   {
     name: 'Handicrafts',
     genre: 'Creative Hand-made Art',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.33 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.33 PM (1).jpeg',
     color: '#00FFFF',
     icon: Scissors,
     fee: '₹200/person',
@@ -260,7 +260,7 @@ export default function Lineup() {
                 9 Events · Entry Fee: ₹200 (Individual) | ₹500 (Team)
               </p>
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#C9A84C]/30 bg-[#C9A84C]/5">
-                <img src="/trophy.png" alt="Trophy" className="w-8 h-8 object-contain" />
+                <img src="trophy.png" alt="Trophy" className="w-8 h-8 object-contain" />
                 <span className="text-[#C9A84C] font-display text-2xl">₹2,50,000</span>
                 <span className="text-[#C9A84C]/70 text-xs font-mono uppercase">Prize Pool</span>
               </div>
@@ -348,7 +348,7 @@ export default function Lineup() {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent opacity-60" />
             <p className="font-mono text-sm text-[#C9A84C] uppercase tracking-[0.3em] mb-4 font-bold" style={{ textShadow: '0 0 10px rgba(201,168,76,0.3)' }}>Total Prize Pool</p>
             <img 
-              src="/trophy.png" 
+              src="trophy.png" 
               alt="Trophy" 
               className="w-32 h-auto mx-auto mb-6 animate-float" 
               style={{ 

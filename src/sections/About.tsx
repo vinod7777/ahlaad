@@ -170,7 +170,7 @@ export default function About() {
             {/* Back Image */}
             <div className="back-image absolute top-0 right-0 w-[80%] h-[70%] rounded-xl overflow-hidden shadow-2xl border border-[#C9A84C]/20">
               <img 
-                src="/img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg" 
+                src="img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg" 
                 alt="AITAM Cultural Fest highlights"
                 className="w-full h-full object-cover"
               />
@@ -179,7 +179,7 @@ export default function About() {
             {/* Front Image */}
             <div className="front-image absolute bottom-[10%] left-0 w-[55%] h-[45%] rounded-xl overflow-hidden shadow-2xl border border-[#8B0000]/30">
               <img 
-                src="/img/WhatsApp Image 2026-05-07 at 8.37.33 PM.jpeg" 
+                src="img/WhatsApp Image 2026-05-07 at 8.37.33 PM.jpeg" 
                 alt="Performance at AITAM"
                 className="w-full h-full object-cover"
               />

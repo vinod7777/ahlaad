@@ -125,7 +125,7 @@ export default function Contact() {
           <div className="flex items-center gap-3">
             <SilverJubileeLogo size={48} />
             <div>
-              <img src="/ahlaad.png" alt="Ahlaad" className="h-8 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
+              <img src="ahlaad.png" alt="Ahlaad" className="h-8 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
               <span className="font-display text-lg text-[#C9A84C] tracking-wider">2K26</span>
               <span className="text-white/40 text-xs block">AITAM Silver Jubilee Cultural Fest</span>
             </div>

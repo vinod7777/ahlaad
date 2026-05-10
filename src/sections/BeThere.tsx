@@ -85,7 +85,7 @@ export default function BeThere() {
         className="absolute inset-0 w-full h-full"
       >
         <img 
-          src="/img/WhatsApp Image 2026-05-07 at 8.37.28 PM.jpeg"
+          src="img/WhatsApp Image 2026-05-07 at 8.37.28 PM.jpeg"
           alt="AITAM Ahlaad Crowd"
           className="w-full h-full object-cover opacity-70"
         />
@@ -104,7 +104,7 @@ export default function BeThere() {
         </div>
 
         <div className="be-there-title mb-12 pt-8">
-          <img src="/ahlaad.png" alt="Ahlaad" className="h-[clamp(45px,8vw,120px)] w-auto object-contain mx-auto" style={{ filter: 'drop-shadow(0 0 25px rgba(201,168,76,0.8)) drop-shadow(0 0 50px rgba(201,168,76,0.4))' }} />
+          <img src="ahlaad.png" alt="Ahlaad" className="h-[clamp(45px,8vw,120px)] w-auto object-contain mx-auto" style={{ filter: 'drop-shadow(0 0 25px rgba(201,168,76,0.8)) drop-shadow(0 0 50px rgba(201,168,76,0.4))' }} />
         </div>
 
         {/* MASSIVE Chief Guest Highlight */}
@@ -116,7 +116,7 @@ export default function BeThere() {
                 background: 'linear-gradient(135deg, #C9A84C, #8B0000, #C9A84C)'
               }}>
               <div className="w-full h-full rounded-full overflow-hidden bg-[#0d0b1e]">
-                <img src="/rashi-singh.jpg" alt="Rashi Singh" className="w-full h-full object-cover" />
+                <img src="rashi-singh.jpg" alt="Rashi Singh" className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="absolute -bottom-2 -right-2 w-14 h-14 bg-[#C9A84C] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(201,168,76,0.5)] border-4 border-[#080614] animate-pulse">

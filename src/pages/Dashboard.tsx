@@ -18,7 +18,7 @@ const PassCard = ({ title, name, id, passId, role }: { title: string, name: stri
             <p className="text-[#C9A84C] font-mono text-[10px] uppercase tracking-[0.3em] mb-1">Ahlaad 2K26 • {title}</p>
             <h4 className="text-2xl md:text-3xl font-display text-white tracking-tight">ENTRY <span className="text-gradient-gold">PASS</span></h4>
           </div>
-          <img src="/ahlaad.png" alt="Logo" className="h-8 opacity-40 grayscale brightness-200 shrink-0" />
+          <img src="ahlaad.png" alt="Logo" className="h-8 opacity-40 grayscale brightness-200 shrink-0" />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6 md:mb-0">
@@ -321,7 +321,7 @@ export default function Dashboard() {
       <aside className={`w-64 border-r border-white/10 bg-[#0d0b1e] p-6 flex flex-col fixed h-full z-[200] transition-transform duration-300 md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
-            <img src="/ahlaad.png" alt="Ahlaad" className="h-8" />
+            <img src="ahlaad.png" alt="Ahlaad" className="h-8" />
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white">
             <X className="w-6 h-6" />

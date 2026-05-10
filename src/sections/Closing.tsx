@@ -84,7 +84,7 @@ export default function Closing() {
         className="absolute inset-0 w-full h-full"
       >
         <img 
-          src="/img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg"
+          src="img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg"
           alt="AITAM Group"
           className="w-full h-full object-cover opacity-60"
         />

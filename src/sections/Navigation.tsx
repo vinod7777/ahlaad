@@ -51,7 +51,7 @@ export default function Navigation() {
           >
           
             <div className="hidden sm:flex items-center gap-2">
-              <img src="/ahlaad.png" alt="Ahlaad" className="h-7 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
+              <img src="ahlaad.png" alt="Ahlaad" className="h-7 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.9)) drop-shadow(0 0 16px rgba(201,168,76,0.5))' }} />
               <span className="font-display text-xl md:text-2xl text-white tracking-wider" 
                 style={{ textShadow: '0 0 10px rgba(201,168,76,0.9), 0 0 20px rgba(201,168,76,0.5)' }}>
                 2K26
