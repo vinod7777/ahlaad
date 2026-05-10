@@ -48,7 +48,7 @@ export default function NotFound() {
             >
               <div className="flex items-center justify-center gap-3">
                 <QrCode className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-bold uppercase tracking-widest text-blue-400">Scanner</span>
+                <span className="text-sm font-bold uppercase tracking-widest text-blue-400">Pass Scan</span>
               </div>
             </button>
 

@@ -4,6 +4,7 @@ import { QrCode, LogOut, CheckCircle, Printer, User, Plus, Menu, X, AlertCircle,
 import { API_BASE_URL } from '../config';
 import { usePagination } from '../hooks/usePagination';
 import PaginationControls from '../components/PaginationControls';
+import { useNotification } from '../components/Notification';
 
 const PassCard = ({ title, name, id, passId, role }: { title: string, name: string, id: string, passId: string, role: string }) => (
   <div className="relative group pass-card-container mb-8 md:h-[30vh] md:min-h-[220px] h-auto">
@@ -88,6 +89,7 @@ export default function Dashboard() {
   const [updatingRegId, setUpdatingRegId] = useState<number | null>(null);
   const [activePassSubTab, setActivePassSubTab] = useState<Record<number, 'lead' | 'members'>>({});
 
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
 
   const competitions = [
@@ -178,27 +180,27 @@ export default function Dashboard() {
   const handleRegisterEvent = async () => {
     if (newReg.entry_type === 'team') {
       if (!newReg.team_name.trim()) {
-        alert('Please enter your Team/Group Name for this team registration.');
+        showNotification('Please enter your Team/Group Name for this team registration.', 'warning');
         return;
       }
       if (newReg.team_size < 4 || newReg.team_size > 12) {
-        alert('Group size must be between 4 and 12 members.');
+        showNotification('Group size must be between 4 and 12 members.', 'warning');
         return;
       }
     }
     
     const utrTrimmed = newReg.utr_id.trim();
     if (!utrTrimmed) {
-      alert('Please provide UTR ID.');
+      showNotification('Please provide UTR ID.', 'warning');
       return;
     }
     if (!/^\d{12}$/.test(utrTrimmed)) {
-      alert('UTR ID must be exactly 12 numeric digits.');
+      showNotification('UTR ID must be exactly 12 numeric digits.', 'warning');
       return;
     }
     
     if (!paymentFile && !updatingRegId) {
-      alert('Please upload a payment screenshot.');
+      showNotification('Please upload a payment screenshot.', 'warning');
       return;
     }
 
@@ -230,11 +232,12 @@ export default function Dashboard() {
         setRegStep(1);
         setActiveTab('registrations');
         fetchDashboardData(user.id);
+        showNotification('Registration submitted successfully! Waiting for admin approval.', 'success');
       } else {
-        alert(data.message);
+        showNotification(data.message, 'error');
       }
     } catch (error) {
-      alert('Registration failed');
+      showNotification('Registration failed', 'error');
     }
   };
 
@@ -246,32 +249,32 @@ export default function Dashboard() {
     const collegeIdTrimmed = newMember.college_id.trim();
 
     if (!memberNameTrimmed || !emailTrimmed || !phoneTrimmed || !collegeTrimmed || !collegeIdTrimmed) {
-      alert("Please fill in all member details.");
+      showNotification("Please fill in all member details.", 'warning');
       return;
     }
 
     if (memberNameTrimmed.length < 3 || !/^[a-zA-Z\s]+$/.test(memberNameTrimmed)) {
-      alert("Member Name must be at least 3 characters and contain only letters and spaces.");
+      showNotification("Member Name must be at least 3 characters and contain only letters and spaces.", 'warning');
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
-      alert("Please enter a valid email address for the team member.");
+      showNotification("Please enter a valid email address for the team member.", 'warning');
       return;
     }
 
     if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
-      alert("Phone Number must be a valid 10-digit Indian mobile number.");
+      showNotification("Phone Number must be a valid 10-digit Indian mobile number.", 'warning');
       return;
     }
 
     if (collegeTrimmed.length < 3) {
-      alert("College Name must be at least 3 characters.");
+      showNotification("College Name must be at least 3 characters.", 'warning');
       return;
     }
 
     if (collegeIdTrimmed.length < 2) {
-      alert("College ID must be at least 2 characters.");
+      showNotification("College ID must be at least 2 characters.", 'warning');
       return;
     }
     try {
@@ -289,13 +292,14 @@ export default function Dashboard() {
       });
       const data = await response.json();
       if (data.success) {
+        showNotification('Team member added successfully!', 'success');
         setNewMember({ name: '', email: '', phone: '', college: '', college_id: '' });
         fetchDashboardData(user.id);
       } else {
-        alert(data.message);
+        showNotification(data.message, 'error');
       }
     } catch (error) {
-      alert('Failed to add member');
+      showNotification('Failed to add member', 'error');
     }
   };
 

@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LogOut, Users, FileText, Download, BarChart3, Search, Check, Clock,
   CheckCircle, Menu, X, Settings, QrCode, Plus, Trash2,
-  Trophy, Activity, TrendingUp, Shield
+  Trophy, Activity, TrendingUp
 } from 'lucide-react';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -15,6 +15,7 @@ import { API_BASE_URL } from '../config';
 import { usePagination } from '../hooks/usePagination';
 import { useAdvancedSearch } from '../hooks/useAdvancedSearch';
 import PaginationControls from '../components/PaginationControls';
+import { useNotification } from '../components/Notification';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,6 +44,14 @@ export default function AdminDashboard() {
   const [newMember, setNewMember] = useState({ member_name: '', email: '', phone: '', college: '', college_id: '' });
   const [analytics, setAnalytics] = useState<any>(null);
   const [itemsPerPage = 10] = useState(10);
+  const isEditingRef = useRef(false);
+
+  const setEditingStatus = (status: boolean) => {
+    // We only need the ref for polling, but keeping state for potential UI triggers
+    isEditingRef.current = status;
+  };
+
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
 
   const [reportSearchQuery, setReportSearchQuery] = useState('');
@@ -543,8 +552,12 @@ export default function AdminDashboard() {
       setAdmin(userData);
       fetchAdminData();
 
-      // Set up polling for real-time updates
-      const interval = setInterval(fetchAdminData, 5000);
+      // Set up polling for real-time updates - skip if user is currently interacting with forms
+      const interval = setInterval(() => {
+        if (!isEditingRef.current && !selectedReg && !selectedUser && !showDeclineModal) {
+          fetchAdminData();
+        }
+      }, 5000);
       return () => clearInterval(interval);
     }
   }, [navigate]);
@@ -589,11 +602,13 @@ export default function AdminDashboard() {
       if (data && data.success) {
         setRegistrations(data.registrations);
         // Sync active registration details modal view in real-time
-        setSelectedReg((prevSelected: any) => {
-          if (!prevSelected) return null;
-          const updated = data.registrations.find((r: any) => r.id === prevSelected.id);
-          return updated || prevSelected;
-        });
+        if (!isEditingRef.current) {
+          setSelectedReg((prevSelected: any) => {
+            if (!prevSelected) return null;
+            const updated = data.registrations.find((r: any) => r.id === prevSelected.id);
+            return updated || prevSelected;
+          });
+        }
         if (data.settings && data.settings.registration_enabled !== undefined) {
           setRegistrationEnabled(data.settings.registration_enabled);
         }
@@ -601,11 +616,13 @@ export default function AdminDashboard() {
       if (usersData && usersData.success) {
         setAllUsers(usersData.users);
         // Sync active user details modal view in real-time
-        setSelectedUser((prevSelected: any) => {
-          if (!prevSelected) return null;
-          const updated = usersData.users.find((u: any) => u.id === prevSelected.id);
-          return updated || prevSelected;
-        });
+        if (!isEditingRef.current) {
+          setSelectedUser((prevSelected: any) => {
+            if (!prevSelected) return null;
+            const updated = usersData.users.find((u: any) => u.id === prevSelected.id);
+            return updated || prevSelected;
+          });
+        }
       }
       if (checkinData && checkinData.success) {
         setCheckinUsers(checkinData.data);
@@ -614,6 +631,53 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Failed to fetch', error);
       setLoading(false);
+    }
+  };
+
+  const handleUpdateRegistrationStatus = async (regId: any, status: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin_update_registration_status.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          registration_id: Number(regId),
+          status: status
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        showNotification(`Success: ${data.message}`, 'success');
+        if (selectedReg) {
+          setSelectedReg({ ...selectedReg, status: status });
+          setRegistrations((prev: any[]) => prev.map(r => r.id === selectedReg.id ? { ...r, status: status } : r));
+        }
+        fetchAdminData();
+      } else {
+        showNotification(`Error updating status for ID ${regId}: ${data.message}`, 'error');
+      }
+    } catch (error) {
+      console.error(error);
+      showNotification(`Network/Server Error for ID ${regId}. Check connection.`, 'error');
+    }
+  };
+
+  const handleRevertCheckin = async (id: number, role: string) => {
+    if (!confirm('Are you sure you want to revert this check-in? This will set them as "Not Checked In".')) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin_revert_checkin.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, role })
+      });
+      const data = await response.json();
+      if (data.success) {
+        showNotification('Check-in reverted successfully!', 'success');
+        fetchAdminData();
+      } else {
+        showNotification(data.message, 'error');
+      }
+    } catch (error) {
+      showNotification('Failed to revert check-in', 'error');
     }
   };
 
@@ -628,10 +692,10 @@ export default function AdminDashboard() {
       if (data.success) {
         fetchAdminData();
       } else {
-        alert(data.message);
+        showNotification(data.message, 'error');
       }
     } catch (error) {
-      alert('Approval failed');
+      showNotification('Approval failed', 'error');
     }
   };
 
@@ -647,12 +711,13 @@ export default function AdminDashboard() {
         setShowDeclineModal(false);
         setDeclineReason('');
         setDeclineRegId(null);
+        setEditingStatus(false);
         fetchAdminData();
       } else {
-        alert(data.message);
+        showNotification(data.message, 'error');
       }
     } catch (error) {
-      alert('Decline failed');
+      showNotification('Decline failed', 'error');
     }
   };
 
@@ -666,7 +731,7 @@ export default function AdminDashboard() {
       });
       const data = await response.json();
       if (data.success) {
-        alert('Team member removed successfully!');
+        showNotification('Team member removed successfully!', 'success');
         if (selectedReg) {
           const updatedMembers = selectedReg.members.filter((m: any) => m.id !== memberId);
           setSelectedReg({
@@ -743,12 +808,13 @@ export default function AdminDashboard() {
           college_id: ''
         });
         setShowAddMemberForm(false);
+        setEditingStatus(false);
       } else {
-        alert(data.message || 'Failed to add member.');
+        showNotification(data.message || 'Failed to add member.', 'error');
       }
     } catch (error) {
       console.error(error);
-      alert('Error adding team member.');
+      showNotification('Error adding team member.', 'error');
     }
   };
 
@@ -766,10 +832,10 @@ export default function AdminDashboard() {
       if (data.success) {
         setRegistrationEnabled(newStatus);
       } else {
-        alert(data.message || 'Toggle failed');
+        showNotification(data.message || 'Toggle failed', 'error');
       }
     } catch (error) {
-      alert('Toggle failed');
+      showNotification('Toggle failed', 'error');
     }
   };
 
@@ -782,36 +848,36 @@ export default function AdminDashboard() {
     // --- FRONTEND VALIDATIONS ---
     const nameTrimmed = (updatedData.name || '').trim();
     if (nameTrimmed.length < 3 || !/^[a-zA-Z\s]+$/.test(nameTrimmed)) {
-      alert('Full Name must be at least 3 characters and contain only letters and spaces.');
+      showNotification('Full Name must be at least 3 characters and contain only letters and spaces.', 'warning');
       return;
     }
 
     const emailTrimmed = (updatedData.email || '').trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
-      alert('Please enter a valid email address.');
+      showNotification('Please enter a valid email address.', 'warning');
       return;
     }
 
     const phoneTrimmed = (updatedData.phone || '').trim();
     if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
-      alert('Phone Number must be a valid 10-digit Indian mobile number starting with 6,7,8 or 9.');
+      showNotification('Phone Number must be a valid 10-digit Indian mobile number starting with 6,7,8 or 9.', 'warning');
       return;
     }
 
     const collegeTrimmed = (updatedData.college || '').trim();
     if (collegeTrimmed.length < 3) {
-      alert('College Name must be at least 3 characters.');
+      showNotification('College Name must be at least 3 characters.', 'warning');
       return;
     }
 
     const collegeIdTrimmed = (updatedData.college_id || '').trim();
     if (collegeIdTrimmed.length < 2) {
-      alert('College ID must be at least 2 characters.');
+      showNotification('College ID must be at least 2 characters.', 'warning');
       return;
     }
 
     if (updatedData.password && updatedData.password.length < 6) {
-      alert('Password must be at least 6 characters.');
+      showNotification('Password must be at least 6 characters.', 'warning');
       return;
     }
     // ----------------------------
@@ -831,14 +897,15 @@ export default function AdminDashboard() {
       });
       const data = await response.json();
       if (data.success) {
-        alert('User updated successfully');
+        showNotification('User updated successfully', 'success');
         fetchAdminData();
         setSelectedUser(null);
+        setEditingStatus(false);
       } else {
-        alert(data.message);
+        showNotification(data.message, 'error');
       }
     } catch (error) {
-      alert('Failed to update user');
+      showNotification('Failed to update user', 'error');
     }
   };
 
@@ -854,10 +921,10 @@ export default function AdminDashboard() {
       if (data.success) {
         fetchAdminData();
       } else {
-        alert(data.message);
+        showNotification(data.message, 'error');
       }
     } catch (error) {
-      alert('Failed to delete user');
+      showNotification('Failed to delete user', 'error');
     }
   };
 
@@ -1137,7 +1204,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {[
                 { label: 'Registered', val: analytics?.stats?.total_participants || 0, icon: Users, col: '#C9A84C', sub: 'Total persons' },
-                { label: 'Payments', val: analytics?.stats?.approved_count || 0, icon: FileText, col: '#00FFFF', sub: 'Successful' },
+                { label: 'Payments', val: analytics?.stats?.payments_count || 0, icon: FileText, col: '#00FFFF', sub: 'Successful' },
                 { label: 'Approved', val: analytics?.stats?.approved_count || 0, icon: CheckCircle, col: '#39FF14', sub: 'Paid teams' },
                 { label: 'Passes', val: analytics?.stats?.passes_count || 0, icon: QrCode, col: '#FFD700', sub: 'Generated' },
                 { label: 'Checked-In', val: analytics?.stats?.checkin_count || 0, icon: Activity, col: '#39FF14', sub: 'At venue' },
@@ -1303,7 +1370,7 @@ export default function AdminDashboard() {
                     Event Analytics
                   </h3>
                   <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-4">Registration & Check-In Summary</p>
-                  
+
                   <div data-lenis-prevent className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
                     {[
                       'Short Films', 'Rock Band', 'Photography', 'Singing', 'Cover Song',
@@ -1318,7 +1385,7 @@ export default function AdminDashboard() {
                       }).length;
 
                       return (
-                        <div 
+                        <div
                           key={evt}
                           onClick={() => setSelectedEventForModal(evt)}
                           className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.06] hover:border-[#C9A84C]/40 transition-all cursor-pointer flex justify-between items-center group"
@@ -1335,7 +1402,7 @@ export default function AdminDashboard() {
                             </span>
                             {/* Progress track bar */}
                             <div className="w-14 bg-white/5 h-1 rounded-full overflow-hidden mt-1">
-                              <div 
+                              <div
                                 className="bg-gradient-to-r from-[#C9A84C] to-[#39FF14] h-full rounded-full transition-all duration-500"
                                 style={{ width: `${registeredCount > 0 ? (checkedInCount / registeredCount) * 100 : 0}%` }}
                               />
@@ -1666,7 +1733,10 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button
-                              onClick={() => setSelectedUser({ ...u, password: '' })}
+                              onClick={() => {
+                                setSelectedUser({ ...u, password: '' });
+                                setEditingStatus(true);
+                              }}
                               className="px-3 py-1 bg-white/5 hover:bg-white/10 text-white rounded text-xs transition-colors"
                             >
                               Edit
@@ -1798,6 +1868,7 @@ export default function AdminDashboard() {
                       <th className="px-6 py-4 font-medium">Event & Role</th>
                       <th className="px-6 py-4 font-medium">Pass ID</th>
                       <th className="px-6 py-4 font-medium">Check-In Status</th>
+                      <th className="px-6 py-4 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="text-sm">
@@ -1844,11 +1915,22 @@ export default function AdminDashboard() {
                             </span>
                           )}
                         </td>
+                        <td className="px-6 py-4 text-right">
+                          {u.checked_in === 1 && (
+                            <button
+                              onClick={() => handleRevertCheckin(u.id, u.role)}
+                              className="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all text-[10px] font-bold uppercase tracking-wider"
+                              title="Revert Check-in"
+                            >
+                              Revert
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                     {checkinPagination.totalItems === 0 && (
                       <tr>
-                        <td colSpan={5} className="text-center py-12 text-white/30 italic">
+                        <td colSpan={6} className="text-center py-12 text-white/30 italic">
                           No participants match the selected criteria.
                         </td>
                       </tr>
@@ -2019,6 +2101,27 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
+                  <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Registration Status</h4>
+                  <div className="flex items-center gap-3">
+                    <select
+                      value={selectedReg.status}
+                      onChange={(e) => handleUpdateRegistrationStatus(selectedReg.id, e.target.value)}
+                      onFocus={() => setEditingStatus(true)}
+                      onBlur={() => setEditingStatus(false)}
+                      disabled={selectedReg.checked_in === 1}
+                      className={`flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider focus:outline-none transition-all ${selectedReg.checked_in === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#C9A84C]/50'}`}
+                    >
+                      <option value="pending" className="bg-[#080614]">Pending</option>
+                      <option value="confirmed" className="bg-[#080614]">Confirmed</option>
+                      <option value="cancelled" className="bg-[#080614]">Cancelled</option>
+                    </select>
+                    {selectedReg.checked_in === 1 && (
+                      <span className="text-[9px] text-red-400/60 font-bold uppercase italic">Locked (Checked-in)</span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
                   <h4 className="text-[10px] uppercase tracking-widest text-[#C9A84C] mb-2 font-bold">Check-in Status</h4>
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10">
                     <div className="flex items-center gap-3">
@@ -2113,7 +2216,7 @@ export default function AdminDashboard() {
                     <div className="mt-3">
                       {!showAddMemberForm ? (
                         <button
-                          onClick={() => setShowAddMemberForm(true)}
+                          onClick={() => { setShowAddMemberForm(true); setEditingStatus(true); }}
                           className="w-full py-2 bg-[#39FF14]/10 hover:bg-[#39FF14]/20 border border-[#39FF14]/20 text-[#39FF14] hover:text-[#39FF14] rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -2124,7 +2227,7 @@ export default function AdminDashboard() {
                           <div className="flex items-center justify-between border-b border-white/5 pb-2">
                             <h5 className="text-[10px] uppercase tracking-wider text-[#C9A84C] font-bold">Add New Team Member</h5>
                             <button
-                              onClick={() => setShowAddMemberForm(false)}
+                              onClick={() => { setShowAddMemberForm(false); setEditingStatus(false); }}
                               className="text-white/40 hover:text-white"
                             >
                               <X className="w-3.5 h-3.5" />
@@ -2219,6 +2322,7 @@ export default function AdminDashboard() {
                     onClick={() => {
                       setDeclineRegId(selectedReg.id);
                       setShowDeclineModal(true);
+                      setEditingStatus(true);
                       setSelectedReg(null);
                     }}
                     className="flex-1 min-w-[120px] py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-all text-sm uppercase tracking-widest"
@@ -2259,7 +2363,7 @@ export default function AdminDashboard() {
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 to-red-900" />
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-display text-white">Edit User <span className="text-red-400">#{selectedUser.id}</span></h3>
-              <button onClick={() => setSelectedUser(null)} className="text-white/40 hover:text-white"><X className="w-6 h-6" /></button>
+              <button onClick={() => { setSelectedUser(null); setEditingStatus(false); }} className="text-white/40 hover:text-white"><X className="w-6 h-6" /></button>
             </div>
 
             <div className="space-y-4">
@@ -2304,8 +2408,8 @@ export default function AdminDashboard() {
             </div>
 
             <div className="flex gap-4 mt-8">
-              <button onClick={() => setSelectedUser(null)} className="flex-1 py-3 bg-white/5 rounded-xl text-white/60 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">Cancel</button>
-              <button onClick={() => handleUpdateUser(selectedUser)} className="flex-1 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-red-500/30 transition-colors">Save Changes</button>
+              <button onClick={() => { setSelectedUser(null); setEditingStatus(false); }} className="flex-1 py-3 bg-white/5 rounded-xl text-white/60 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">Cancel</button>
+              <button onClick={() => { handleUpdateUser(selectedUser); setEditingStatus(false); }} className="flex-1 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-red-500/30 transition-colors">Save Changes</button>
             </div>
           </div>
         </div>
@@ -2325,6 +2429,7 @@ export default function AdminDashboard() {
                   setShowDeclineModal(false);
                   setDeclineReason('');
                   setDeclineRegId(null);
+                  setEditingStatus(false);
                 }}
                 className="text-white/40 hover:text-white"
               >
@@ -2379,6 +2484,7 @@ export default function AdminDashboard() {
                     setShowDeclineModal(false);
                     setDeclineReason('');
                     setDeclineRegId(null);
+                    setEditingStatus(false);
                   }}
                   className="flex-1 py-3 border border-white/10 rounded-xl text-white/60 hover:bg-white/5 transition-all text-sm font-bold uppercase tracking-widest"
                 >
