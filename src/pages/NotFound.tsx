@@ -78,6 +78,9 @@ export default function NotFound() {
           <p className="text-[10px] text-white/20 font-mono uppercase tracking-[0.3em]">
             Ahlaad 2K26 — Advanced Routing Terminal
           </p>
+          <p className="text-sm text-white/50 font-light">
+            Developed by <a href="https://www.linkedin.com/in/saisateeshwarareddy/" target="_blank" rel="noopener noreferrer" className="text-[#C9A84C] hover:text-[#E0C97F] transition-colors underline underline-offset-2 font-bold">T. Saisateeshwara Reddy</a> | Technical Trainer, IIC
+          </p>
         </div>
       </div>
     </div>

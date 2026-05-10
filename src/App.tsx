@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
@@ -85,6 +85,32 @@ function GlobalEffects() {
 
 import { NotificationProvider } from './components/Notification';
 
+const getBasename = () => {
+  const pathname = window.location.pathname;
+  const segments = pathname.split('/').filter(Boolean);
+  
+  // Known top-level routes
+  const knownRoutes = ['login', 'dashboard', 'admin', 'checkin', 'scan-pass'];
+  
+  // If we have at least 2 segments and the first one is not a known route,
+  // the first segment is the subdirectory.
+  if (segments.length >= 2 && !knownRoutes.includes(segments[0])) {
+    return `/${segments[0]}`;
+  }
+  
+  // If we have 1 segment:
+  // If it is a known route, then the basename is '/' (hosted at root)
+  // If it is NOT a known route (e.g. visiting '/dist/'), then the pathname ends with a slash,
+  // and segments.length is 1. In this case, the basename is '/dist'.
+  if (segments.length === 1 && !knownRoutes.includes(segments[0])) {
+    if (pathname.endsWith('/')) {
+      return `/${segments[0]}`;
+    }
+  }
+  
+  return '/';
+};
+
 function App() {
   useEffect(() => {
     return () => {
@@ -96,7 +122,7 @@ function App() {
     <HelmetProvider>
       <NotificationProvider>
         <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
-          <Router>
+          <Router basename={getBasename()}>
             <GlobalEffects />
             <div className="relative bg-[#080614] min-h-screen">
               <div className="noise-overlay" />

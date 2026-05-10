@@ -1,9 +1,6 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   
-  # Get the requested URI (without the subfolder path)
-  RewriteBase /ahlaad2k26/
-  
   # Don't rewrite actual files or directories
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
