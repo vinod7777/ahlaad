@@ -94,8 +94,8 @@ export default function Featured() {
   }, []);
 
   const highlights = {
-    1: { name: 'DJ Night', image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg', genre: 'The Silver Jubilee Pulse', desc: 'Day 1 closes with an electrifying DJ night — "The Silver Jubilee Pulse". Feel the bass, lose yourself in the lights, and dance until the stars come out. This is the celebration of 25 glorious years.' },
-    2: { name: 'Grand Valedictory', image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg', genre: 'MSK Prasad & Rasi Singh', desc: 'The grand finale — prize distribution worth ₹2,50,000 🏆, graced by chief guests MSK Prasad and Rasi Singh. Two days of talent, passion, and unforgettable memories culminate in this spectacular closing ceremony.' }
+    1: { name: 'DJ Night', image: 'img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg', genre: 'The Silver Jubilee Pulse', desc: 'Day 1 closes with an electrifying DJ night — "The Silver Jubilee Pulse". Feel the bass, lose yourself in the lights, and dance until the stars come out. This is the celebration of 25 glorious years.' },
+    2: { name: 'Grand Valedictory', image: 'img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg', genre: 'MSK Prasad & Rasi Singh', desc: 'The grand finale — prize distribution worth ₹2,50,000 🏆, graced by chief guests MSK Prasad and Rasi Singh. Two days of talent, passion, and unforgettable memories culminate in this spectacular closing ceremony.' }
   };
 
   return (

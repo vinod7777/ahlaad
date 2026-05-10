@@ -9,7 +9,7 @@ const events = [
   {
     name: 'Short Films',
     category: 'FILMMAKING',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.26 PM.jpeg',
     color: '#FF0080',
     icon: Film,
     desc: 'Max 10 min duration. Content must be 100% original. Films can be in any genre — drama, comedy, thriller, documentary. Submit in MP4/AVI format.',
@@ -18,7 +18,7 @@ const events = [
   {
     name: 'Rock Band',
     category: 'LIVE MUSIC',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.35 PM.jpeg',
     color: '#00FFFF',
     icon: Guitar,
     desc: '15 min performance including sound check. Covers or originals allowed. Drum kit provided by institute. Bring your own guitars, bass & processors.',
@@ -27,7 +27,7 @@ const events = [
   {
     name: 'Photography',
     category: 'VISUAL ARTS',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.30 PM.jpeg',
     color: '#BF00FF',
     icon: Camera,
     desc: 'On-spot theme-based. 2 hours from theme announcement. Only basic editing (crop/color) allowed. No AI-generated images. Submit in JPEG/RAW.',
@@ -36,7 +36,7 @@ const events = [
   {
     name: 'Singing',
     category: 'SOLO VOCALS',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.29 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.29 PM.jpeg',
     color: '#C9A84C',
     icon: Mic,
     desc: '4 min performance. One acoustic instrument or backing track allowed (no lead vocals in track). Any language. Judged on vocal range, pitch & expression.',
@@ -45,7 +45,7 @@ const events = [
   {
     name: 'Cover Song',
     category: 'MUSIC',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.25 PM.jpeg',
     color: '#FF5E00',
     icon: Music,
     desc: '4 min limit. Reimagine any hit song — make it your own! One instrument or backing track allowed. Judged on improvisation, soul & creativity.',
@@ -54,7 +54,7 @@ const events = [
   {
     name: 'Dance',
     category: 'DANCE COMPETITIONS',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.28 PM (1).jpeg',
     color: '#39FF14',
     icon: PersonStanding,
     desc: 'Classical & Western categories. Solo (3-4 min) & Group (5-8 min, 4-12 members). Submit tracks 2 hours prior in .mp3 format on pendrive.',
@@ -63,7 +63,7 @@ const events = [
   {
     name: 'Drama / Skit',
     category: 'STAGE PERFORMANCE',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.25 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.25 PM (1).jpeg',
     color: '#0080FF',
     icon: Drama,
     desc: 'Max 15 min stage play. Any language. Props allowed but must be cleared after performance. No vulgarity or political content. Team event.',
@@ -72,7 +72,7 @@ const events = [
   {
     name: 'Painting',
     category: 'FINE ARTS',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.35 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.35 PM (1).jpeg',
     color: '#FF0080',
     icon: Palette,
     desc: 'On-spot theme-based. 2 hours. All materials (canvas, colors, brushes) must be brought by participants. Any medium — watercolor, acrylic, oil, charcoal.',
@@ -81,7 +81,7 @@ const events = [
   {
     name: 'Handicrafts',
     category: 'CREATIVE ARTS',
-    image: '/img/WhatsApp Image 2026-05-07 at 8.37.33 PM (1).jpeg',
+    image: 'img/WhatsApp Image 2026-05-07 at 8.37.33 PM (1).jpeg',
     color: '#00FFFF',
     icon: Scissors,
     desc: 'On-spot creative handicraft competition. 2 hours. Any form — paper art, origami, clay work, embroidery. All materials must be brought by participants.',
