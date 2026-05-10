@@ -83,6 +83,8 @@ function GlobalEffects() {
   return <SplashCursor />;
 }
 
+import { NotificationProvider } from './components/Notification';
+
 function App() {
   useEffect(() => {
     return () => {
@@ -92,24 +94,26 @@ function App() {
 
   return (
     <HelmetProvider>
-      <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
-        <Router>
-          <GlobalEffects />
-          <div className="relative bg-[#080614] min-h-screen">
-            <div className="noise-overlay" />
+      <NotificationProvider>
+        <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
+          <Router>
+            <GlobalEffects />
+            <div className="relative bg-[#080614] min-h-screen">
+              <div className="noise-overlay" />
 
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/checkin" element={<CheckIn />} />
-              <Route path="/scan-pass" element={<PassScanner />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-        </Router>
-      </ReactLenis>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/checkin" element={<CheckIn />} />
+                <Route path="/scan-pass" element={<PassScanner />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </Router>
+        </ReactLenis>
+      </NotificationProvider>
     </HelmetProvider>
   );
 }
